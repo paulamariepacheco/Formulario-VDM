@@ -50,7 +50,6 @@
 <main class="flex-1 overflow-y-auto bg-[#F7F9FC] relative">
     <div class="max-w-5xl mx-auto p-4 md:p-8">
 
-        <!-- SEÇÃO: PROPÓSITO -->
         <section id="section-proposito" class="content-section block fade-in">
             <div class="mb-8">
                 <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Bem-vinda à Viagem das Minas</h2>
@@ -155,7 +154,6 @@
             </div>
         </section>
 
-        <!-- SEÇÃO: O DESTINO -->
         <section id="section-destino" class="content-section hidden fade-in">
             <div class="mb-8">
                 <h2 id="ui-destino-title" class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Missão: Delfinópolis</h2>
@@ -215,7 +213,6 @@
             </div>
         </section>
 
-        <!-- SEÇÃO: ROTEIRO COM IA -->
         <section id="section-roteiro" class="content-section hidden fade-in">
             <div class="mb-8">
                 <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4 flex items-center gap-3">Roteiro Interativo</h2>
@@ -224,15 +221,12 @@
 
             <div class="glass-card rounded-xl overflow-hidden flex flex-col">
                 <div class="flex border-b border-gray-200 overflow-x-auto bg-gray-50" id="roteiro-tabs">
-                    <!-- Abas geradas dinamicamente -->
-                </div>
+                    </div>
                 <div class="p-6 md:p-8" id="roteiro-content">
-                    <!-- Conteúdo gerado via JS -->
-                </div>
+                    </div>
             </div>
         </section>
 
-        <!-- SEÇÃO: CHECKLIST & CARDÁPIO IA -->
         <section id="section-checklist" class="content-section hidden fade-in">
             <div class="mb-8">
                 <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Preparação & Planejamento</h2>
@@ -264,7 +258,6 @@
                     </div>
                 </div>
                 
-                <!-- FEATURE IA: PLANEJADOR DE CARDÁPIO -->
                 <div class="lg:col-span-3 glass-card rounded-xl p-6 md:p-8 border-t-4 border-t-purple-500 shadow-md">
                     <div class="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between mb-4">
                         <div>
@@ -289,7 +282,6 @@
             </div>
         </section>
 
-        <!-- SEÇÃO: PERFIL -->
         <section id="section-perfil" class="content-section hidden fade-in">
             <div class="mb-8">
                 <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Quem Somos (Dados do Grupo)</h2>
@@ -331,7 +323,6 @@
             </div>
         </section>
 
-        <!-- SEÇÃO: ADMINISTRAÇÃO -->
         <section id="section-admin" class="content-section hidden fade-in">
             <div id="admin-login-area" class="max-w-md mx-auto mt-12 glass-card p-8 rounded-xl text-center border-t-4 border-t-slate-800">
                 <div class="text-4xl mb-4">🔐</div>
@@ -408,19 +399,24 @@
     import { getFirestore, collection, addDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
 
     // =========================================================================
-    // CONFIGURAÇÃO INTELIGENTE DE AMBIENTE (PREVIEW VS NETLIFY)
+    // 1. CHAVE DO GEMINI (INTELIGÊNCIA ARTIFICIAL)
     // =========================================================================
-    
-    // 1. Chave do Gemini
-    // No Preview (aqui no chat), deixamos vazio pois o sistema injeta automaticamente.
-    // Quando for colocar no Netlify, substitua as aspas vazias "" pela sua chave real "AIzaSy..."
+    // Deixe as aspas vazias ("") se quiser testar o código aqui no nosso chat (preview).
+    // Quando for copiar para o GitHub, coloque sua chave real entre as aspas (ex: "AIzaSy...").
     const apiKey = "AIzaSyA0E6QSKV7Bm8AeJ8JTO59_jJOrH6Uw5H4"; 
     
     const mdTick = '`' + '`' + '`'; 
 
     async function callGemini(prompt, systemInstruction = "", retries = 5, delay = 1000) {
-        // Usa o modelo estrito do Preview se estiver rodando aqui
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+        
+        // Verifica se está rodando no GitHub sem a chave configurada
+        if (window.location.hostname.includes("github.io") && apiKey === "") {
+             console.error("Lembre-se de colocar a chave do Gemini no código antes de subir para o GitHub!");
+             return "<p class='text-rose-600 font-bold'>Erro: Chave da IA não configurada no código-fonte.</p>";
+        }
+        
+        // Se a chave estiver vazia (aqui no chat), a plataforma injeta automaticamente. Se estiver no Github, usa a sua.
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
         const payload = {
             contents: [{ parts: [{ text: prompt }] }],
             systemInstruction: { parts: [{ text: systemInstruction }] }
@@ -440,25 +436,25 @@
         }
     }
 
-    // 2. Configuração do Firebase
+    // =========================================================================
+    // 2. CONFIGURAÇÃO DO FIREBASE (BANCO DE DADOS)
+    // =========================================================================
     let firebaseConfig;
     
+    // O sistema descobre automaticamente se você está testando no chat ou no site real
     if (typeof __firebase_config !== 'undefined') {
-        // Deteta automaticamente que estamos no ambiente de Preview aqui no chat
-        firebaseConfig = JSON.parse(__firebase_config);
+        firebaseConfig = JSON.parse(__firebase_config); // Ambiente de testes do chat
     } else {
-        // =======================================================
-        // NETLIFY: QUANDO EXPORTAR, COLE O CÓDIGO DO FIREBASE AQUI
-        // =======================================================
+        // --- CÓDIGO DO GITHUB: APAGUE AS LINHAS ABAIXO E COLE O SEU FIREBASE AQUI ---
         firebaseConfig = {
-  apiKey: "AIzaSyDWfeYA76wdehxgirQFYHfCNd14IzDrDks",
-  authDomain: "viagem-das-minas-app.firebaseapp.com",
-  projectId: "viagem-das-minas-app",
-  storageBucket: "viagem-das-minas-app.firebasestorage.app",
-  messagingSenderId: "107521091207",
-  appId: "1:107521091207:web:cf0992435e477c68b5fa22",
-  measurementId: "G-V3150Y7V7J"
-};
+            apiKey: "SUA_API_KEY_DO_FIREBASE",
+            authDomain: "seu-projeto.firebaseapp.com",
+            projectId: "seu-projeto",
+            storageBucket: "seu-projeto.appspot.com",
+            messagingSenderId: "123456789",
+            appId: "1:123456789:web:abcdef"
+        };
+        // ----------------------------------------------------------------------------
     }
     
     const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
@@ -605,7 +601,7 @@
             const prompt = `A usuária está na trilha: "${data.title}" (Distância: ${data.dist}, Nível: ${data.nivel}). Ela perguntou: "${inp.value}". Ajude-a a se preparar.`;
 
             let ans = await callGemini(prompt, sysInst);
-            let cleanAns = ans ? ans.split(mdTick + 'html').join('').split(mdTick).join('') : "Erro de conexão com o oráculo.";
+            let cleanAns = ans ? ans.split(mdTick + 'html').join('').split(mdTick).join('') : "<p class='text-rose-600'>Erro de comunicação com a IA.</p>";
             out.innerHTML = cleanAns;
             
             btn.innerHTML = '✨ Perguntar';
@@ -698,11 +694,11 @@ Texto a analisar: "${txt}"`;
                 aiSuccessMsg.classList.remove('hidden');
                 aiTripInput.value = '';
             } else {
-                alert("Erro na IA ao gerar nova viagem.");
+                alert("Erro na IA. Falha ao gerar o roteiro.");
             }
         } catch (e) {
             console.error(e);
-            alert("Erro ao extrair dados. Verifique se o texto possui informações claras de roteiro.");
+            alert("Erro ao extrair dados. O texto colado não possui informações suficientes para montar o JSON de roteiro.");
         } finally {
             btnGenerateTrip.innerHTML = '✨ Analisar e Criar Formulário';
             btnGenerateTrip.disabled = false;
@@ -730,7 +726,7 @@ Texto a analisar: "${txt}"`;
         const prompt = `Gere lista de compras para 4 dias de trekking. Restrição: ${pref}. Formato: HTML básico (<p>, <ul>). Prático e leve. Sem markdown.`;
         const ans = await callGemini(prompt, "Responda apenas com o HTML solicitado, sem tags grandes de header.");
         
-        let cleanAns = ans ? ans.split(mdTick + 'html').join('').split(mdTick).join('') : "Erro de conexão ao gerar o cardápio.";
+        let cleanAns = ans ? ans.split(mdTick + 'html').join('').split(mdTick).join('') : "<p class='text-rose-600'>Erro ao gerar cardápio.</p>";
         out.innerHTML = `<div class="prose prose-sm">${cleanAns}</div>`;
         btn.innerHTML = '✨ Gerar Novamente';
     });
@@ -761,16 +757,16 @@ Texto a analisar: "${txt}"`;
 
         if (db && currentUser) {
             try {
-                await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'participantes'), {
+                await addDoc(collection(db, 'participantes'), {
                     nome: inps[0].value, rg: inps[1].value, cidade: inps[2].value, telefone: inps[3].value, emergencia: inps[4].value, experiencia: exp, wikiloc: wikiloc, timestamp: new Date().toISOString()
                 });
                 btn.innerHTML = '✅ Salvo!';
             } catch (error) {
                 console.error(error);
-                btn.innerHTML = '❌ Erro. Verifique seu Firebase.';
+                btn.innerHTML = '❌ Erro. Cheque o Firebase.';
             }
         } else {
-            btn.innerHTML = '⚠️ Firebase não configurado no código';
+            btn.innerHTML = '⚠️ Trabalhando no modo Local (Sem BD)';
         }
 
         setTimeout(() => { btn.innerHTML = txt; btn.disabled = false; this.reset(); }, 3000);
@@ -778,7 +774,7 @@ Texto a analisar: "${txt}"`;
     
     function loadAdminData() {
         if (!currentUser || !db) return;
-        onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'participantes'), (snapshot) => {
+        onSnapshot(collection(db, 'participantes'), (snapshot) => {
             const tabela = document.getElementById('tabela-participantes');
             const docs = []; snapshot.forEach(d => docs.push(d.data())); docs.sort((a,b) => new Date(a.timestamp) - new Date(b.timestamp));
             if(docs.length === 0) return;
@@ -788,7 +784,7 @@ Texto a analisar: "${txt}"`;
                 tabela.innerHTML += `<tr class="border-b"><td class="py-4 px-6">${d.nome||'-'}</td><td class="py-4 px-6">${d.rg||'-'}</td><td class="py-4 px-6">${d.cidade||'-'}</td><td class="py-4 px-6">${d.telefone||'-'}</td><td class="py-4 px-6 text-xs">${d.emergencia||'-'}</td><td class="py-4 px-6"><span class="px-3 py-1 rounded-full text-xs font-bold ${cor}">${d.experiencia||'-'}</span></td><td class="py-4 px-6">${d.wikiloc==='Sim'?'✅':'❌'}</td></tr>`;
             });
             document.getElementById('total-inscritas').textContent = docs.length;
-        }, (error) => console.error("Erro ao ler:", error));
+        });
     }
 
     window.initPieChart = function() {
