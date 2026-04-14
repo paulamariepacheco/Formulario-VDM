@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Viagem das Minas - Dashboard de Inscrição</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+    body { font-family: 'Outfit', sans-serif; background-color: #FAFAFA; color: #2D3748; }
+    .chart-container { position: relative; width: 100%; max-width: 700px; margin-left: auto; margin-right: auto; height: 40vh; max-height: 400px; }
+    @media (min-width: 768px) { .chart-container { height: 350px; } }
+    .nav-active { background-color: #E2E8F0; color: #2B6CB0; font-weight: 600; border-left: 4px solid #2B6CB0; }
+    .tab-active { border-bottom: 2px solid #2B6CB0; color: #2B6CB0; font-weight: 600; }
+    .glass-card { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); border: 1px solid rgba(226, 232, 240, 0.8); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: #EDF2F7; }
+    ::-webkit-scrollbar-thumb { background: #CBD5E0; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #A0AEC0; }
+    .prose ul { list-style-type: disc; margin-left: 1.5rem; margin-bottom: 1rem; }
+    .prose li { margin-bottom: 0.25rem; }
+    .prose strong { color: #4C51BF; }
+    .prose p { margin-bottom: 1rem; }
+    
+    .loader { border: 3px solid #f3f3f3; border-top: 3px solid #8B5CF6; border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; display: inline-block; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+</style>
+</head>
+<body class="flex flex-col md:flex-row h-screen overflow-hidden">
+
+<nav class="w-full md:w-64 bg-white shadow-lg z-20 flex-shrink-0 h-auto md:h-full flex flex-col">
+    <div class="p-6 border-b border-gray-100 flex items-center justify-between md:justify-center">
+        <h1 class="text-2xl font-bold text-gray-800 tracking-tight flex items-center gap-3">
+            <img src="./icone-vdm.jpg" alt="Logo Viagem das Minas" class="w-10 h-10 rounded-full object-cover shadow-sm" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iI2QxZDVkYiI+PHBhdGggZD0iTTEyIDJDMi41IDEyIDIgMTIgMiAxMnMyIDEwIDEwIDEwIDEwLTEwIDEwLTEwUzIxLjUgMiAxMiAyem0wIDE4Yy00LjQgMC04LTcuMi04LThzMy42LTggOC04IDggNy4yIDggOC0zLjYgOC04IDh6Ii8+PHBhdGggZD0iTTEyIDZhNiA2IDAgMTAwIDEyIDYgNiAwIDAwMC0xMnpNMiAxMmg0djJoLTR6bTE2IDBoNHYyaC00eiIvPjwvc3ZnPg=='">
+            VDM Hub
+        </h1>
+        <button id="mobile-menu-btn" class="md:hidden text-2xl">☰</button>
+    </div>
+    <ul id="nav-menu" class="hidden md:flex flex-col flex-1 overflow-y-auto py-4">
+        <li><button data-target="section-proposito" class="nav-btn w-full text-left px-6 py-3 text-gray-600 hover:bg-gray-50 transition-colors nav-active">📖 Nosso Propósito</button></li>
+        <li><button data-target="section-destino" class="nav-btn w-full text-left px-6 py-3 text-gray-600 hover:bg-gray-50 transition-colors">📍 O Destino</button></li>
+        <li><button data-target="section-roteiro" class="nav-btn w-full text-left px-6 py-3 text-gray-600 hover:bg-gray-50 transition-colors">🗺️ Roteiro com IA</button></li>
+        <li><button data-target="section-checklist" class="nav-btn w-full text-left px-6 py-3 text-gray-600 hover:bg-gray-50 transition-colors">🎒 Checklist & Cardápio</button></li>
+        <li><button data-target="section-perfil" class="nav-btn w-full text-left px-6 py-3 text-gray-600 hover:bg-gray-50 transition-colors">👥 Perfil do Grupo</button></li>
+        <li class="mt-4 border-t border-gray-100"><button data-target="section-admin" class="nav-btn w-full text-left px-6 py-3 text-slate-400 hover:text-slate-800 hover:bg-gray-50 transition-colors text-sm">🔒 Administração</button></li>
+    </ul>
+</nav>
+
+<main class="flex-1 overflow-y-auto bg-[#F7F9FC] relative">
+    <div class="max-w-5xl mx-auto p-4 md:p-8">
+
+        <!-- SEÇÃO: PROPÓSITO -->
+        <section id="section-proposito" class="content-section block fade-in">
+            <div class="mb-8">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Bem-vinda à Viagem das Minas</h2>
+                <p class="text-lg text-gray-600 leading-relaxed">Esta seção define a essência do nosso coletivo. Antes de embarcar, é crucial entender que não somos uma agência de turismo, mas sim uma rede de apoio e autonomia feminina na natureza. Interaja com os cards abaixo para confirmar sua ciência sobre nossa filosofia.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div class="glass-card rounded-xl p-6 border-l-4 border-l-orange-500">
+                    <div class="text-4xl mb-4">🧗‍♀️</div>
+                    <h3 class="text-xl font-bold mb-2">Autonomia & Cooperação</h3>
+                    <p class="text-gray-600 mb-4">As organizadoras voluntárias não são guias. Cada participante é responsável por fazer o grupo chegar ao destino. O objetivo é fortalecer a sua autonomia.</p>
+                    <label class="flex items-center space-x-3 cursor-pointer p-3 bg-orange-50 rounded-lg hover:bg-orange-100 transition">
+                        <input type="checkbox" class="form-checkbox h-5 w-5 text-orange-600" id="check-autonomia">
+                        <span class="text-gray-800 font-medium">Compreendi e assumo minha responsabilidade</span>
+                    </label>
+                </div>
+                
+                <div class="glass-card rounded-xl p-6 border-l-4 border-l-blue-500">
+                    <div class="text-4xl mb-4">💸</div>
+                    <h3 class="text-xl font-bold mb-2">Sem Fins Lucrativos</h3>
+                    <p class="text-gray-600 mb-4">O valor pago é o rateio exato dos custos da viagem (transporte, seguro base). Devido a essa natureza colaborativa, não realizamos ressarcimentos.</p>
+                    <label class="flex items-center space-x-3 cursor-pointer p-3 bg-blue-50 rounded-lg hover:bg-blue-100 transition">
+                        <input type="checkbox" class="form-checkbox h-5 w-5 text-blue-600" id="check-custos">
+                        <span class="text-gray-800 font-medium">Estou ciente da política de valores</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="glass-card rounded-xl p-6 md:p-8 mb-8 border-t-4 border-t-blue-600">
+                <h3 class="text-2xl font-bold mb-2 text-gray-800">📋 Ficha de Participante</h3>
+                <p class="text-gray-600 mb-6 text-sm">Por favor, preencha seus dados abaixo. Estas informações são estritamente para gerenciamento interno e segurança do grupo.</p>
+                
+                <form id="form-participante" class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Nome Completo *</label>
+                            <input type="text" required class="w-full px-4 py-2 bg-white/50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition" placeholder="Digite seu nome completo">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">RG *</label>
+                            <input type="text" required class="w-full px-4 py-2 bg-white/50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition" placeholder="Número do documento">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Bairro / Cidade *</label>
+                            <input type="text" required class="w-full px-4 py-2 bg-white/50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition" placeholder="Ex: Savassi / Belo Horizonte">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Telefone (WhatsApp) *</label>
+                            <input type="tel" required class="w-full px-4 py-2 bg-white/50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition" placeholder="(DD) 90000-0000">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Contato de Emergência (Nome e Tel) *</label>
+                            <input type="text" required class="w-full px-4 py-2 bg-white/50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition" placeholder="Ex: Maria (Mãe): (DD) 90000-0000">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-gray-200">
+                        <div>
+                            <label class="block text-sm font-bold text-gray-800 mb-3">Sua experiência com trilhas: *</label>
+                            <div class="space-y-3">
+                                <label class="flex items-center space-x-3 cursor-pointer p-2 rounded hover:bg-gray-50 transition">
+                                    <input type="radio" name="exp_trilha" value="Nunca Fez" required class="w-5 h-5 text-blue-600 border-gray-300 focus:ring-blue-500">
+                                    <span class="text-gray-700">Nunca Fez</span>
+                                </label>
+                                <label class="flex items-center space-x-3 cursor-pointer p-2 rounded hover:bg-gray-50 transition">
+                                    <input type="radio" name="exp_trilha" value="Pouca Experiência" class="w-5 h-5 text-blue-600 border-gray-300 focus:ring-blue-500">
+                                    <span class="text-gray-700">Pouca Experiência</span>
+                                </label>
+                                <label class="flex items-center space-x-3 cursor-pointer p-2 rounded hover:bg-gray-50 transition">
+                                    <input type="radio" name="exp_trilha" value="Praticante" class="w-5 h-5 text-blue-600 border-gray-300 focus:ring-blue-500">
+                                    <span class="text-gray-700">Praticante (Faz regularmente)</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-bold text-gray-800 mb-3">Você já usa/conhece o app Wikiloc? *</label>
+                            <div class="space-y-3">
+                                <label class="flex items-center space-x-3 cursor-pointer p-2 rounded hover:bg-gray-50 transition">
+                                    <input type="radio" name="wikiloc" value="Sim" required class="w-5 h-5 text-blue-600 border-gray-300 focus:ring-blue-500">
+                                    <span class="text-gray-700">Sim, já utilizo para navegação.</span>
+                                </label>
+                                <label class="flex items-center space-x-3 cursor-pointer p-2 rounded hover:bg-gray-50 transition">
+                                    <input type="radio" name="wikiloc" value="Não" class="w-5 h-5 text-blue-600 border-gray-300 focus:ring-blue-500">
+                                    <span class="text-gray-700">Não, precisarei de ajuda para baixar/usar.</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="pt-4 text-right">
+                        <button type="submit" class="bg-blue-600 text-white px-8 py-3 rounded-lg font-bold hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 transition-all shadow-md w-full md:w-auto">
+                            Salvar Minhas Informações
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="bg-slate-800 text-white rounded-xl p-8 text-center shadow-xl">
+                <h3 class="text-2xl font-bold mb-2 text-slate-200 uppercase tracking-widest text-sm">Nosso Lema</h3>
+                <p class="text-2xl md:text-4xl font-light italic">"Cada uma é responsável por si e por todas!"</p>
+            </div>
+        </section>
+
+        <!-- SEÇÃO: O DESTINO -->
+        <section id="section-destino" class="content-section hidden fade-in">
+            <div class="mb-8">
+                <h2 id="ui-destino-title" class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Missão: Delfinópolis</h2>
+                <p class="text-lg text-gray-600 leading-relaxed">Aqui você visualiza os dados quantitativos e a logística geral da nossa expedição. Analise os dados para entender a demanda que nos aguarda.</p>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                <div class="bg-white rounded-xl p-4 shadow-sm text-center border border-gray-100">
+                    <div class="text-2xl mb-1">📅</div>
+                    <div class="text-sm text-gray-500 uppercase tracking-wide">Datas</div>
+                    <div id="ui-destino-datas" class="font-bold text-gray-800">18 a 21/04</div>
+                </div>
+                <div class="bg-white rounded-xl p-4 shadow-sm text-center border border-gray-100">
+                    <div class="text-2xl mb-1">🚌</div>
+                    <div class="text-sm text-gray-500 uppercase tracking-wide">Distância (BH)</div>
+                    <div id="ui-destino-distancia" class="font-bold text-gray-800">413 km</div>
+                </div>
+                <div class="bg-white rounded-xl p-4 shadow-sm text-center border border-gray-100">
+                    <div class="text-2xl mb-1">⛺</div>
+                    <div class="text-sm text-gray-500 uppercase tracking-wide">Vagas</div>
+                    <div id="ui-destino-vagas" class="font-bold text-gray-800">17</div>
+                </div>
+                <div class="bg-white rounded-xl p-4 shadow-sm text-center border border-gray-100">
+                    <div class="text-2xl mb-1">🥾</div>
+                    <div class="text-sm text-gray-500 uppercase tracking-wide">Total a caminhar</div>
+                    <div id="ui-destino-total-km" class="font-bold text-gray-800">33 km</div>
+                </div>
+            </div>
+
+            <div class="bg-blue-50 border border-blue-200 rounded-xl p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+                <div class="w-full">
+                    <h3 class="font-bold text-blue-900 text-lg mb-2">Logística de Embarque</h3>
+                    <p class="text-sm text-blue-800 mb-4">Selecione o seu ponto de embarque. Não há tolerância para atrasos!</p>
+                    <form id="form-embarque" class="space-y-3 w-full">
+                        <div id="ui-embarque-options" class="space-y-3">
+                            <label class="flex items-center space-x-3 cursor-pointer p-3 bg-white rounded-lg border border-blue-100 hover:bg-blue-100 transition shadow-sm">
+                                <input type="radio" name="local_embarque" value="Shopping Estação" required class="w-5 h-5 text-blue-600 border-gray-300 focus:ring-blue-500">
+                                <span class="text-blue-900 font-medium">📍 23:30 - Shopping Estação</span>
+                            </label>
+                            <label class="flex items-center space-x-3 cursor-pointer p-3 bg-white rounded-lg border border-blue-100 hover:bg-blue-100 transition shadow-sm">
+                                <input type="radio" name="local_embarque" value="Ouro Minas" class="w-5 h-5 text-blue-600 border-gray-300 focus:ring-blue-500">
+                                <span class="text-blue-900 font-medium">📍 23:45 - Ouro Minas</span>
+                            </label>
+                            <label class="flex items-center space-x-3 cursor-pointer p-3 bg-white rounded-lg border border-blue-100 hover:bg-blue-100 transition shadow-sm">
+                                <input type="radio" name="local_embarque" value="Terminal JK" class="w-5 h-5 text-blue-600 border-gray-300 focus:ring-blue-500">
+                                <span class="text-blue-900 font-medium">📍 23:59 - Terminal JK</span>
+                            </label>
+                        </div>
+                        <div class="pt-2">
+                            <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 transition-all shadow-md w-full md:w-auto">
+                                Confirmar Local
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <div class="hidden md:flex text-6xl opacity-80 self-center">🚌</div>
+            </div>
+        </section>
+
+        <!-- SEÇÃO: ROTEIRO COM IA -->
+        <section id="section-roteiro" class="content-section hidden fade-in">
+            <div class="mb-8">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4 flex items-center gap-3">Roteiro Interativo</h2>
+                <p class="text-lg text-gray-600 leading-relaxed">Explore a programação diária. Se tiver alguma dúvida sobre roupas, terreno ou preparo para o dia específico, use a <strong>Caixa de Perguntas à IA</strong> no final do card do dia!</p>
+            </div>
+
+            <div class="glass-card rounded-xl overflow-hidden flex flex-col">
+                <div class="flex border-b border-gray-200 overflow-x-auto bg-gray-50" id="roteiro-tabs">
+                    <!-- Abas geradas dinamicamente -->
+                </div>
+                <div class="p-6 md:p-8" id="roteiro-content">
+                    <!-- Conteúdo gerado via JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- SEÇÃO: CHECKLIST & CARDÁPIO IA -->
+        <section id="section-checklist" class="content-section hidden fade-in">
+            <div class="mb-8">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Preparação & Planejamento</h2>
+                <p class="text-lg text-gray-600 leading-relaxed">Sua segurança começa no planejamento. Utilize o checklist abaixo para organizar sua mochila e experimente nosso gerador inteligente de cardápio para trilhas.</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="lg:col-span-2 glass-card rounded-xl p-6">
+                    <div class="flex justify-between items-end mb-4 border-b pb-2">
+                        <h3 class="text-xl font-bold">Itens Obrigatórios</h3>
+                        <span id="checklist-progress" class="text-2xl font-bold text-emerald-600">0%</span>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3" id="checklist-container">
+                    </div>
+                </div>
+
+                <div class="space-y-6">
+                    <div class="bg-rose-50 border border-rose-200 rounded-xl p-6">
+                        <div class="text-3xl mb-2">🛡️</div>
+                        <h3 class="font-bold text-rose-900 text-lg mb-2">Seguro Aventura</h3>
+                        <p class="text-sm text-rose-800 mb-4">A contratação é obrigatória. Coberturas necessárias: trilha, acampamento, despesas médicas.</p>
+                        <a href="https://seguroaventura.com.br/contratar-day-use/" target="_blank" class="block w-full text-center bg-rose-600 text-white font-semibold py-2 rounded shadow hover:bg-rose-700 transition">Acessar Sugestão (Roca)</a>
+                    </div>
+                    
+                    <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-6">
+                        <div class="text-3xl mb-2">📡</div>
+                        <h3 class="font-bold text-emerald-900 text-lg mb-2">Navegação Offline</h3>
+                        <p class="text-sm text-emerald-800">Baixe o trajeto no Wikiloc. Alternativa gratuita: A-GPS Tracker (baixar arquivo .gpx).</p>
+                    </div>
+                </div>
+                
+                <!-- FEATURE IA: PLANEJADOR DE CARDÁPIO -->
+                <div class="lg:col-span-3 glass-card rounded-xl p-6 md:p-8 border-t-4 border-t-purple-500 shadow-md">
+                    <div class="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between mb-4">
+                        <div>
+                            <h3 class="text-2xl font-bold text-gray-800 flex items-center gap-2">🏕️ Planejador de Cardápio <span class="bg-purple-100 text-purple-700 text-xs px-3 py-1 rounded-full border border-purple-200">IA Gemini ✨</span></h3>
+                            <p class="text-gray-600 text-sm mt-1">Gere uma lista de compras otimizada e leve para os dias de acampamento.</p>
+                        </div>
+                        <div class="flex w-full md:w-auto gap-2">
+                            <select id="meal-preference" class="px-4 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 outline-none flex-1 md:w-48 text-sm">
+                                <option value="Sem restrições">Sem restrições</option>
+                                <option value="Vegetariana">Vegetariana</option>
+                                <option value="Vegana">Vegana</option>
+                                <option value="Sem Glúten">Sem Glúten</option>
+                            </select>
+                            <button id="btn-meal-planner" class="bg-purple-600 text-white px-5 py-2 rounded-lg font-bold hover:bg-purple-700 transition flex items-center justify-center gap-2 flex-shrink-0">
+                                ✨ Gerar
+                            </button>
+                        </div>
+                    </div>
+                    <div id="meal-output" class="hidden mt-6 pt-6 border-t border-gray-200"></div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- SEÇÃO: PERFIL -->
+        <section id="section-perfil" class="content-section hidden fade-in">
+            <div class="mb-8">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Quem Somos (Dados do Grupo)</h2>
+                <p class="text-lg text-gray-600 leading-relaxed">Conhecer a experiência das integrantes ajuda na colaboração durante a trilha. Abaixo, uma visualização analítica baseada nas respostas do formulário de inscrição, destacando o nível de vivência em trekking do grupo.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="glass-card rounded-xl p-6 flex flex-col justify-center items-center">
+                    <h3 class="text-xl font-bold mb-6 text-center">Nível de Experiência com o Grupo</h3>
+                    <div class="chart-container" style="height: 300px;">
+                        <canvas id="experienciaChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="space-y-6">
+                    <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                        <h3 class="font-bold text-gray-800 mb-4 flex items-center gap-2"><span>💪</span> Preparo Físico do Grupo</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <div class="flex justify-between text-sm mb-1"><span class="text-gray-600">Alta Frequência (4x+ /semana)</span><span class="font-bold">45%</span></div>
+                                <div class="w-full bg-gray-200 rounded-full h-2"><div class="bg-emerald-500 h-2 rounded-full" style="width: 45%"></div></div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-sm mb-1"><span class="text-gray-600">Moderada (1-3x /semana)</span><span class="font-bold">35%</span></div>
+                                <div class="w-full bg-gray-200 rounded-full h-2"><div class="bg-blue-400 h-2 rounded-full" style="width: 35%"></div></div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-sm mb-1"><span class="text-gray-600">Sedentária/Baixa</span><span class="font-bold">20%</span></div>
+                                <div class="w-full bg-gray-200 rounded-full h-2"><div class="bg-orange-400 h-2 rounded-full" style="width: 20%"></div></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-slate-800 rounded-xl p-6 text-white text-sm leading-relaxed shadow-lg">
+                        <strong class="block text-lg mb-2 text-slate-200">Análise de Dados:</strong>
+                        Com a presença de iniciantes totais, as veteranas terão papel fundamental em compartilhar conhecimento sobre montagem de barracas, uso do GPS e ritmo de caminhada. A colaboração será o pilar desta expedição.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SEÇÃO: ADMINISTRAÇÃO -->
+        <section id="section-admin" class="content-section hidden fade-in">
+            <div id="admin-login-area" class="max-w-md mx-auto mt-12 glass-card p-8 rounded-xl text-center border-t-4 border-t-slate-800">
+                <div class="text-4xl mb-4">🔐</div>
+                <h3 class="text-2xl font-bold mb-2 text-gray-800">Acesso Restrito</h3>
+                <p class="text-gray-600 mb-6 text-sm">Área exclusiva para organizadoras. Insira a senha de acesso (vdm2026)</p>
+                <input type="password" id="admin-pass" class="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-slate-500 outline-none transition mb-4 text-center" placeholder="Digite a senha">
+                <button id="btn-login-admin" class="w-full bg-slate-800 text-white py-3 rounded-lg font-bold hover:bg-slate-700 transition shadow-md">Acessar Painel</button>
+                <p id="admin-error" class="text-rose-500 text-sm mt-3 hidden font-medium">Senha incorreta. Tente novamente.</p>
+            </div>
+
+            <div id="admin-dashboard" class="hidden">
+                
+                <div class="flex space-x-6 mb-8 border-b border-gray-300">
+                    <button id="tab-admin-inscritas" class="pb-3 text-lg font-bold text-slate-800 border-b-2 border-slate-800 transition">📋 Inscritas da Viagem Atual</button>
+                    <button id="tab-admin-gerador" class="pb-3 text-lg font-medium text-gray-500 hover:text-slate-800 hover:border-b-2 hover:border-gray-400 transition flex items-center gap-2">✨ Gerar Nova Viagem (IA)</button>
+                </div>
+
+                <div id="panel-admin-inscritas" class="block">
+                    <div class="mb-6 flex flex-col md:flex-row md:justify-between md:items-end gap-4">
+                        <div>
+                            <p class="text-gray-600">Dados do banco de dados atualizados em tempo real.</p>
+                        </div>
+                        <div class="bg-blue-100 border border-blue-200 text-blue-800 px-6 py-3 rounded-xl font-bold text-center shadow-sm">
+                            Total: <span id="total-inscritas" class="text-2xl ml-2">0</span>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden overflow-x-auto">
+                        <table class="w-full text-left border-collapse whitespace-nowrap">
+                            <thead>
+                                <tr class="bg-slate-800 text-white text-sm uppercase tracking-wide">
+                                    <th class="py-4 px-6 font-semibold">Nome Completo</th>
+                                    <th class="py-4 px-6 font-semibold">RG</th>
+                                    <th class="py-4 px-6 font-semibold">Cidade</th>
+                                    <th class="py-4 px-6 font-semibold">WhatsApp</th>
+                                    <th class="py-4 px-6 font-semibold">Emergência</th>
+                                    <th class="py-4 px-6 font-semibold">Experiência</th>
+                                    <th class="py-4 px-6 font-semibold">Usa Wikiloc?</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabela-participantes" class="divide-y divide-gray-100 text-sm">
+                                <tr><td colspan="7" class="py-8 text-center text-gray-500 italic">Aguardando inscrições...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="panel-admin-gerador" class="hidden">
+                    <div class="glass-card rounded-xl p-6 md:p-8 border-t-4 border-t-purple-600 shadow-md mb-8">
+                        <h3 class="text-2xl font-bold text-gray-800 mb-2 flex items-center gap-2">Transformar Texto em App ✨</h3>
+                        <p class="text-gray-600 mb-6">Cole abaixo o texto de divulgação do WhatsApp ou Instagram. Nossa Inteligência Artificial vai ler os dados e criar magicamente as abas "O Destino" e "Roteiro" atualizadas para a próxima viagem.</p>
+                        
+                        <textarea id="ai-trip-input" rows="10" class="w-full p-4 rounded-xl border border-gray-300 focus:ring-2 focus:ring-purple-500 outline-none mb-4 font-mono text-sm resize-none bg-gray-50" placeholder="Ex: Viagem para o Caparaó! Datas 10 a 12 de Outubro. Saída JK às 22h. Dia 1: Pico da Bandeira 14km difícil..."></textarea>
+                        
+                        <button id="btn-generate-trip" class="bg-purple-600 text-white px-8 py-3 rounded-lg font-bold hover:bg-purple-700 transition flex items-center gap-2 shadow-md">
+                            ✨ Analisar e Criar Formulário
+                        </button>
+                        
+                        <div id="ai-trip-success" class="hidden mt-6 p-4 bg-emerald-50 border border-emerald-200 rounded-lg text-emerald-800">
+                            <strong>✅ Sucesso! Mágica realizada.</strong><br>
+                            O dashboard acabou de ser reconfigurado e atualizado ao vivo. Verifique as abas "O Destino" e "Roteiro com IA" no menu lateral para visualizar as informações da nova viagem!
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </div>
+</main>
+
+<script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js';
+    import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
+    import { getFirestore, collection, addDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
+
+    // =========================================================================
+    // CONFIGURAÇÃO INTELIGENTE DE AMBIENTE (PREVIEW VS NETLIFY)
+    // =========================================================================
+    
+    // 1. Chave do Gemini
+    // No Preview (aqui no chat), deixamos vazio pois o sistema injeta automaticamente.
+    // Quando for colocar no Netlify, substitua as aspas vazias "" pela sua chave real "AIzaSy..."
+    const apiKey = ""; 
+    
+    const mdTick = '`' + '`' + '`'; 
+
+    async function callGemini(prompt, systemInstruction = "", retries = 5, delay = 1000) {
+        // Usa o modelo estrito do Preview se estiver rodando aqui
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+        const payload = {
+            contents: [{ parts: [{ text: prompt }] }],
+            systemInstruction: { parts: [{ text: systemInstruction }] }
+        };
+
+        for (let i = 0; i < retries; i++) {
+            try {
+                const response = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                const data = await response.json();
+                return data.candidates[0].content.parts[0].text;
+            } catch (error) {
+                if (i === retries - 1) return null;
+                await new Promise(res => setTimeout(res, delay));
+                delay *= 2;
+            }
+        }
+    }
+
+    // 2. Configuração do Firebase
+    let firebaseConfig;
+    
+    if (typeof __firebase_config !== 'undefined') {
+        // Deteta automaticamente que estamos no ambiente de Preview aqui no chat
+        firebaseConfig = JSON.parse(__firebase_config);
+    } else {
+        // =======================================================
+        // NETLIFY: QUANDO EXPORTAR, COLE O CÓDIGO DO FIREBASE AQUI
+        // =======================================================
+        firebaseConfig = {
+  apiKey: "AIzaSyDWfeYA76wdehxgirQFYHfCNd14IzDrDks",
+  authDomain: "viagem-das-minas-app.firebaseapp.com",
+  projectId: "viagem-das-minas-app",
+  storageBucket: "viagem-das-minas-app.firebasestorage.app",
+  messagingSenderId: "107521091207",
+  appId: "1:107521091207:web:cf0992435e477c68b5fa22",
+  measurementId: "G-V3150Y7V7J"
+};
+    }
+    
+    const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+
+    let db, auth, currentUser;
+
+    if (firebaseConfig) {
+        const app = initializeApp(firebaseConfig);
+        auth = getAuth(app);
+        db = getFirestore(app);
+        
+        const initAuth = async () => {
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+            } catch (error) {
+                console.error("Autenticação falhou:", error);
+            }
+        };
+        initAuth();
+        
+        onAuthStateChanged(auth, (user) => { 
+            currentUser = user; 
+            if (user && !document.getElementById('admin-dashboard').classList.contains('hidden')) {
+                loadAdminData();
+            }
+        });
+    }
+
+    let currentTripData = {
+        destino: "Delfinópolis",
+        datas: "18 a 21/04",
+        distancia: "413 km",
+        vagas: 17,
+        embarques: ["23:30 - Shopping Estação", "23:45 - Ouro Minas", "23:59 - Terminal JK"],
+        roteiro: [
+            { dia: 1, title: "Complexo do Claro", nivel: "Fácil", dist: "8 km ida/volta", taxa: "Camping na área", desc: "Cachoeira da gruta e outras 4 cachoeiras. Dia introdutório para ambientação.", icon: "💦", link: "https://loc.wiki/t/231959369" },
+            { dia: 2, title: "Vale da Gurita", nivel: "Moderado", dist: "5 km", taxa: "R$ 60,00 total", desc: "Visita à Cachoeira do Zé Carlinhos e Ouro.", icon: "🌿", link: "https://loc.wiki/t/15108889" },
+            { dia: 3, title: "Cânions Paraíso Selvagem", nivel: "Difícil", dist: "14 km ida/volta", taxa: "R$ 50,00", desc: "O desafio. Alpinista, Águas Claras e Salto do Solitário.", icon: "⛰️", link: "https://loc.wiki/t/166241428" },
+            { dia: 4, title: "Complexo do Luquinha", nivel: "Fácil", dist: "8 km ida/volta", taxa: "R$ 40,00", desc: "Dia de despedida e retorno para BH.", icon: "🌅", link: "https://loc.wiki/t/163862676" }
+        ]
+    };
+
+    function applyTripDataToUI() {
+        document.getElementById('ui-destino-title').textContent = `Missão: ${currentTripData.destino}`;
+        document.getElementById('ui-destino-datas').textContent = currentTripData.datas;
+        document.getElementById('ui-destino-distancia').textContent = currentTripData.distancia;
+        document.getElementById('ui-destino-vagas').textContent = currentTripData.vagas;
+        
+        let totalKm = 0;
+        currentTripData.roteiro.forEach(r => {
+            const match = String(r.dist).match(/\d+/);
+            if (match) {
+                totalKm += parseInt(match[0]);
+            }
+        });
+        document.getElementById('ui-destino-total-km').textContent = totalKm > 0 ? `${totalKm} km` : '? km';
+
+        const embarqueContainer = document.getElementById('ui-embarque-options');
+        embarqueContainer.innerHTML = '';
+        currentTripData.embarques.forEach((local, index) => {
+            embarqueContainer.innerHTML += `
+                <label class="flex items-center space-x-3 cursor-pointer p-3 bg-white rounded-lg border border-blue-100 hover:bg-blue-100 transition shadow-sm">
+                    <input type="radio" name="local_embarque" value="${local}" ${index===0?'required':''} class="w-5 h-5 text-blue-600 border-gray-300 focus:ring-blue-500">
+                    <span class="text-blue-900 font-medium">📍 ${local}</span>
+                </label>
+            `;
+        });
+
+        const tabsContainer = document.getElementById('roteiro-tabs');
+        tabsContainer.innerHTML = '';
+        currentTripData.roteiro.forEach((r, index) => {
+            tabsContainer.innerHTML += `
+                <button class="flex-1 py-4 px-6 text-center font-medium hover:bg-gray-100 transition whitespace-nowrap tab-btn ${index===0?'tab-active':''}" data-index="${index}">Dia ${r.dia}</button>
+            `;
+        });
+
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('tab-active'));
+                e.target.classList.add('tab-active');
+                renderRoteiroDay(e.target.getAttribute('data-index'));
+            });
+        });
+
+        renderRoteiroDay(0);
+    }
+
+    function renderRoteiroDay(index) {
+        const data = currentTripData.roteiro[index];
+        if(!data) return;
+
+        const roteiroContent = document.getElementById('roteiro-content');
+        let diffColor = (data.nivel.toLowerCase().includes('fácil') || data.nivel.toLowerCase().includes('facil')) ? 'bg-emerald-100 text-emerald-800' : 
+                        (data.nivel.toLowerCase().includes('moderado') ? 'bg-orange-100 text-orange-800' : 'bg-rose-100 text-rose-800');
+        
+        const linkBtn = data.link ? `<a href="${data.link}" target="_blank" class="inline-flex items-center gap-2 bg-slate-800 text-white px-5 py-2 rounded-lg hover:bg-slate-700 transition mt-4"><span>📲 Ver Mapa Offline (Wikiloc)</span></a>` : '';
+
+        roteiroContent.innerHTML = `
+            <div class="flex flex-col gap-6 fade-in">
+                <div class="flex flex-col md:flex-row gap-6 items-start">
+                    <div class="text-7xl bg-gray-100 rounded-2xl p-6 flex-shrink-0">${data.icon || '🏞️'}</div>
+                    <div class="flex-1">
+                        <h3 class="text-2xl font-bold text-gray-800 mb-2">${data.title}</h3>
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span class="px-3 py-1 rounded-full text-xs font-bold ${diffColor}">${data.nivel}</span>
+                            <span class="px-3 py-1 bg-gray-200 text-gray-700 rounded-full text-xs font-bold font-mono">${data.dist}</span>
+                            <span class="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-bold">💰 ${data.taxa}</span>
+                        </div>
+                        <p class="text-gray-600 leading-relaxed">${data.desc}</p>
+                        ${linkBtn}
+                    </div>
+                </div>
+
+                <div class="bg-purple-50 rounded-xl p-6 border border-purple-100 mt-2">
+                    <h4 class="font-bold text-purple-900 flex items-center gap-2 mb-2">🏔️ Oráculo da Trilha <span class="bg-purple-200 text-purple-800 text-[10px] uppercase px-2 py-0.5 rounded-full tracking-wider">IA Gemini ✨</span></h4>
+                    <p class="text-sm text-purple-800 mb-4">Tem alguma dúvida sobre preparo ou equipamento para <strong class="text-purple-900">${data.title}</strong>?</p>
+                    <div class="flex flex-col md:flex-row gap-3">
+                        <input type="text" id="input-oracle" class="flex-1 px-4 py-2 rounded-lg border border-purple-200 focus:ring-2 focus:ring-purple-500 outline-none" placeholder="Ex: Tem muita subida nessa?">
+                        <button id="btn-oracle" class="bg-purple-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-purple-700 transition flex items-center justify-center gap-2">
+                            ✨ Perguntar
+                        </button>
+                    </div>
+                    <div id="output-oracle" class="hidden mt-4 p-4 bg-white rounded-lg border border-purple-100 text-sm text-gray-700 prose prose-sm max-w-none"></div>
+                </div>
+            </div>
+        `;
+        
+        document.getElementById('btn-oracle').addEventListener('click', async () => {
+            const inp = document.getElementById('input-oracle');
+            const out = document.getElementById('output-oracle');
+            const btn = document.getElementById('btn-oracle');
+            if(!inp.value.trim()) return;
+
+            btn.innerHTML = '<span class="loader border-white border-t-white mr-2"></span>Pensando';
+            btn.disabled = true;
+            out.innerHTML = '<p class="text-purple-600 italic">Analisando o terreno e as condições climáticas... 🧭</p>';
+            out.classList.remove('hidden');
+
+            const sysInst = "Você é uma guia outdoor atuando no 'Viagem das Minas'. Responda em português de forma amigável, direta (máx 2 parágrafos) e com tags HTML (<p>, <strong>). Sem markdown.";
+            const prompt = `A usuária está na trilha: "${data.title}" (Distância: ${data.dist}, Nível: ${data.nivel}). Ela perguntou: "${inp.value}". Ajude-a a se preparar.`;
+
+            let ans = await callGemini(prompt, sysInst);
+            let cleanAns = ans ? ans.split(mdTick + 'html').join('').split(mdTick).join('') : "Erro de conexão com o oráculo.";
+            out.innerHTML = cleanAns;
+            
+            btn.innerHTML = '✨ Perguntar';
+            btn.disabled = false;
+        });
+    }
+
+    applyTripDataToUI();
+
+    const navBtns = document.querySelectorAll('.nav-btn');
+    const sections = document.querySelectorAll('.content-section');
+    const navMenu = document.getElementById('nav-menu');
+
+    navBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            navBtns.forEach(b => b.classList.remove('nav-active'));
+            btn.classList.add('nav-active');
+            const targetId = btn.getAttribute('data-target');
+            sections.forEach(sec => {
+                if(sec.id === targetId) { sec.classList.remove('hidden'); sec.classList.add('fade-in'); } 
+                else { sec.classList.add('hidden'); }
+            });
+            if(window.innerWidth < 768) navMenu.classList.add('hidden');
+        });
+    });
+
+    document.getElementById('mobile-menu-btn').addEventListener('click', () => navMenu.classList.toggle('hidden'));
+
+    const tabInscritas = document.getElementById('tab-admin-inscritas');
+    const tabGerador = document.getElementById('tab-admin-gerador');
+    const panelInscritas = document.getElementById('panel-admin-inscritas');
+    const panelGerador = document.getElementById('panel-admin-gerador');
+
+    tabInscritas.addEventListener('click', () => {
+        tabInscritas.className = "pb-3 text-lg font-bold text-slate-800 border-b-2 border-slate-800 transition";
+        tabGerador.className = "pb-3 text-lg font-medium text-gray-500 hover:text-slate-800 hover:border-b-2 hover:border-gray-400 transition flex items-center gap-2";
+        panelInscritas.classList.remove('hidden');
+        panelGerador.classList.add('hidden');
+    });
+
+    tabGerador.addEventListener('click', () => {
+        tabGerador.className = "pb-3 text-lg font-bold text-slate-800 border-b-2 border-slate-800 transition flex items-center gap-2";
+        tabInscritas.className = "pb-3 text-lg font-medium text-gray-500 hover:text-slate-800 hover:border-b-2 hover:border-gray-400 transition";
+        panelGerador.classList.remove('hidden');
+        panelInscritas.classList.add('hidden');
+    });
+
+    const btnGenerateTrip = document.getElementById('btn-generate-trip');
+    const aiTripInput = document.getElementById('ai-trip-input');
+    const aiSuccessMsg = document.getElementById('ai-trip-success');
+
+    btnGenerateTrip.addEventListener('click', async () => {
+        const txt = aiTripInput.value.trim();
+        if(!txt) { alert("Cole o texto da viagem primeiro!"); return; }
+
+        btnGenerateTrip.innerHTML = '<span class="loader border-white border-t-white mr-2"></span> Processando Logística...';
+        btnGenerateTrip.disabled = true;
+        aiSuccessMsg.classList.add('hidden');
+
+        const sysInst = "Você é um extrator de dados JSON estrito. Responda APENAS com o JSON válido, sem NENHUM texto extra ou marcadores markdown.";
+        const prompt = `Analise o texto promocional abaixo de um grupo de trilha. Extraia os dados e formate EXATAMENTE nesta estrutura JSON:
+{
+  "destino": "Nome do Local",
+  "datas": "Dias e Mes",
+  "distancia": "Distância ex: 200 km (ou 'Não informado')",
+  "vagas": Numero inteiro,
+  "embarques": ["Lista de strings com horário e local"],
+  "roteiro": [
+    {
+      "dia": Numero do dia,
+      "title": "Nome da trilha",
+      "nivel": "Fácil, Moderado ou Difícil",
+      "dist": "X km",
+      "taxa": "R$ X ou Gratuito",
+      "desc": "Resumo do que vai rolar",
+      "icon": "Um emoji que represente (ex: ⛰️, 💦, 🥾)",
+      "link": "URL ou link do wikiloc (se houver no texto, senão deixe vazio '')"
+    }
+  ]
+}
+Texto a analisar: "${txt}"`;
+
+        try {
+            let jsonString = await callGemini(prompt, sysInst, 1);
+            if(jsonString) {
+                jsonString = jsonString.split(mdTick + 'json').join('').split(mdTick).join('').trim();
+                const newTripData = JSON.parse(jsonString);
+                currentTripData = newTripData;
+                applyTripDataToUI(); 
+                aiSuccessMsg.classList.remove('hidden');
+                aiTripInput.value = '';
+            } else {
+                alert("Erro na IA ao gerar nova viagem.");
+            }
+        } catch (e) {
+            console.error(e);
+            alert("Erro ao extrair dados. Verifique se o texto possui informações claras de roteiro.");
+        } finally {
+            btnGenerateTrip.innerHTML = '✨ Analisar e Criar Formulário';
+            btnGenerateTrip.disabled = false;
+        }
+    });
+
+    const checklistItems = ["Barraca", "Isolante", "Saco de dormir", "Lanterna", "Protetor/Repelente", "Bota/Tênis", "Garrafa 2L", "Capa de chuva", "Kit primeiros socorros"];
+    const chkContainer = document.getElementById('checklist-container');
+    checklistItems.forEach((item, idx) => {
+        chkContainer.innerHTML += `<div class="flex items-center space-x-3 p-2"><input type="checkbox" id="chk-${idx}" class="chk form-checkbox h-5 w-5 text-emerald-600 rounded"><label for="chk-${idx}">${item}</label></div>`;
+    });
+    document.querySelectorAll('.chk').forEach(c => c.addEventListener('change', () => {
+        const pct = Math.round((document.querySelectorAll('.chk:checked').length / checklistItems.length) * 100);
+        document.getElementById('checklist-progress').textContent = `${pct}%`;
+    }));
+
+    document.getElementById('btn-meal-planner').addEventListener('click', async () => {
+        const btn = document.getElementById('btn-meal-planner');
+        btn.innerHTML = '✨ Gerando...';
+        const out = document.getElementById('meal-output');
+        out.innerHTML = '<p class="text-purple-600">Nutricionista virtual pensando...</p>';
+        out.classList.remove('hidden');
+
+        const pref = document.getElementById('meal-preference').value;
+        const prompt = `Gere lista de compras para 4 dias de trekking. Restrição: ${pref}. Formato: HTML básico (<p>, <ul>). Prático e leve. Sem markdown.`;
+        const ans = await callGemini(prompt, "Responda apenas com o HTML solicitado, sem tags grandes de header.");
+        
+        let cleanAns = ans ? ans.split(mdTick + 'html').join('').split(mdTick).join('') : "Erro de conexão ao gerar o cardápio.";
+        out.innerHTML = `<div class="prose prose-sm">${cleanAns}</div>`;
+        btn.innerHTML = '✨ Gerar Novamente';
+    });
+
+    document.getElementById('btn-login-admin')?.addEventListener('click', () => {
+        if(document.getElementById('admin-pass').value === 'vdm2026') {
+            document.getElementById('admin-login-area').classList.add('hidden');
+            document.getElementById('admin-dashboard').classList.remove('hidden');
+            if (currentUser) loadAdminData();
+        } else {
+            document.getElementById('admin-error').classList.remove('hidden');
+        }
+    });
+
+    let expData = { 'Nunca Fez': 6, 'Pouca Experiência': 5, 'Praticante': 3, 'Organização': 3 };
+    document.getElementById('form-participante')?.addEventListener('submit', async function(e) {
+        e.preventDefault(); 
+        const btn = this.querySelector('button[type="submit"]');
+        const txt = btn.innerHTML;
+        btn.innerHTML = '⏳ Salvando...';
+        btn.disabled = true;
+
+        const inps = this.querySelectorAll('input[type="text"], input[type="tel"]');
+        const exp = document.querySelector('input[name="exp_trilha"]:checked')?.value;
+        const wikiloc = document.querySelector('input[name="wikiloc"]:checked')?.value;
+
+        if(exp) { expData[exp]++; if(window.pieChartInstance) { window.pieChartInstance.data.datasets[0].data = Object.values(expData); window.pieChartInstance.update(); } }
+
+        if (db && currentUser) {
+            try {
+                await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'participantes'), {
+                    nome: inps[0].value, rg: inps[1].value, cidade: inps[2].value, telefone: inps[3].value, emergencia: inps[4].value, experiencia: exp, wikiloc: wikiloc, timestamp: new Date().toISOString()
+                });
+                btn.innerHTML = '✅ Salvo!';
+            } catch (error) {
+                console.error(error);
+                btn.innerHTML = '❌ Erro. Verifique seu Firebase.';
+            }
+        } else {
+            btn.innerHTML = '⚠️ Firebase não configurado no código';
+        }
+
+        setTimeout(() => { btn.innerHTML = txt; btn.disabled = false; this.reset(); }, 3000);
+    });
+    
+    function loadAdminData() {
+        if (!currentUser || !db) return;
+        onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'participantes'), (snapshot) => {
+            const tabela = document.getElementById('tabela-participantes');
+            const docs = []; snapshot.forEach(d => docs.push(d.data())); docs.sort((a,b) => new Date(a.timestamp) - new Date(b.timestamp));
+            if(docs.length === 0) return;
+            tabela.innerHTML = ''; 
+            docs.forEach(d => {
+                let cor = d.experiencia === 'Nunca Fez' ? 'bg-orange-100 text-orange-800' : 'bg-emerald-100 text-emerald-800';
+                tabela.innerHTML += `<tr class="border-b"><td class="py-4 px-6">${d.nome||'-'}</td><td class="py-4 px-6">${d.rg||'-'}</td><td class="py-4 px-6">${d.cidade||'-'}</td><td class="py-4 px-6">${d.telefone||'-'}</td><td class="py-4 px-6 text-xs">${d.emergencia||'-'}</td><td class="py-4 px-6"><span class="px-3 py-1 rounded-full text-xs font-bold ${cor}">${d.experiencia||'-'}</span></td><td class="py-4 px-6">${d.wikiloc==='Sim'?'✅':'❌'}</td></tr>`;
+            });
+            document.getElementById('total-inscritas').textContent = docs.length;
+        }, (error) => console.error("Erro ao ler:", error));
+    }
+
+    window.initPieChart = function() {
+        if(window.pieChartInstance) return;
+        window.pieChartInstance = new Chart(document.getElementById('experienciaChart').getContext('2d'), {
+            type: 'doughnut', data: { labels: Object.keys(expData), datasets: [{ data: Object.values(expData), backgroundColor: ['#F6AD55', '#68D391', '#4FD1C5', '#4A5568'] }] },
+            options: { responsive: true, maintainAspectRatio: false, cutout: '60%' }
+        });
+    }
+    window.initBarChart = function() {} 
+</script>
+</body>
+</html>
