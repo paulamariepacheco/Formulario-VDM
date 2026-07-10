@@ -94,7 +94,8 @@ Faixas de prioridade sobre G×U×T (1–125):
 ## 4. Fases
 
 - **Fase 1 — Motor de geração (.docx).** ✅ Implementada (ver §5).
-- **Fase 2 — Captura desktop.** Formulário web ligado ao Supabase. _Pendente._
+- **Fase 2 — Captura desktop.** ✅ Implementada (ver §5.1). App HTML+Supabase com
+  login, RLS por dono, CRUD e fotos; motor lê do Supabase.
 - **Fase 3 — Captura em campo (mobile, offline-first).** ⚠️ Maior densidade
   arquitetural — **parar e confirmar modelo/esforço com a Paula antes de iniciar.**
 - **Fase 4 — Extras.** Anotação de setas/círculos nas fotos; mapas-chave com pins.
@@ -140,6 +141,30 @@ EXEMPLO".
 
 Abrir o `.docx` no Word: sumário reflete os títulos reais; numeração de página
 contínua do início ao fim; figuras na ordem e numeração corretas (FIG. 01→06).
+
+## 5.1. Captura desktop (Fase 2) — como usar
+
+App HTML único em `sistema_laudos/app/index.html` (Supabase via CDN):
+
+- Login por **link mágico** (Supabase Auth); acesso restrito por **RLS ao e-mail
+  da proprietária** (migrações `0002`/`0003`).
+- CRUD de laudo, ambientes e anomalias (com preview de G×U×T/faixa ao vivo) e
+  upload de fotos ao bucket privado `laudos-fotos` (reduzidas a 1600px no cliente).
+- Config única e deploy: ver `sistema_laudos/app/README.md` (Redirect URLs no
+  Supabase, Exposed schemas = `laudos`, Netlify base `sistema_laudos`).
+
+Geração a partir dos dados capturados (o motor da Fase 1 não muda, só a fonte):
+
+```bash
+cd sistema_laudos
+pip install -r requirements.txt -r requirements-supabase.txt
+export SUPABASE_URL="https://noknoebspmrbigwhyucn.supabase.co"
+export SUPABASE_SERVICE_KEY="<service role key>"
+python -m gerador.gerar_do_supabase "50/2026" "saida/Laudo-50-2026.docx"
+```
+
+`fonte_dados.carregar_do_supabase` e `gerar_do_supabase` fazem a ponte
+(schema `laudos` + download das fotos do Storage).
 
 ---
 

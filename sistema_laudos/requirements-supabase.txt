@@ -1,0 +1,3 @@
+# Dependência opcional — só para gerar o .docx lendo do Supabase
+# (gerador/gerar_do_supabase.py). O núcleo da Fase 1 não precisa disto.
+supabase>=2.4

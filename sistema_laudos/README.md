@@ -16,12 +16,20 @@ Abrir `saida/Laudo-50-2026.docx` no Word (Ctrl+A + F9 se o sumário não preench
 
 ```
 design/tokens.json                 cores/fontes da marca (via /design-sync)
-supabase/migrations/               schema `laudos` (já aplicado)
+supabase/migrations/               schema `laudos` + RLS/storage (já aplicado)
 gerador/                           motor .docx (python-docx + Pillow)
+  gerar_laudo.py                   Fase 1: gera a partir de JSON
+  gerar_do_supabase.py             Fase 2: gera lendo do Supabase (+fotos)
+app/                               Fase 2: formulário de captura (HTML+Supabase)
 dados/laudo_50_2026.json           fixture: Laudo 50/2026 — Ed. Otoni
 saida/                             saída gerada (.docx + img comprimidas)
 ativos_canva/                      capa/infográficos exportados do Canva (fusão)
 ```
+
+## Fase 2 — captura desktop
+
+App em `app/index.html` (login + CRUD + fotos, ligado ao Supabase). Setup e deploy:
+ver `app/README.md`.
 
 ## Dados
 
