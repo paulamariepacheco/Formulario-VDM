@@ -1,0 +1,123 @@
+{
+  "_nota": "FIXTURE DE TESTE (Fase 1). Dados representativos do Laudo Nº 50/2026 — Edifício Otoni, recriados no formato das tabelas do schema `laudos`. Os textos periciais e os valores G/U/T são exemplos plausíveis: a Paula deve substituir pelos dados reais do laudo antes da emissão.",
+  "id": "50-2026",
+  "numero": "50/2026",
+  "tipo": "condominial_nao_judicial",
+  "cliente_nome": "Condomínio do Edifício Otoni",
+  "cliente_cnpj_cpf": "00.000.000/0001-00",
+  "endereco": "Rua Otoni, nº 000 — Bairro Centro, Belo Horizonte/MG",
+  "data_emissao": "2026-07-10",
+  "status": "em_redacao",
+  "datas_diligencia": ["12/06/2026", "19/06/2026"],
+  "acompanhamento": "Síndico — Sr. Murilo",
+
+  "ambientes": [
+    { "id": "amb-subsolo2", "nome": "2º Subsolo", "pavimento": "2º Subsolo", "ordem": 1 },
+    { "id": "amb-garagem", "nome": "Garagem (laje de cobertura)", "pavimento": "1º Subsolo", "ordem": 2 },
+    { "id": "amb-terreo", "nome": "Hall Térreo", "pavimento": "Térreo", "ordem": 3 },
+    { "id": "amb-fachada", "nome": "Fachada Frontal", "pavimento": "Externo", "ordem": 4 },
+    { "id": "amb-reservatorio", "nome": "Casa de Bombas / Reservatório Inferior", "pavimento": "2º Subsolo", "ordem": 5 }
+  ],
+
+  "anomalias": [
+    {
+      "id": "an-01",
+      "ordem": 1,
+      "ambiente_id": "amb-fachada",
+      "sistema_construtivo": "impermeabilização e drenagem",
+      "titulo": "Jardineira da fachada frontal com impermeabilização comprometida",
+      "descricao_fenomenologica": "Constatou-se na jardineira da fachada frontal a presença de manchas de umidade, eflorescências e destacamento do revestimento na face inferior adjacente, com escorrimento persistente para os panos de parede internos.",
+      "mecanismo": "Percolação de água pela camada de substrato em razão da ausência ou ruptura da manta de impermeabilização e da deficiência do sistema de drenagem, com migração da umidade por capilaridade e gravidade para os elementos vizinhos.",
+      "causa_provavel": "Impermeabilização com vida útil esgotada e/ou executada sem rodapé de arremate e sem dreno adequado, associada à retenção de água no substrato da jardineira.",
+      "consequencias": "Deterioração progressiva do revestimento, risco de corrosão de armaduras nos elementos de concreto adjacentes e potencial destacamento de material sobre a via de circulação.",
+      "origem_taxonomia": "construtiva",
+      "vicio_ou_falha_manutencao": "indeterminado",
+      "gr": 3, "g": 5, "u": 5, "t": 4,
+      "alerta_juridico": true
+    },
+    {
+      "id": "an-02",
+      "ordem": 2,
+      "ambiente_id": "amb-subsolo2",
+      "sistema_construtivo": "estrutura",
+      "titulo": "Fissuras em viga de concreto armado do 2º subsolo",
+      "descricao_fenomenologica": "Verificou-se fissuração mapeada e trinca de abertura relevante em viga de concreto armado do 2º subsolo, acompanhada de manchas de umidade e indícios de exposição de armadura em ponto localizado.",
+      "mecanismo": "Solicitação combinada de esforços e ingresso de agentes agressivos pela fissura, favorecendo a despassivação e a corrosão da armadura, com expansão e lascamento do cobrimento.",
+      "causa_provavel": "Infiltração persistente associada a possível deficiência de cobrimento e/ou sobrecarga não prevista, a ser confirmada por investigação complementar.",
+      "consequencias": "Redução da capacidade resistente do elemento estrutural, com risco à segurança de pessoas e bens caso não haja intervenção.",
+      "origem_taxonomia": "adquirida",
+      "vicio_ou_falha_manutencao": "indeterminado",
+      "gr": 3, "g": 5, "u": 4, "t": 4,
+      "alerta_juridico": true
+    },
+    {
+      "id": "an-03",
+      "ordem": 3,
+      "ambiente_id": "amb-garagem",
+      "sistema_construtivo": "impermeabilização e drenagem",
+      "titulo": "Infiltração na laje de cobertura da garagem",
+      "descricao_fenomenologica": "Observaram-se manchas de umidade, estalactites e pingamento na face inferior da laje de cobertura da garagem, com concentração nas proximidades de ralos e juntas.",
+      "mecanismo": "Percolação de água pluvial através de falhas na impermeabilização da laje e de arremates deficientes junto a ralos e juntas de dilatação.",
+      "causa_provavel": "Sistema de impermeabilização sem manutenção e caimentos insuficientes para os pontos de captação.",
+      "consequencias": "Comprometimento estético e funcional, risco de corrosão de armaduras a médio prazo e danos a veículos estacionados.",
+      "origem_taxonomia": "funcional",
+      "vicio_ou_falha_manutencao": "falha_manutencao",
+      "gr": 2, "g": 4, "u": 3, "t": 3,
+      "alerta_juridico": false
+    },
+    {
+      "id": "an-04",
+      "ordem": 4,
+      "ambiente_id": "amb-terreo",
+      "sistema_construtivo": "vedações e alvenarias",
+      "titulo": "Umidade ascendente em parede do hall térreo",
+      "descricao_fenomenologica": "Identificou-se faixa de umidade ascendente até cerca de 60 cm da base da parede do hall térreo, com eflorescências, bolhas na pintura e destacamento do revestimento.",
+      "mecanismo": "Ascensão capilar de água do solo/contrapiso pela alvenaria em razão da ausência ou ineficiência de barreira horizontal de impermeabilização.",
+      "causa_provavel": "Corte de umidade inexistente ou deteriorado na base da parede.",
+      "consequencias": "Degradação do revestimento e da pintura, com recorrência caso não tratada a origem.",
+      "origem_taxonomia": "construtiva",
+      "vicio_ou_falha_manutencao": "vicio_construtivo",
+      "gr": 2, "g": 3, "u": 3, "t": 4,
+      "alerta_juridico": false
+    },
+    {
+      "id": "an-05",
+      "ordem": 5,
+      "ambiente_id": "amb-reservatorio",
+      "sistema_construtivo": "instalações hidráulicas",
+      "titulo": "Sinais de vazamento no reservatório inferior",
+      "descricao_fenomenologica": "Constataram-se manchas de umidade e gotejamento na parede externa do reservatório inferior, além de eflorescências no piso da casa de bombas.",
+      "mecanismo": "Perda de estanqueidade da parede do reservatório por deterioração da impermeabilização interna e/ou fissuração da estrutura de contenção.",
+      "causa_provavel": "Impermeabilização interna do reservatório com vida útil esgotada.",
+      "consequencias": "Desperdício de água tratada, risco de contaminação e agravamento de patologias em elementos estruturais vizinhos.",
+      "origem_taxonomia": "funcional",
+      "vicio_ou_falha_manutencao": "indeterminado",
+      "gr": 2, "g": 4, "u": 4, "t": 3,
+      "alerta_juridico": false
+    },
+    {
+      "id": "an-06",
+      "ordem": 6,
+      "ambiente_id": "amb-garagem",
+      "sistema_construtivo": "revestimentos e pisos",
+      "titulo": "Destacamento de rejunte no piso da garagem",
+      "descricao_fenomenologica": "Verificou-se perda de rejuntamento e destacamento pontual de placas cerâmicas em trecho do piso da garagem, sem comprometimento estrutural.",
+      "mecanismo": "Movimentação térmica e ausência de juntas de dessolidarização, com fadiga do rejunte e da argamassa colante.",
+      "causa_provavel": "Especificação/execução do rejunte incompatível com a solicitação de tráfego.",
+      "consequencias": "Progressão do destacamento e risco de infiltração pontual pelas juntas abertas.",
+      "origem_taxonomia": "construtiva",
+      "vicio_ou_falha_manutencao": "vicio_construtivo",
+      "gr": 1, "g": 2, "u": 2, "t": 2,
+      "alerta_juridico": false
+    }
+  ],
+
+  "fotos": [
+    { "id": "f-01", "anomalia_id": "an-01", "ambiente_id": "amb-fachada", "ordem": 1, "legenda": "vista da jardineira com destacamento do revestimento e eflorescências" },
+    { "id": "f-02", "anomalia_id": "an-02", "ambiente_id": "amb-subsolo2", "ordem": 2, "legenda": "trinca em viga de concreto com indício de exposição de armadura" },
+    { "id": "f-03", "anomalia_id": "an-03", "ambiente_id": "amb-garagem", "ordem": 3, "legenda": "manchas de umidade e estalactites na face inferior da laje" },
+    { "id": "f-04", "anomalia_id": "an-04", "ambiente_id": "amb-terreo", "ordem": 4, "legenda": "faixa de umidade ascendente com bolhas na pintura" },
+    { "id": "f-05", "anomalia_id": "an-05", "ambiente_id": "amb-reservatorio", "ordem": 5, "legenda": "gotejamento na parede externa do reservatório inferior" },
+    { "id": "f-06", "anomalia_id": "an-06", "ambiente_id": "amb-garagem", "ordem": 6, "legenda": "perda de rejunte e destacamento de placas cerâmicas" }
+  ]
+}
