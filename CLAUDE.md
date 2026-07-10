@@ -96,8 +96,9 @@ Faixas de prioridade sobre G×U×T (1–125):
 - **Fase 1 — Motor de geração (.docx).** ✅ Implementada (ver §5).
 - **Fase 2 — Captura desktop.** ✅ Implementada (ver §5.1). App HTML+Supabase com
   login, RLS por dono, CRUD e fotos; motor lê do Supabase.
-- **Fase 3 — Captura em campo (mobile, offline-first).** ⚠️ Maior densidade
-  arquitetural — **parar e confirmar modelo/esforço com a Paula antes de iniciar.**
+- **Fase 3 — Captura em campo (mobile, offline-first).** ✅ Implementada em
+  **Claude Fable 5** após confirmação da Paula (ver §5.2). PWA `app/campo.html`
+  com IndexedDB local-first, fila de sync idempotente e fotos offline.
 - **Fase 4 — Extras.** Anotação de setas/círculos nas fotos; mapas-chave com pins.
 
 ---
@@ -165,6 +166,30 @@ python -m gerador.gerar_do_supabase "50/2026" "saida/Laudo-50-2026.docx"
 
 `fonte_dados.carregar_do_supabase` e `gerar_do_supabase` fazem a ponte
 (schema `laudos` + download das fotos do Storage).
+
+## 5.2. Captura em campo (Fase 3) — como funciona
+
+PWA mobile-first em `sistema_laudos/app/campo.html` (+ `sw.js`, `manifest.webmanifest`,
+`icons/`), instalável na tela inicial. Feito para garagem/subsolo **sem sinal**:
+
+- **Local-first:** toda gravação vai primeiro ao IndexedDB; rede é opcional.
+- **IDs de cliente (UUID)** ⇒ FKs consistentes offline e **sync idempotente**
+  (upsert por PK; reenvio não duplica). Exclusões viram *tombstones*.
+- **Fila de sync:** flag `_dirty`; push em ordem pai→filho (laudo→ambiente→
+  anomalia→foto; o **blob da foto sobe ao Storage antes da linha**), pull com
+  LWW (registro sujo local prevalece até subir). Dispara ao voltar online,
+  ao abrir o app e a cada 45s; selos "⟳ no aparelho / ✓ sincronizado" por item.
+- **Fotos offline:** comprimidas no aparelho (1600px/JPEG 80%), blob guardado
+  no IndexedDB até o upload; miniatura offline sai do blob local.
+- Colunas geradas (`gut`, `faixa_prioridade`) e campos locais **nunca** vão no
+  payload. Atualizações pós-sync **não** re-renderizam formulários (digitação
+  em andamento nunca é perdida).
+- 1º acesso exige internet (magic-link); depois o SW mantém a casca offline.
+
+**Critério de aceite (modo avião) — atendido e versionado:**
+`tests/test_campo_offline.py` roda o fluxo real no Chromium (Playwright):
+captura offline → reload persiste → volta o sinal → tudo sobe 1x (idempotente).
+Rodar: `pip install playwright pillow && python sistema_laudos/tests/test_campo_offline.py`.
 
 ---
 

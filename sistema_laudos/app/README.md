@@ -1,19 +1,30 @@
-# App de captura desktop (Fase 2)
+# Apps de captura (Fases 2 e 3)
 
-Formulário web (HTML único + Supabase) para lançar laudo, ambientes, anomalias e
-fotos. Depois o motor da Fase 1 gera o `.docx` lendo direto do Supabase.
+| Arquivo | Uso |
+|---|---|
+| `index.html` | **Desktop (Fase 2)** — formulário completo pós-vistoria. |
+| `campo.html` | **Campo (Fase 3)** — mobile, **funciona sem sinal** (PWA offline-first). |
 
-- Login por **link mágico** (e-mail) — Supabase Auth.
-- Acesso restrito por **RLS** ao e-mail da proprietária (migração `0003`).
-- Fotos vão para o bucket privado **`laudos-fotos`** (reduzidas a 1600px antes do upload).
-- Cores/fontes seguem os tokens da marca.
+Ambos usam o mesmo Supabase (schema `laudos`), login por **link mágico** e
+acesso restrito por **RLS** ao e-mail da proprietária (migração `0003`).
+Fotos vão ao bucket privado **`laudos-fotos`**, reduzidas a 1600px no aparelho.
+Cores/fontes seguem os tokens da marca.
+
+## Campo (offline) — o essencial
+
+- Abra `campo.html` no celular **uma vez com internet** e faça login; adicione
+  à tela inicial (PWA). Depois disso funciona em garagem/subsolo sem sinal.
+- Tudo é salvo primeiro **no aparelho** (selo "⟳ no aparelho") e sobe sozinho
+  quando há sinal (selo "✓ sincronizado"). O contador no topo mostra o que
+  ainda não subiu; o botão **Sync** força o envio.
+- Teste do modo avião automatizado: `../tests/test_campo_offline.py`.
 
 ## Configuração única no Supabase (Dashboard)
 
 1. **Authentication → URL Configuration → Redirect URLs**: adicionar as URLs de onde
-   o app será aberto, ex.:
-   - `http://localhost:8000` (teste local)
-   - `https://SEU-SITE.netlify.app` (produção)
+   os apps serão abertos (o `/*` cobre `index.html` e `campo.html`), ex.:
+   - `http://localhost:8000/*` (teste local)
+   - `https://SEU-SITE.netlify.app/*` (produção)
 2. **Settings → API → Exposed schemas**: confirmar que **`laudos`** está na lista
    (a migração `0002` já tenta habilitar via SQL; isto é o fallback pelo painel).
 3. O e-mail com acesso é `paula.mariesp@gmail.com` (definido na migração `0003`).

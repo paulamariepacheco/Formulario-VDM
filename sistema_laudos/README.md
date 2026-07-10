@@ -20,7 +20,9 @@ supabase/migrations/               schema `laudos` + RLS/storage (já aplicado)
 gerador/                           motor .docx (python-docx + Pillow)
   gerar_laudo.py                   Fase 1: gera a partir de JSON
   gerar_do_supabase.py             Fase 2: gera lendo do Supabase (+fotos)
-app/                               Fase 2: formulário de captura (HTML+Supabase)
+app/                               Fase 2: captura desktop (index.html)
+  campo.html + sw.js + manifest    Fase 3: captura em campo (PWA offline-first)
+tests/test_campo_offline.py       critério de aceite da Fase 3 (modo avião, Chromium)
 dados/laudo_50_2026.json           fixture: Laudo 50/2026 — Ed. Otoni
 saida/                             saída gerada (.docx + img comprimidas)
 ativos_canva/                      capa/infográficos exportados do Canva (fusão)
