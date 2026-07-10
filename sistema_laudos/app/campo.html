@@ -185,7 +185,7 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
 
 /* ---- Regras de risco (espelham gerador/risco.py) ---- */
 const calcGut=(g,u,t)=>(+g)*(+u)*(+t);
-const faixa=gut=>gut>=100?"Imediata":gut>=60?"Alta":gut>=30?"Média":gut>=10?"Programada":"Monitoramento";
+const faixa=gut=>gut>=80?"Imediata":gut>=40?"Alta":gut>=20?"Média":gut>=8?"Programada":"Monitoramento";
 
 const TIPOS={condominial_nao_judicial:"Condominial",contratual_extrajudicial:"Contratual/Extraj.",unidade_correlacao:"Unidade/Correlação",individual:"Individual"};
 const SISTEMAS=["impermeabilização e drenagem","estrutura","vedações e alvenarias","instalações hidráulicas","instalações elétricas","climatização","revestimentos e pisos","esquadrias","cobertura"];

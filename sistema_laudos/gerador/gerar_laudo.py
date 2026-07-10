@@ -190,6 +190,13 @@ class GeradorLaudo:
                 p = self.doc.add_paragraph(style="List Bullet")
                 pav = f" — {amb.pavimento}" if amb.pavimento else ""
                 p.add_run(f"{amb.nome}{pav}")
+        # fotos sem vínculo com anomalia = registro complementar da vistoria
+        avulsas = [f for f in sorted(lau.fotos, key=lambda f: f.ordem) if not f.anomalia_id]
+        if avulsas:
+            self._p("Registro fotográfico complementar (condições gerais observadas):",
+                    bold=True, space_after=2)
+            for foto in avulsas:
+                self._figura(foto, lau.ambiente(foto.ambiente_id))
 
     # ---------------------------------------------- relatório / diagnóstico
     def _diagnostico(self, numero: int):
@@ -282,6 +289,8 @@ class GeradorLaudo:
         p.alignment = WD_ALIGN_PARAGRAPH.CENTER
         p.add_run().add_picture(str(destino), width=Cm(13))
 
+        # legenda usa o ambiente da PRÓPRIA foto; o da anomalia é fallback
+        amb = self.laudo.ambiente(foto.ambiente_id) or amb
         ambiente = amb.nome if amb else ""
         descricao = foto.legenda or ""
         texto_leg = f"FIG. {foto.numero_figura:02d}"

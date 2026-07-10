@@ -175,7 +175,7 @@ const SISTEMAS = ["impermeabilização e drenagem","estrutura","vedações e alv
 
 /* ---- Regras de risco (espelham gerador/risco.py) ---- */
 function calcGut(g,u,t){return (+g)*(+u)*(+t)}
-function faixa(gut){return gut>=100?"Imediata":gut>=60?"Alta":gut>=30?"Média":gut>=10?"Programada":"Monitoramento"}
+function faixa(gut){return gut>=80?"Imediata":gut>=40?"Alta":gut>=20?"Média":gut>=8?"Programada":"Monitoramento"}
 function grClass(gr){return gr==3?"gr3":gr==2?"gr2":"gr1"}
 
 /* ---- Utils ---- */

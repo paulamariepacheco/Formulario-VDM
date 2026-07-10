@@ -16,11 +16,14 @@ GR_SUPERFICIE = {1: "E9F2E9", 2: "F9F0DD", 3: "F5E5E3"}
 
 # --- Matriz GUT: faixas de prioridade sobre GUT (1..125) ------------------
 # Faixa -> (gut_minimo, prazo sugerido correspondente)
+# Calibradas pelas matrizes REAIS do Laudo 50/2026 (documento assinado):
+#   100 e 80 -> Imediata | 48 -> Alta | 36 e 27 -> Média |
+#   18, 12 e 8 -> Programada | 6 -> Monitoramento.
 FAIXAS = [
-    ("Imediata",      100, "imediato"),
-    ("Alta",           60, "curto prazo"),
-    ("Média",          30, "médio prazo"),
-    ("Programada",     10, "longo prazo"),
+    ("Imediata",       80, "imediato"),
+    ("Alta",           40, "curto prazo"),
+    ("Média",          20, "médio prazo"),
+    ("Programada",      8, "longo prazo"),
     ("Monitoramento",   1, "monitoramento"),
 ]
 FAIXA_HEX = {

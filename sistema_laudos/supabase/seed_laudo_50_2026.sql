@@ -1,106 +1,145 @@
--- Seed idempotente do Laudo Nº 50/2026 — Edifício Otoni (fixture de teste).
--- Espelha dados/laudo_50_2026.json. Reexecutar recria o laudo do zero.
--- ATENÇÃO: textos e valores G/U/T são exemplos plausíveis — substituir pelos reais.
+-- Seed REAL do Laudo Nº 50/2026 — Edifício Comercial Otoni (gerado de dados/laudo_50_2026.json).
+
+-- Idempotente: recria o laudo do zero (cascade limpa filhos).
+
 set search_path to laudos, public;
 
-do $$
-declare
-  v_laudo uuid;
-  a_sub2 uuid; a_gar uuid; a_ter uuid; a_fac uuid; a_res uuid;
-  an1 uuid; an2 uuid; an3 uuid; an4 uuid; an5 uuid; an6 uuid;
-begin
-  delete from laudos.laudos where numero = '50/2026';  -- cascade limpa filhos
+delete from laudos.laudos where numero = '50/2026';
 
-  insert into laudos.laudos (numero, tipo, cliente_nome, cliente_cnpj_cpf, endereco,
-                             data_emissao, status, datas_diligencia, acompanhamento)
-  values ('50/2026', 'condominial_nao_judicial', 'Condomínio do Edifício Otoni',
-          '00.000.000/0001-00', 'Rua Otoni, nº 000 — Bairro Centro, Belo Horizonte/MG',
-          '2026-07-10', 'em_redacao', array['12/06/2026','19/06/2026'], 'Síndico — Sr. Murilo')
-  returning id into v_laudo;
+insert into laudos.laudos (id, numero, tipo, cliente_nome, cliente_cnpj_cpf, endereco, data_emissao, status, datas_diligencia, acompanhamento)
+values ('e39902cf-9794-5c4b-ba5c-046323de6352', '50/2026', 'condominial_nao_judicial', 'Condomínio do Edifício Comercial Otoni', '12.963.873/0001-89', 'Av. do Contorno, 3772 — Santa Efigênia, Belo Horizonte/MG, CEP 30110-022', '2026-07-09', 'finalizado', array['06/05/2026','17/06/2026'], 'Síndico — Sr. Murilo; Zeladora — Sra. Maria; Prestador de Serviço — Sr. Guilherme');
 
-  insert into laudos.ambientes (laudo_id, nome, pavimento, ordem) values
-    (v_laudo, '2º Subsolo', '2º Subsolo', 1) returning id into a_sub2;
-  insert into laudos.ambientes (laudo_id, nome, pavimento, ordem) values
-    (v_laudo, 'Garagem (laje de cobertura)', '1º Subsolo', 2) returning id into a_gar;
-  insert into laudos.ambientes (laudo_id, nome, pavimento, ordem) values
-    (v_laudo, 'Hall Térreo', 'Térreo', 3) returning id into a_ter;
-  insert into laudos.ambientes (laudo_id, nome, pavimento, ordem) values
-    (v_laudo, 'Fachada Frontal', 'Externo', 4) returning id into a_fac;
-  insert into laudos.ambientes (laudo_id, nome, pavimento, ordem) values
-    (v_laudo, 'Casa de Bombas / Reservatório Inferior', '2º Subsolo', 5) returning id into a_res;
+insert into laudos.ambientes (id, laudo_id, nome, pavimento, ordem) values ('b59fc7a0-d47f-5893-8a8e-2804a039c730', 'e39902cf-9794-5c4b-ba5c-046323de6352', 'Frente do Prédio — Jardineira', 'Térreo / Externo', 1);
 
-  insert into laudos.anomalias (laudo_id, ambiente_id, ordem, sistema_construtivo, titulo,
-    descricao_fenomenologica, mecanismo, causa_provavel, consequencias, origem_taxonomia,
-    vicio_ou_falha_manutencao, gr, g, u, t, alerta_juridico, status)
-  values
-    (v_laudo, a_fac, 1, 'impermeabilização e drenagem',
-     'Jardineira da fachada frontal com impermeabilização comprometida',
-     'Constatou-se na jardineira da fachada frontal a presença de manchas de umidade, eflorescências e destacamento do revestimento na face inferior adjacente, com escorrimento persistente para os panos de parede internos.',
-     'Percolação de água pela camada de substrato em razão da ausência ou ruptura da manta de impermeabilização e da deficiência do sistema de drenagem.',
-     'Impermeabilização com vida útil esgotada e/ou executada sem rodapé de arremate e sem dreno adequado.',
-     'Deterioração progressiva do revestimento, risco de corrosão de armaduras e potencial destacamento de material sobre a via.',
-     'construtiva', 'indeterminado', 3, 5, 5, 4, true, 'rascunho') returning id into an1;
-  insert into laudos.anomalias (laudo_id, ambiente_id, ordem, sistema_construtivo, titulo,
-    descricao_fenomenologica, mecanismo, causa_provavel, consequencias, origem_taxonomia,
-    vicio_ou_falha_manutencao, gr, g, u, t, alerta_juridico, status)
-  values
-    (v_laudo, a_sub2, 2, 'estrutura',
-     'Fissuras em viga de concreto armado do 2º subsolo',
-     'Verificou-se fissuração mapeada e trinca de abertura relevante em viga de concreto armado do 2º subsolo, com indícios de exposição de armadura.',
-     'Ingresso de agentes agressivos pela fissura, favorecendo despassivação e corrosão da armadura.',
-     'Infiltração persistente associada a possível deficiência de cobrimento e/ou sobrecarga.',
-     'Redução da capacidade resistente do elemento estrutural, com risco à segurança.',
-     'adquirida', 'indeterminado', 3, 5, 4, 4, true, 'rascunho') returning id into an2;
-  insert into laudos.anomalias (laudo_id, ambiente_id, ordem, sistema_construtivo, titulo,
-    descricao_fenomenologica, mecanismo, causa_provavel, consequencias, origem_taxonomia,
-    vicio_ou_falha_manutencao, gr, g, u, t, alerta_juridico, status)
-  values
-    (v_laudo, a_gar, 3, 'impermeabilização e drenagem',
-     'Infiltração na laje de cobertura da garagem',
-     'Manchas de umidade, estalactites e pingamento na face inferior da laje de cobertura da garagem.',
-     'Percolação de água pluvial por falhas na impermeabilização e arremates deficientes.',
-     'Sistema de impermeabilização sem manutenção e caimentos insuficientes.',
-     'Comprometimento estético/funcional e risco de corrosão de armaduras a médio prazo.',
-     'funcional', 'falha_manutencao', 2, 4, 3, 3, false, 'rascunho') returning id into an3;
-  insert into laudos.anomalias (laudo_id, ambiente_id, ordem, sistema_construtivo, titulo,
-    descricao_fenomenologica, mecanismo, causa_provavel, consequencias, origem_taxonomia,
-    vicio_ou_falha_manutencao, gr, g, u, t, alerta_juridico, status)
-  values
-    (v_laudo, a_ter, 4, 'vedações e alvenarias',
-     'Umidade ascendente em parede do hall térreo',
-     'Faixa de umidade ascendente até cerca de 60 cm da base da parede, com eflorescências e destacamento do revestimento.',
-     'Ascensão capilar de água do solo pela alvenaria por ausência de barreira horizontal.',
-     'Corte de umidade inexistente ou deteriorado na base da parede.',
-     'Degradação do revestimento e da pintura, com recorrência caso não tratada a origem.',
-     'construtiva', 'vicio_construtivo', 2, 3, 3, 4, false, 'rascunho') returning id into an4;
-  insert into laudos.anomalias (laudo_id, ambiente_id, ordem, sistema_construtivo, titulo,
-    descricao_fenomenologica, mecanismo, causa_provavel, consequencias, origem_taxonomia,
-    vicio_ou_falha_manutencao, gr, g, u, t, alerta_juridico, status)
-  values
-    (v_laudo, a_res, 5, 'instalações hidráulicas',
-     'Sinais de vazamento no reservatório inferior',
-     'Manchas de umidade e gotejamento na parede externa do reservatório inferior.',
-     'Perda de estanqueidade por deterioração da impermeabilização interna e/ou fissuração.',
-     'Impermeabilização interna do reservatório com vida útil esgotada.',
-     'Desperdício de água tratada, risco de contaminação e patologias em elementos vizinhos.',
-     'funcional', 'indeterminado', 2, 4, 4, 3, false, 'rascunho') returning id into an5;
-  insert into laudos.anomalias (laudo_id, ambiente_id, ordem, sistema_construtivo, titulo,
-    descricao_fenomenologica, mecanismo, causa_provavel, consequencias, origem_taxonomia,
-    vicio_ou_falha_manutencao, gr, g, u, t, alerta_juridico, status)
-  values
-    (v_laudo, a_gar, 6, 'revestimentos e pisos',
-     'Destacamento de rejunte no piso da garagem',
-     'Perda de rejuntamento e destacamento pontual de placas cerâmicas em trecho do piso.',
-     'Movimentação térmica e ausência de juntas de dessolidarização.',
-     'Especificação/execução do rejunte incompatível com a solicitação de tráfego.',
-     'Progressão do destacamento e risco de infiltração pontual pelas juntas.',
-     'construtiva', 'vicio_construtivo', 1, 2, 2, 2, false, 'rascunho') returning id into an6;
+insert into laudos.ambientes (id, laudo_id, nome, pavimento, ordem) values ('bc275a1e-8a8c-5d8b-95f3-4862ad2c4fee', 'e39902cf-9794-5c4b-ba5c-046323de6352', 'Áreas Comuns — Halls, Corredores e Escadas', 'Pavimentos 4, 7 e 8', 2);
 
-  insert into laudos.fotos (laudo_id, anomalia_id, ambiente_id, ordem, legenda) values
-    (v_laudo, an1, a_fac, 1, 'vista da jardineira com destacamento do revestimento e eflorescências'),
-    (v_laudo, an2, a_sub2, 2, 'trinca em viga de concreto com indício de exposição de armadura'),
-    (v_laudo, an3, a_gar, 3, 'manchas de umidade e estalactites na face inferior da laje'),
-    (v_laudo, an4, a_ter, 4, 'faixa de umidade ascendente com bolhas na pintura'),
-    (v_laudo, an5, a_res, 5, 'gotejamento na parede externa do reservatório inferior'),
-    (v_laudo, an6, a_gar, 6, 'perda de rejunte e destacamento de placas cerâmicas');
-end $$;
+insert into laudos.ambientes (id, laudo_id, nome, pavimento, ordem) values ('4465ec22-68c9-5169-8fe3-7e434ea23e9e', 'e39902cf-9794-5c4b-ba5c-046323de6352', 'Salas (unidades privativas)', 'Diversos pavimentos', 3);
+
+insert into laudos.ambientes (id, laudo_id, nome, pavimento, ordem) values ('c82ba32c-b022-5497-acd6-f183e83e511a', 'e39902cf-9794-5c4b-ba5c-046323de6352', 'Sala 404', '4º Pavimento', 4);
+
+insert into laudos.ambientes (id, laudo_id, nome, pavimento, ordem) values ('91b1d23c-8788-5ebc-af98-a7cf37924f99', 'e39902cf-9794-5c4b-ba5c-046323de6352', '2º Pavimento', '2º Pavimento', 5);
+
+insert into laudos.ambientes (id, laudo_id, nome, pavimento, ordem) values ('a3d064bb-0ca8-53df-b7d4-ac091c0e5d53', 'e39902cf-9794-5c4b-ba5c-046323de6352', 'Garagens e Áreas Comuns', '1º Subsolo', 6);
+
+insert into laudos.ambientes (id, laudo_id, nome, pavimento, ordem) values ('8422aed4-01d2-5459-9bfd-296ad11ae758', 'e39902cf-9794-5c4b-ba5c-046323de6352', '2º Subsolo', '2º Subsolo', 7);
+
+insert into laudos.ambientes (id, laudo_id, nome, pavimento, ordem) values ('4ea081ad-2deb-5e64-955a-d4a2fa872ba9', 'e39902cf-9794-5c4b-ba5c-046323de6352', 'Cobertura — Telhado, Platibandas e Caixa d''Água', 'Cobertura', 8);
+
+insert into laudos.ambientes (id, laudo_id, nome, pavimento, ordem) values ('9da66ca9-01ab-51c0-a4c1-8fad273e9166', 'e39902cf-9794-5c4b-ba5c-046323de6352', 'Corredor Lateral Descoberto', 'Térreo', 9);
+
+insert into laudos.anomalias (id, laudo_id, ambiente_id, ordem, sistema_construtivo, titulo, descricao_fenomenologica, mecanismo, causa_provavel, consequencias, origem_taxonomia, vicio_ou_falha_manutencao, gr, g, u, t, prazo_sugerido, alerta_juridico, status)
+values ('c518d920-8a9e-5a5d-b77b-03526999e178', 'e39902cf-9794-5c4b-ba5c-046323de6352', 'b59fc7a0-d47f-5893-8a8e-2804a039c730', 1, 'impermeabilização e drenagem', 'Jardineira da fachada frontal (Av. do Contorno) com repercussão na laje de teto da garagem', 'Constatou-se, na jardineira implantada junto à fachada frontal da edificação, voltada para a Avenida do Contorno, quadro de infiltração que se manifesta no pavimento imediatamente inferior, com indícios de infiltração e perda de rejunte no próprio elemento e infiltração no teto da garagem na projeção da jardineira.', 'Perda de estanqueidade do sistema impermeabilizante de fundo e paredes do reservatório de terra, associada à ação de raízes, ao acúmulo de umidade constante do substrato vegetal e à ausência ou insuficiência de camada drenante — condições que mantêm a manta ou membrana sob umidade permanente e aceleram sua deterioração. Rompida a estanqueidade, a água infiltra-se pela laje de fundo da jardineira, manifestando-se no teto do pavimento imediatamente inferior (NBR 9575).', 'Perda de estanqueidade do sistema de impermeabilização da jardineira, agravada pela ausência ou deficiência de sistema drenante, permitindo a infiltração progressiva de água para os pavimentos inferiores.', 'Evolução com surgimento de eflorescências, deterioração de revestimentos e, a médio prazo, exposição da armadura da laje de teto da garagem à umidade constante, com risco de corrosão. Reclassificar para GR3 caso constatada, em inspeção complementar, exposição de armadura com sinais de corrosão.', '', 'indeterminado', 2, 3, 3, 4, 'médio prazo', false, 'aprovado');
+
+insert into laudos.anomalias (id, laudo_id, ambiente_id, ordem, sistema_construtivo, titulo, descricao_fenomenologica, mecanismo, causa_provavel, consequencias, origem_taxonomia, vicio_ou_falha_manutencao, gr, g, u, t, prazo_sugerido, alerta_juridico, status)
+values ('471654ef-491e-5881-954c-b7081d05ebe2', 'e39902cf-9794-5c4b-ba5c-046323de6352', '4465ec22-68c9-5169-8fe3-7e434ea23e9e', 2, 'impermeabilização e drenagem', 'Sacada do 4º Pavimento — acúmulo de água e falhas de drenagem e rejunte', 'Verificou-se acúmulo de água acompanhado de formação de lodo e proliferação de vegetação nas frestas do piso, além de falhas na drenagem e na vedação dos rejuntes dos revestimentos cerâmicos, com manifestação de umidade na base da parede interna em contato com a referida sacada.', 'Retenção de água sobre a superfície, que penetra pelas frestas e juntas deficientes até a camada impermeabilizante ou, na sua ausência, diretamente ao substrato construtivo, migrando lateralmente até a base da alvenaria adjacente por capilaridade e ação da gravidade. A presença de lodo e vegetação evidencia umidade constante e insuficiência de escoamento.', 'Deficiência do sistema de drenagem da sacada, associada a falhas no rejuntamento dos revestimentos, permitindo o acúmulo e a infiltração progressiva de água para a base da alvenaria interna.', 'Agravamento com desenvolvimento de mofo, deterioração de revestimentos internos e comprometimento da salubridade do ambiente.', '', 'indeterminado', 2, 3, 3, 3, 'médio prazo', false, 'aprovado');
+
+insert into laudos.anomalias (id, laudo_id, ambiente_id, ordem, sistema_construtivo, titulo, descricao_fenomenologica, mecanismo, causa_provavel, consequencias, origem_taxonomia, vicio_ou_falha_manutencao, gr, g, u, t, prazo_sugerido, alerta_juridico, status)
+values ('012cf9fc-89e7-503b-8534-cd51c42f42a5', 'e39902cf-9794-5c4b-ba5c-046323de6352', '9da66ca9-01ab-51c0-a4c1-8fad273e9166', 3, 'impermeabilização e drenagem', 'Laje descoberta lateral e de fundos — trincas no contrapiso e falhas de vedação', 'Na laje descoberta que contorna uma das laterais e os fundos da edificação, foram constatadas trincas no contrapiso, falhas na vedação dos ralos e falhas no rejuntamento dos peitoris do muro perimetral.', 'Movimentação térmica do contrapiso exposto ao sol e à chuva que, na ausência de juntas de dilatação adequadas ou de argamassa com módulo de elasticidade compatível, tende a fissurar; as trincas resultantes tornam-se caminhos preferenciais de infiltração, somando-se às falhas pontuais de vedação em ralos e peitoris, que comprometem a estanqueidade do sistema como um todo.', 'Associação entre fissuração do contrapiso, por movimentação térmica e/ou retração, e falhas localizadas de vedação em ralos e peitoris, resultando em múltiplos pontos de infiltração na laje descoberta.', 'Aumento da extensão fissurada e infiltração para os ambientes inferiores.', '', 'indeterminado', 2, 2, 2, 3, 'médio prazo', false, 'aprovado');
+
+insert into laudos.anomalias (id, laudo_id, ambiente_id, ordem, sistema_construtivo, titulo, descricao_fenomenologica, mecanismo, causa_provavel, consequencias, origem_taxonomia, vicio_ou_falha_manutencao, gr, g, u, t, prazo_sugerido, alerta_juridico, status)
+values ('f3e60b18-708b-50e0-835f-8da09f811fee', 'e39902cf-9794-5c4b-ba5c-046323de6352', '4465ec22-68c9-5169-8fe3-7e434ea23e9e', 4, 'impermeabilização e drenagem', 'Áreas externas descobertas das unidades privativas — vulnerabilidade de estanqueidade', 'Nas unidades privativas com área externa descoberta, foram constatados pontos com susceptibilidade à passagem de água, notadamente falhas na vedação dos revestimentos e ralos com deficiência de vedação. Manifestação em estágio inicial, sem quadro de infiltração ativa consolidada.', 'A deficiência de vedação nos ralos e nas juntas de revestimento tende a evoluir para infiltração ativa na medida em que a exposição às intempéries se prolonga, sobretudo em períodos de maior precipitação.', 'Deficiência de vedação nas interfaces entre revestimento e ralos das áreas externas descobertas das unidades privativas.', 'Evolução para infiltração ativa, com repercussão nos ambientes internos das próprias unidades ou nos pavimentos inferiores; recomenda-se acompanhamento e correção antes da consolidação do quadro.', '', 'indeterminado', 1, 2, 1, 3, 'longo prazo', false, 'aprovado');
+
+insert into laudos.anomalias (id, laudo_id, ambiente_id, ordem, sistema_construtivo, titulo, descricao_fenomenologica, mecanismo, causa_provavel, consequencias, origem_taxonomia, vicio_ou_falha_manutencao, gr, g, u, t, prazo_sugerido, alerta_juridico, status)
+values ('0f8756db-d271-569a-b63b-2ba0e8c29362', 'e39902cf-9794-5c4b-ba5c-046323de6352', '4ea081ad-2deb-5e64-955a-d4a2fa872ba9', 5, 'impermeabilização e drenagem', 'Peitoril solto na platibanda da cobertura', 'Constatou-se, na platibanda da cobertura, a existência de peitoril solto — elemento de arremate com aderência comprometida ao suporte, apresentando mobilidade e risco de desprendimento, em cota elevada em relação a pavimentos inferiores e áreas de circulação.', 'Deterioração da argamassa de assentamento e/ou do rejunte de fixação, associada a ciclos de dilatação e contração térmica e à infiltração de água pela junta entre o peitoril e a platibanda, com perda progressiva de aderência e mobilidade crescente do elemento, que tende a agravar-se até o desprendimento total.', 'Perda de aderência do peitoril ao seu suporte, por deterioração da argamassa/rejunte de fixação, associada à ação de intempéries e, eventualmente, a fixação inicial inadequada.', 'Risco iminente de queda de material em altura sobre áreas de circulação, com risco direto à integridade física de pessoas e bens. Intervenção prioritária, com isolamento preventivo da área sob risco de queda até a execução do reparo.', '', 'indeterminado', 3, 5, 5, 4, 'imediato', true, 'aprovado');
+
+insert into laudos.anomalias (id, laudo_id, ambiente_id, ordem, sistema_construtivo, titulo, descricao_fenomenologica, mecanismo, causa_provavel, consequencias, origem_taxonomia, vicio_ou_falha_manutencao, gr, g, u, t, prazo_sugerido, alerta_juridico, status)
+values ('f0850ac0-dc73-5f63-afdb-b68907d185d8', 'e39902cf-9794-5c4b-ba5c-046323de6352', 'bc275a1e-8a8c-5d8b-95f3-4862ad2c4fee', 6, 'climatização', 'Escoamento livre do condensado das unidades condensadoras pela fachada (shaft técnico)', 'O shaft técnico que atravessa a totalidade dos pavimentos acomoda as unidades condensadoras dos sistemas de ar-condicionado de todas as unidades autônomas. A água gerada pelos equipamentos não dispõe de sistema de coleta e condução adequado, escoando livremente pela fachada, com acúmulo de água no 2º Pavimento, degradação das vigas de fachada em diversos pavimentos e infiltrações nas paredes adjacentes.', 'Umidade constante sobre as superfícies que, associada a eventuais microfissuras ou à porosidade do revestimento e do concreto de cobrimento das vigas, permite a penetração progressiva de água até a armadura.', 'Lançamento livre e contínuo da água das condensadoras sobre a fachada, sem sistema de coleta e condução adequado, promovendo umedecimento permanente das superfícies.', 'Acúmulo de água no 2º Pavimento, infiltrações nas paredes adjacentes e infiltração progressiva até as armaduras das vigas de fachada.', '', 'vicio_construtivo', 2, 3, 3, 4, 'médio prazo', false, 'aprovado');
+
+insert into laudos.anomalias (id, laudo_id, ambiente_id, ordem, sistema_construtivo, titulo, descricao_fenomenologica, mecanismo, causa_provavel, consequencias, origem_taxonomia, vicio_ou_falha_manutencao, gr, g, u, t, prazo_sugerido, alerta_juridico, status)
+values ('524b923b-ac29-5a57-8b92-39f60d28166e', 'e39902cf-9794-5c4b-ba5c-046323de6352', '91b1d23c-8788-5ebc-af98-a7cf37924f99', 7, 'climatização', 'Manchas de infiltração no teto do 2º Pavimento', 'Manchas de infiltração no teto do 2º Pavimento, associadas ao acúmulo de água decorrente do escoamento livre do condensado das condensadoras pela fachada.', 'Percolação da água acumulada através da laje e dos revestimentos do teto do pavimento.', 'Acúmulo de água no 2º Pavimento proveniente do escoamento livre do condensado das condensadoras, sem sistema de coleta e condução.', 'Persistência das manchas e degradação progressiva dos revestimentos enquanto não eliminada a fonte de umidade.', '', 'vicio_construtivo', 2, 3, 2, 3, 'médio prazo', false, 'aprovado');
+
+insert into laudos.anomalias (id, laudo_id, ambiente_id, ordem, sistema_construtivo, titulo, descricao_fenomenologica, mecanismo, causa_provavel, consequencias, origem_taxonomia, vicio_ou_falha_manutencao, gr, g, u, t, prazo_sugerido, alerta_juridico, status)
+values ('6c2b192a-53e4-5941-b3af-75d2c06b4f0f', 'e39902cf-9794-5c4b-ba5c-046323de6352', 'bc275a1e-8a8c-5d8b-95f3-4862ad2c4fee', 8, 'estrutura', 'Corrosão de armadura e eflorescência nas vigas de fachada', 'As vigas de fachada situadas na região afetada pelo escoamento livre desde as condensadoras apresentam degradação caracterizada por eflorescência e corrosão de armaduras.', 'A eflorescência denuncia percolação continuada de água pela massa de concreto (lixiviação, com formação de carbonato de cálcio na superfície). A corrosão instala-se quando umidade e oxigênio atingem a armadura em condição de despassivação — por carbonatação do cobrimento ou redução de sua espessura efetiva —, formando óxidos expansivos que fissuram o cobrimento e, em estágios avançados, causam desplacamento e exposição da armadura. A evolução é cumulativa e não reversível sem intervenção técnica.', 'Umidade permanente proveniente do escoamento livre do condensado pela fachada, acelerando a carbonatação e/ou a penetração de agentes agressivos até a armadura.', 'Redução da seção resistente da armadura, perda de aderência aço-concreto, fissuração e desplacamento adicional do cobrimento, podendo comprometer, a longo prazo, a capacidade resistente do elemento estrutural. Recomenda-se avaliação estrutural específica com a maior brevidade possível.', '', 'vicio_construtivo', 3, 5, 4, 4, 'imediato', true, 'aprovado');
+
+insert into laudos.anomalias (id, laudo_id, ambiente_id, ordem, sistema_construtivo, titulo, descricao_fenomenologica, mecanismo, causa_provavel, consequencias, origem_taxonomia, vicio_ou_falha_manutencao, gr, g, u, t, prazo_sugerido, alerta_juridico, status)
+values ('3c4275fc-3c9e-5614-a9f7-39c4e0cfbd11', 'e39902cf-9794-5c4b-ba5c-046323de6352', null, 9, 'vedações e alvenarias', 'Trincas nas alvenarias — halls dos Pavimentos 4, 7 e 8, 2º Pavimento e 2º Subsolo', 'Nos halls de circulação dos Pavimentos 4, 7 e 8, trincas nas mesmas posições construtivas das respectivas paredes, com orientação predominantemente inclinada e vertical; no 2º Pavimento, inclinadas; no 2º Subsolo, predominantemente horizontais. Não foram identificados indícios de recalque de fundação nem de movimentação estrutural expressiva, e não há trincas correlatas nas vigas da garagem.', 'Deformação diferencial entre a alvenaria de vedação (não estrutural) e a estrutura de concreto armado que a envolve — trincas inclinadas associadas a solicitação por cisalhamento; verticais, à retração de argamassa ou movimentação térmica diferencial. A recorrência do padrão na mesma posição em três pavimentos distintos constitui indício técnico relevante de causa sistêmica, associada à geometria construtiva repetida, e não a fenômeno pontual.', 'Deformação diferencial entre a alvenaria de vedação e a estrutura de concreto armado adjacente, em posição construtiva recorrente nos três pavimentos, sem relação com recalque de fundação.', 'Tendência de estabilidade (se o fenômeno gerador for predominantemente térmico e cíclico) ou progressão lenta (se decorrer de fluência da estrutura); risco predominantemente estético e de estanqueidade da vedação, sem indícios de comprometimento estrutural. Recomenda-se instalação de fissurômetros para monitoramento da evolução.', 'construtiva e/ou natural', 'indeterminado', 2, 3, 3, 3, 'curto/médio prazo', false, 'aprovado');
+
+insert into laudos.anomalias (id, laudo_id, ambiente_id, ordem, sistema_construtivo, titulo, descricao_fenomenologica, mecanismo, causa_provavel, consequencias, origem_taxonomia, vicio_ou_falha_manutencao, gr, g, u, t, prazo_sugerido, alerta_juridico, status)
+values ('9cc36349-b53a-50c5-a9c6-2470aa16bffd', 'e39902cf-9794-5c4b-ba5c-046323de6352', '4ea081ad-2deb-5e64-955a-d4a2fa872ba9', 10, 'instalações hidráulicas', 'Infiltração no entorno da conexão de tubulação sob o reservatório superior', 'Constatou-se infiltração no entorno da conexão de tubulação situada imediatamente abaixo do reservatório superior de água da edificação — ponto crítico de estanqueidade, pela carga hidráulica permanente e pela relevância estrutural da laje de apoio do reservatório.', 'Falha de vedação na junta (rosca, flange, anel de vedação ou conexão soldada/colada) que permite gotejamento ou escoamento contínuo; a água escorre e acumula-se sobre a superfície de apoio, podendo infiltrar-se pela interface tubulação-laje ou pelas juntas de concretagem, atingindo a armadura ao longo do tempo.', 'Perda de estanqueidade na conexão da tubulação situada abaixo do reservatório superior, por deterioração do elemento de vedação da junta.', 'Manutenção ou agravamento sob a ação contínua da pressão hidráulica do reservatório, com umedecimento constante da laje de apoio e, a médio/longo prazo, risco de corrosão da armadura desse elemento estrutural crítico. Reclassificar para GR3 caso constatada exposição ou corrosão de armadura em inspeção complementar.', '', 'indeterminado', 2, 4, 4, 3, 'curto prazo', false, 'aprovado');
+
+insert into laudos.anomalias (id, laudo_id, ambiente_id, ordem, sistema_construtivo, titulo, descricao_fenomenologica, mecanismo, causa_provavel, consequencias, origem_taxonomia, vicio_ou_falha_manutencao, gr, g, u, t, prazo_sugerido, alerta_juridico, status)
+values ('94f997ba-d0e7-5b1f-b8c6-f221b740a2e6', 'e39902cf-9794-5c4b-ba5c-046323de6352', '4465ec22-68c9-5169-8fe3-7e434ea23e9e', 11, 'instalações hidráulicas', 'Suspeita de infiltração na tubulação do shaft hidráulico (Sala 401 × banheiro dos funcionários)', 'Há suspeita de infiltração na tubulação situada no interior do shaft hidráulico embutido na alvenaria entre a Sala 401 e o banheiro dos funcionários.', 'A água extravasada no interior do shaft tende a migrar através da alvenaria por capilaridade, manifestando-se na superfície do revestimento de forma diferida e, frequentemente, distante do ponto real de origem do vazamento, o que dificulta a localização precisa sem ensaios complementares.', 'Perda de estanqueidade em conexão ou trecho da tubulação embutida no shaft hidráulico, ainda não confirmada visualmente.', 'Comprometimento progressivo da alvenaria adjacente, com desenvolvimento de umidade, eflorescência e eventual proliferação de bolor nos ambientes lindeiros. Classificação GR2 como medida de precaução técnica até a confirmação diagnóstica.', '', 'indeterminado', 2, 3, 3, 3, 'curto prazo', false, 'aprovado');
+
+insert into laudos.anomalias (id, laudo_id, ambiente_id, ordem, sistema_construtivo, titulo, descricao_fenomenologica, mecanismo, causa_provavel, consequencias, origem_taxonomia, vicio_ou_falha_manutencao, gr, g, u, t, prazo_sugerido, alerta_juridico, status)
+values ('b255f223-f0ae-5b07-9bdf-0ee5f8b5b0ad', 'e39902cf-9794-5c4b-ba5c-046323de6352', '91b1d23c-8788-5ebc-af98-a7cf37924f99', 12, 'instalações hidráulicas', 'Infiltração no furo de laje da tubulação de esgoto do banheiro dos funcionários', 'Por ocasião da implantação do banheiro dos funcionários — intervenção posterior à concepção original da edificação —, foi executado furo na laje para passagem da tubulação de esgoto. No entorno desse furo verificou-se infiltração, indicativa de falha na vedação do sistema de passagem da tubulação através da laje.', 'A ausência ou deficiência do tratamento de vedação na interface tubulação-concreto (anéis de vedação, argamassa expansiva ou selante apropriado) resulta em caminho preferencial de infiltração ao longo de toda a espessura da laje, no entorno da tubulação.', 'Vedação inadequada ou insuficiente executada no entorno da tubulação de esgoto, no ponto de passagem pela laje, por ocasião da reforma de implantação do banheiro dos funcionários — falha executiva da intervenção posterior (vício construtivo da reforma).', 'Manifestação ativa permanente, por tratar-se de rede de esgoto em uso contínuo, com risco de deterioração progressiva da laje e comprometimento da salubridade do ambiente inferior, pela possível veiculação de efluente sanitário ao longo do trajeto de infiltração. Correção prioritária da vedação.', 'construtiva (intervenção posterior)', 'vicio_construtivo', 2, 3, 4, 3, 'curto prazo', false, 'aprovado');
+
+insert into laudos.anomalias (id, laudo_id, ambiente_id, ordem, sistema_construtivo, titulo, descricao_fenomenologica, mecanismo, causa_provavel, consequencias, origem_taxonomia, vicio_ou_falha_manutencao, gr, g, u, t, prazo_sugerido, alerta_juridico, status)
+values ('0df98701-68b9-5846-9b86-a763658f7819', 'e39902cf-9794-5c4b-ba5c-046323de6352', null, 13, 'vedações e alvenarias', 'Infiltração na parede de divisa dos fundos (1º Pavimento)', 'Na divisa dos fundos da edificação, constatou-se infiltração que se manifesta na parede do 1º Pavimento.', 'Migração de água através da alvenaria e/ou de sua interface com elementos estruturais adjacentes, tornando-se visível na face interna sob a forma de manchas de umidade, bolor ou eflorescência, cuja localização na superfície nem sempre corresponde à posição exata do ponto de entrada da água.', 'Múltiplas fontes possíveis: deficiência de impermeabilização ou drenagem da laje descoberta lateral/de fundos em cota superior, umidade proveniente do terreno ou de propriedade confrontante, falha de rejuntamento externo da própria parede ou tubulação embutida na alvenaria de divisa — demanda investigação complementar para elucidação definitiva.', 'Aumento da área afetada e possível degradação do revestimento e da alvenaria.', '', 'indeterminado', 1, 2, 2, 2, 'longo prazo', false, 'aprovado');
+
+insert into laudos.fotos (id, laudo_id, anomalia_id, ambiente_id, ordem, legenda) values
+('12d54c63-fe97-5ff1-b81d-134f977997ed', 'e39902cf-9794-5c4b-ba5c-046323de6352', 'c518d920-8a9e-5a5d-b77b-03526999e178', 'b59fc7a0-d47f-5893-8a8e-2804a039c730', 1, 'Frente do prédio: jardineira'),
+('dad05008-6e60-55b4-ad9d-74bccb82ceee', 'e39902cf-9794-5c4b-ba5c-046323de6352', 'c518d920-8a9e-5a5d-b77b-03526999e178', 'b59fc7a0-d47f-5893-8a8e-2804a039c730', 2, 'indícios de infiltração e perda do rejunte na jardineira'),
+('7fce837d-c409-55e3-8fe3-7a42243db97e', 'e39902cf-9794-5c4b-ba5c-046323de6352', 'c518d920-8a9e-5a5d-b77b-03526999e178', 'b59fc7a0-d47f-5893-8a8e-2804a039c730', 3, 'detalhes de infiltração e perda do rejunte na jardineira'),
+('a1cd3a01-318c-5a0e-8ea4-4b94be9d0793', 'e39902cf-9794-5c4b-ba5c-046323de6352', 'c518d920-8a9e-5a5d-b77b-03526999e178', 'b59fc7a0-d47f-5893-8a8e-2804a039c730', 4, 'detalhe da perda do rejunte do peitoril da jardineira'),
+('68728fcd-737c-50cb-8c7c-20cf49c2eeb2', 'e39902cf-9794-5c4b-ba5c-046323de6352', null, 'bc275a1e-8a8c-5d8b-95f3-4862ad2c4fee', 5, 'Fachada: vidro trincado'),
+('5ea158a1-f549-5775-bc5b-31685ccc9167', 'e39902cf-9794-5c4b-ba5c-046323de6352', '9cc36349-b53a-50c5-a9c6-2470aa16bffd', 'bc275a1e-8a8c-5d8b-95f3-4862ad2c4fee', 6, 'infiltração abaixo do reservatório superior'),
+('053e7976-bdf9-58cd-8d65-7e0a1b2d00b1', 'e39902cf-9794-5c4b-ba5c-046323de6352', 'f0850ac0-dc73-5f63-afdb-b68907d185d8', 'bc275a1e-8a8c-5d8b-95f3-4862ad2c4fee', 7, 'shaft técnico das condensadoras'),
+('c0e927b0-7db2-570b-abb1-49fcfab226a2', 'e39902cf-9794-5c4b-ba5c-046323de6352', 'f0850ac0-dc73-5f63-afdb-b68907d185d8', 'bc275a1e-8a8c-5d8b-95f3-4862ad2c4fee', 8, 'shaft técnico das condensadoras'),
+('cfb7b3eb-4af1-592a-8230-5b4727b9acf2', 'e39902cf-9794-5c4b-ba5c-046323de6352', 'f0850ac0-dc73-5f63-afdb-b68907d185d8', 'bc275a1e-8a8c-5d8b-95f3-4862ad2c4fee', 9, 'umidade no shaft técnico das condensadoras'),
+('5ece3ca1-8d2b-5c30-8e70-9c31be041cd2', 'e39902cf-9794-5c4b-ba5c-046323de6352', 'f0850ac0-dc73-5f63-afdb-b68907d185d8', 'bc275a1e-8a8c-5d8b-95f3-4862ad2c4fee', 10, 'umidade no shaft técnico das condensadoras'),
+('cffe7fb1-1ad4-5f55-b9eb-2d90e3c720f5', 'e39902cf-9794-5c4b-ba5c-046323de6352', '3c4275fc-3c9e-5614-a9f7-39c4e0cfbd11', 'bc275a1e-8a8c-5d8b-95f3-4862ad2c4fee', 11, 'trincas nas paredes dos 4º, 7º e 8º pavimentos'),
+('cf0fedbc-a1ed-5963-bf48-94075bfafdaa', 'e39902cf-9794-5c4b-ba5c-046323de6352', '3c4275fc-3c9e-5614-a9f7-39c4e0cfbd11', 'bc275a1e-8a8c-5d8b-95f3-4862ad2c4fee', 12, 'trincas nas paredes dos 4º, 7º e 8º pavimentos'),
+('919ceba4-e4c0-5c5a-9a30-0ea23fa4965b', 'e39902cf-9794-5c4b-ba5c-046323de6352', '3c4275fc-3c9e-5614-a9f7-39c4e0cfbd11', 'bc275a1e-8a8c-5d8b-95f3-4862ad2c4fee', 13, 'trincas nas paredes dos 4º, 7º e 8º pavimentos'),
+('7c7d0342-ae55-5065-aec8-94f2febb480b', 'e39902cf-9794-5c4b-ba5c-046323de6352', '3c4275fc-3c9e-5614-a9f7-39c4e0cfbd11', 'bc275a1e-8a8c-5d8b-95f3-4862ad2c4fee', 14, 'trincas nas paredes dos 4º, 7º e 8º pavimentos'),
+('375eac44-5574-5afc-97ec-0af2d911a554', 'e39902cf-9794-5c4b-ba5c-046323de6352', '3c4275fc-3c9e-5614-a9f7-39c4e0cfbd11', 'bc275a1e-8a8c-5d8b-95f3-4862ad2c4fee', 15, 'trincas nas paredes dos 4º, 7º e 8º pavimentos'),
+('d5c33089-22ee-508a-9b51-d1296f19cca5', 'e39902cf-9794-5c4b-ba5c-046323de6352', '3c4275fc-3c9e-5614-a9f7-39c4e0cfbd11', 'bc275a1e-8a8c-5d8b-95f3-4862ad2c4fee', 16, 'trincas nas paredes dos 4º, 7º e 8º pavimentos'),
+('db4edd6c-a34b-5839-89a2-41cf513bec6d', 'e39902cf-9794-5c4b-ba5c-046323de6352', '3c4275fc-3c9e-5614-a9f7-39c4e0cfbd11', 'bc275a1e-8a8c-5d8b-95f3-4862ad2c4fee', 17, 'trincas nas paredes dos 4º, 7º e 8º pavimentos'),
+('4918f676-c306-538b-9c08-ef8a87e4156a', 'e39902cf-9794-5c4b-ba5c-046323de6352', '3c4275fc-3c9e-5614-a9f7-39c4e0cfbd11', 'bc275a1e-8a8c-5d8b-95f3-4862ad2c4fee', 18, 'trincas nas paredes dos 4º, 7º e 8º pavimentos'),
+('ba6c03c5-aa04-5b5c-aa28-6bf4ac31d4bf', 'e39902cf-9794-5c4b-ba5c-046323de6352', '3c4275fc-3c9e-5614-a9f7-39c4e0cfbd11', 'bc275a1e-8a8c-5d8b-95f3-4862ad2c4fee', 19, 'trincas nas paredes dos 4º, 7º e 8º pavimentos'),
+('d2063bfd-feaf-576d-95ed-e0cd051e1ece', 'e39902cf-9794-5c4b-ba5c-046323de6352', 'f0850ac0-dc73-5f63-afdb-b68907d185d8', 'bc275a1e-8a8c-5d8b-95f3-4862ad2c4fee', 20, 'infiltração na base da parede próxima ao shaft das condensadoras'),
+('2aa573e9-c43e-5408-b8d2-eb8f5216f133', 'e39902cf-9794-5c4b-ba5c-046323de6352', '6c2b192a-53e4-5941-b3af-75d2c06b4f0f', 'bc275a1e-8a8c-5d8b-95f3-4862ad2c4fee', 21, 'umidade vinda das condensadoras: ataque ao concreto e ao aço das vigas'),
+('928c1fc7-07ff-5182-8b39-e5c0607b8e18', 'e39902cf-9794-5c4b-ba5c-046323de6352', '6c2b192a-53e4-5941-b3af-75d2c06b4f0f', 'bc275a1e-8a8c-5d8b-95f3-4862ad2c4fee', 22, 'umidade vinda das condensadoras: ataque ao concreto e ao aço das vigas'),
+('fec6fa9d-4f32-5c0a-8b1d-80f1f6a5881e', 'e39902cf-9794-5c4b-ba5c-046323de6352', '3c4275fc-3c9e-5614-a9f7-39c4e0cfbd11', 'bc275a1e-8a8c-5d8b-95f3-4862ad2c4fee', 23, 'trincas nas paredes dos 4º, 7º e 8º pavimentos'),
+('b5628142-40c0-5303-8bb0-35ed13203143', 'e39902cf-9794-5c4b-ba5c-046323de6352', '3c4275fc-3c9e-5614-a9f7-39c4e0cfbd11', 'bc275a1e-8a8c-5d8b-95f3-4862ad2c4fee', 24, 'trincas nas paredes dos 4º, 7º e 8º pavimentos'),
+('a37e1e24-94b8-5b4f-9b3c-821a1eb7da19', 'e39902cf-9794-5c4b-ba5c-046323de6352', '471654ef-491e-5881-954c-b7081d05ebe2', 'bc275a1e-8a8c-5d8b-95f3-4862ad2c4fee', 25, 'umidade nas paredes do 4º pavimento'),
+('a88d9836-2274-54fe-8b2d-6618d9056d4f', 'e39902cf-9794-5c4b-ba5c-046323de6352', '471654ef-491e-5881-954c-b7081d05ebe2', 'bc275a1e-8a8c-5d8b-95f3-4862ad2c4fee', 26, 'umidade nas paredes do 4º pavimento'),
+('90b1a4b3-78db-54c7-ad1a-761474929fac', 'e39902cf-9794-5c4b-ba5c-046323de6352', 'f3e60b18-708b-50e0-835f-8da09f811fee', 'bc275a1e-8a8c-5d8b-95f3-4862ad2c4fee', 27, 'inspeção de área descoberta de sala'),
+('d0005b62-52fe-5436-9920-a948561baec9', 'e39902cf-9794-5c4b-ba5c-046323de6352', 'f0850ac0-dc73-5f63-afdb-b68907d185d8', 'bc275a1e-8a8c-5d8b-95f3-4862ad2c4fee', 28, 'local de deságue das condensadoras'),
+('2bfcd4ad-05d0-53a2-bdf4-23123cdd203b', 'e39902cf-9794-5c4b-ba5c-046323de6352', 'f3e60b18-708b-50e0-835f-8da09f811fee', '4465ec22-68c9-5169-8fe3-7e434ea23e9e', 29, 'espaço na alvenaria que possibilita a passagem de água'),
+('1fbcda8f-321b-556a-b35c-852793840aa1', 'e39902cf-9794-5c4b-ba5c-046323de6352', 'f0850ac0-dc73-5f63-afdb-b68907d185d8', '4465ec22-68c9-5169-8fe3-7e434ea23e9e', 30, 'infiltração devido à água que escorre pela fachada'),
+('f39bb8c6-e642-5704-b46e-3bd93abc4acf', 'e39902cf-9794-5c4b-ba5c-046323de6352', '471654ef-491e-5881-954c-b7081d05ebe2', '4465ec22-68c9-5169-8fe3-7e434ea23e9e', 31, 'umidade na base da parede da sala'),
+('57ec865d-d1a0-5a8f-a914-7cca39c13eee', 'e39902cf-9794-5c4b-ba5c-046323de6352', '471654ef-491e-5881-954c-b7081d05ebe2', '4465ec22-68c9-5169-8fe3-7e434ea23e9e', 32, 'umidade na base da parede da sala'),
+('663f5a6e-3182-5f8c-97aa-5a55ff0a452d', 'e39902cf-9794-5c4b-ba5c-046323de6352', 'f3e60b18-708b-50e0-835f-8da09f811fee', '4465ec22-68c9-5169-8fe3-7e434ea23e9e', 33, 'falhas em rejuntes de revestimentos'),
+('e61d3f85-1662-5212-9ef4-7eb08e752a3b', 'e39902cf-9794-5c4b-ba5c-046323de6352', 'f3e60b18-708b-50e0-835f-8da09f811fee', '4465ec22-68c9-5169-8fe3-7e434ea23e9e', 34, 'falhas em rejuntes de revestimentos'),
+('7485c732-9326-56b6-9322-02e94a5fcfc2', 'e39902cf-9794-5c4b-ba5c-046323de6352', null, 'c82ba32c-b022-5497-acd6-f183e83e511a', 35, 'inspeção de sala'),
+('b9e66adf-a87d-5afc-a441-b1d9f825e3f8', 'e39902cf-9794-5c4b-ba5c-046323de6352', 'f3e60b18-708b-50e0-835f-8da09f811fee', 'c82ba32c-b022-5497-acd6-f183e83e511a', 36, 'eflorescência no piso'),
+('f1b9e511-4d5e-5af3-84ee-b98e8ed9ac11', 'e39902cf-9794-5c4b-ba5c-046323de6352', 'f3e60b18-708b-50e0-835f-8da09f811fee', 'c82ba32c-b022-5497-acd6-f183e83e511a', 37, 'falha em vedação e rejunte nas proximidades do ralo'),
+('8cc060f6-e502-5b31-af39-5da6b4bb7291', 'e39902cf-9794-5c4b-ba5c-046323de6352', 'f3e60b18-708b-50e0-835f-8da09f811fee', 'c82ba32c-b022-5497-acd6-f183e83e511a', 38, 'falha em vedação e rejunte nas proximidades do ralo'),
+('ff304956-6802-599b-89cb-660326c912ee', 'e39902cf-9794-5c4b-ba5c-046323de6352', 'f3e60b18-708b-50e0-835f-8da09f811fee', 'c82ba32c-b022-5497-acd6-f183e83e511a', 39, 'inspeção do ralo'),
+('64aff7e7-d1cb-56be-8732-ccbc5b495566', 'e39902cf-9794-5c4b-ba5c-046323de6352', 'f3e60b18-708b-50e0-835f-8da09f811fee', 'c82ba32c-b022-5497-acd6-f183e83e511a', 40, 'saída de água do ralo insuficiente'),
+('ec18ef66-cdfd-59b1-bb37-f338dc3e5e1b', 'e39902cf-9794-5c4b-ba5c-046323de6352', '3c4275fc-3c9e-5614-a9f7-39c4e0cfbd11', '91b1d23c-8788-5ebc-af98-a7cf37924f99', 41, 'trincas em alvenaria no 2º Pavimento'),
+('54f976b0-be61-5ed4-82fa-3d3052560c08', 'e39902cf-9794-5c4b-ba5c-046323de6352', '3c4275fc-3c9e-5614-a9f7-39c4e0cfbd11', '91b1d23c-8788-5ebc-af98-a7cf37924f99', 42, 'trincas em alvenaria no 2º Pavimento'),
+('4aa41b0e-f81f-58cf-be02-d9406ccc976d', 'e39902cf-9794-5c4b-ba5c-046323de6352', '3c4275fc-3c9e-5614-a9f7-39c4e0cfbd11', '91b1d23c-8788-5ebc-af98-a7cf37924f99', 43, 'trincas em alvenaria no 2º Pavimento'),
+('95027cbd-bc47-523b-9a1c-58b5e8d2b5d5', 'e39902cf-9794-5c4b-ba5c-046323de6352', '3c4275fc-3c9e-5614-a9f7-39c4e0cfbd11', '91b1d23c-8788-5ebc-af98-a7cf37924f99', 44, 'trincas em alvenaria no 2º Pavimento'),
+('d3272d1c-7184-5262-96f3-83c0f73a3655', 'e39902cf-9794-5c4b-ba5c-046323de6352', 'c518d920-8a9e-5a5d-b77b-03526999e178', '91b1d23c-8788-5ebc-af98-a7cf37924f99', 45, 'infiltração através da laje de teto da garagem'),
+('c826efa7-54f8-52c4-9c88-fcf9e160db9d', 'e39902cf-9794-5c4b-ba5c-046323de6352', '0df98701-68b9-5846-9b86-a763658f7819', '91b1d23c-8788-5ebc-af98-a7cf37924f99', 46, 'umidade na divisa'),
+('c10cb95a-e175-5b64-95b8-a65b9f7ce0b3', 'e39902cf-9794-5c4b-ba5c-046323de6352', 'c518d920-8a9e-5a5d-b77b-03526999e178', 'a3d064bb-0ca8-53df-b7d4-ac091c0e5d53', 47, 'infiltração através da laje de teto da garagem'),
+('4e26d200-2cf9-5432-82ce-ea61911a3982', 'e39902cf-9794-5c4b-ba5c-046323de6352', '0df98701-68b9-5846-9b86-a763658f7819', 'a3d064bb-0ca8-53df-b7d4-ac091c0e5d53', 48, 'umidade na divisa'),
+('d3e6c3d5-1506-5fea-8d7e-b6310cc4b972', 'e39902cf-9794-5c4b-ba5c-046323de6352', '3c4275fc-3c9e-5614-a9f7-39c4e0cfbd11', 'a3d064bb-0ca8-53df-b7d4-ac091c0e5d53', 49, 'trincas em alvenaria no 2º Pavimento'),
+('188fd04d-050a-5a48-8730-b5f5e6ee59b6', 'e39902cf-9794-5c4b-ba5c-046323de6352', 'c518d920-8a9e-5a5d-b77b-03526999e178', 'a3d064bb-0ca8-53df-b7d4-ac091c0e5d53', 50, 'infiltração através da laje de teto da garagem'),
+('e05c4abb-852e-5e3e-89eb-b3692b8fc452', 'e39902cf-9794-5c4b-ba5c-046323de6352', null, 'a3d064bb-0ca8-53df-b7d4-ac091c0e5d53', 51, 'rodapé solto no hall de entrada'),
+('1904bc5f-caae-5937-ad24-5aba16c93e21', 'e39902cf-9794-5c4b-ba5c-046323de6352', 'c518d920-8a9e-5a5d-b77b-03526999e178', 'a3d064bb-0ca8-53df-b7d4-ac091c0e5d53', 52, 'infiltração no teto da garagem na projeção da jardineira da rua'),
+('34cde07e-b493-5335-94f1-ad2e641834e3', 'e39902cf-9794-5c4b-ba5c-046323de6352', '3c4275fc-3c9e-5614-a9f7-39c4e0cfbd11', '8422aed4-01d2-5459-9bfd-296ad11ae758', 53, 'trincas nas alvenarias do 2º Subsolo'),
+('ae226580-84fb-5a39-89a4-cf6d0d8ff168', 'e39902cf-9794-5c4b-ba5c-046323de6352', '3c4275fc-3c9e-5614-a9f7-39c4e0cfbd11', '8422aed4-01d2-5459-9bfd-296ad11ae758', 54, 'trincas nas alvenarias do 2º Subsolo'),
+('d292451e-5c43-50d0-aa65-6494ddde9d19', 'e39902cf-9794-5c4b-ba5c-046323de6352', '3c4275fc-3c9e-5614-a9f7-39c4e0cfbd11', '8422aed4-01d2-5459-9bfd-296ad11ae758', 55, 'trincas nas alvenarias do 2º Subsolo'),
+('6430f2e2-6eb6-5c6f-91fd-56930fdf7bb4', 'e39902cf-9794-5c4b-ba5c-046323de6352', '3c4275fc-3c9e-5614-a9f7-39c4e0cfbd11', '8422aed4-01d2-5459-9bfd-296ad11ae758', 56, 'trincas nas alvenarias do 2º Subsolo'),
+('d1d65d11-7a68-5ce4-8bef-b88d9587c8b7', 'e39902cf-9794-5c4b-ba5c-046323de6352', '3c4275fc-3c9e-5614-a9f7-39c4e0cfbd11', '8422aed4-01d2-5459-9bfd-296ad11ae758', 57, 'trincas nas alvenarias do 2º Subsolo'),
+('984f2fc0-0c89-54f6-9938-5cfe6541c350', 'e39902cf-9794-5c4b-ba5c-046323de6352', '3c4275fc-3c9e-5614-a9f7-39c4e0cfbd11', '8422aed4-01d2-5459-9bfd-296ad11ae758', 58, 'trincas nas alvenarias do 2º Subsolo'),
+('c5ee4ed8-18ce-5b2a-99e5-eae54ead9ff9', 'e39902cf-9794-5c4b-ba5c-046323de6352', '0df98701-68b9-5846-9b86-a763658f7819', '8422aed4-01d2-5459-9bfd-296ad11ae758', 59, 'umidade na divisa'),
+('dd559117-60b4-5a5d-af33-19e3e70b3d65', 'e39902cf-9794-5c4b-ba5c-046323de6352', '3c4275fc-3c9e-5614-a9f7-39c4e0cfbd11', '8422aed4-01d2-5459-9bfd-296ad11ae758', 60, 'trinca na alvenaria do cômodo do reservatório inferior'),
+('6be8f344-37d5-5959-9393-b47e2b5813d0', 'e39902cf-9794-5c4b-ba5c-046323de6352', '3c4275fc-3c9e-5614-a9f7-39c4e0cfbd11', '8422aed4-01d2-5459-9bfd-296ad11ae758', 61, 'trincas nas alvenarias do 2º Subsolo'),
+('cfb4b593-8e66-5fe0-8260-5c4e29d22ed7', 'e39902cf-9794-5c4b-ba5c-046323de6352', '3c4275fc-3c9e-5614-a9f7-39c4e0cfbd11', '8422aed4-01d2-5459-9bfd-296ad11ae758', 62, 'trincas nas alvenarias do 2º Subsolo'),
+('2ea09de0-ab5f-52ba-a8b6-f131cdf2f3e2', 'e39902cf-9794-5c4b-ba5c-046323de6352', '0f8756db-d271-569a-b63b-2ba0e8c29362', '4ea081ad-2deb-5e64-955a-d4a2fa872ba9', 63, 'peitoris soltos na platibanda'),
+('9bf2fd32-5692-5295-a8db-c1a2b77b1c18', 'e39902cf-9794-5c4b-ba5c-046323de6352', '0f8756db-d271-569a-b63b-2ba0e8c29362', '4ea081ad-2deb-5e64-955a-d4a2fa872ba9', 64, 'peitoris soltos na platibanda'),
+('e329b395-c1dd-5eb9-a34f-6dd92aec76ec', 'e39902cf-9794-5c4b-ba5c-046323de6352', '012cf9fc-89e7-503b-8534-cd51c42f42a5', '9da66ca9-01ab-51c0-a4c1-8fad273e9166', 65, 'trincas no contrapiso'),
+('c23ec227-d5d3-583c-886d-5d05d4f19261', 'e39902cf-9794-5c4b-ba5c-046323de6352', '012cf9fc-89e7-503b-8534-cd51c42f42a5', '9da66ca9-01ab-51c0-a4c1-8fad273e9166', 66, 'trincas no contrapiso'),
+('2cb727d5-3392-5b33-99ec-92c9e5741257', 'e39902cf-9794-5c4b-ba5c-046323de6352', '012cf9fc-89e7-503b-8534-cd51c42f42a5', '9da66ca9-01ab-51c0-a4c1-8fad273e9166', 67, 'vedação comprometida nos ralos'),
+('6479dab8-5d9f-5a90-8f4d-578a72f4d090', 'e39902cf-9794-5c4b-ba5c-046323de6352', '012cf9fc-89e7-503b-8534-cd51c42f42a5', '9da66ca9-01ab-51c0-a4c1-8fad273e9166', 68, 'trincas no contrapiso'),
+('4f579534-37c4-5088-89ef-273f4e876fb9', 'e39902cf-9794-5c4b-ba5c-046323de6352', '012cf9fc-89e7-503b-8534-cd51c42f42a5', '9da66ca9-01ab-51c0-a4c1-8fad273e9166', 69, 'trincas no contrapiso'),
+('48e54051-08af-5f8e-b370-1d7e553de206', 'e39902cf-9794-5c4b-ba5c-046323de6352', '012cf9fc-89e7-503b-8534-cd51c42f42a5', '9da66ca9-01ab-51c0-a4c1-8fad273e9166', 70, 'vedação comprometida nos ralos'),
+('7d61f07f-6368-529d-aa7a-35d49a1dcbf3', 'e39902cf-9794-5c4b-ba5c-046323de6352', '012cf9fc-89e7-503b-8534-cd51c42f42a5', '9da66ca9-01ab-51c0-a4c1-8fad273e9166', 71, 'trincas no contrapiso'),
+('e776cb25-8200-50d3-a114-1e9e1d095060', 'e39902cf-9794-5c4b-ba5c-046323de6352', '012cf9fc-89e7-503b-8534-cd51c42f42a5', '9da66ca9-01ab-51c0-a4c1-8fad273e9166', 72, 'trincas no contrapiso'),
+('d9a14d25-13c0-5f9c-a554-c74b30f30f18', 'e39902cf-9794-5c4b-ba5c-046323de6352', '012cf9fc-89e7-503b-8534-cd51c42f42a5', '9da66ca9-01ab-51c0-a4c1-8fad273e9166', 73, 'vedação comprometida nos ralos'),
+('cc2ad8f1-6cd3-51c8-b363-f5b41823f500', 'e39902cf-9794-5c4b-ba5c-046323de6352', '012cf9fc-89e7-503b-8534-cd51c42f42a5', '9da66ca9-01ab-51c0-a4c1-8fad273e9166', 74, 'ausência de rejunte nos peitoris dos muros'),
+('a51cd1c0-8cb8-5e35-8441-ec9ce1a24985', 'e39902cf-9794-5c4b-ba5c-046323de6352', null, '9da66ca9-01ab-51c0-a4c1-8fad273e9166', 75, 'falta de acabamento na alvenaria de divisa entre o corredor e a sala ao lado'),
+('fb8cea9b-f2a1-573b-aca8-5bec05cb2ce3', 'e39902cf-9794-5c4b-ba5c-046323de6352', null, '9da66ca9-01ab-51c0-a4c1-8fad273e9166', 76, 'falta de acabamento na alvenaria de divisa entre o corredor e a sala ao lado');

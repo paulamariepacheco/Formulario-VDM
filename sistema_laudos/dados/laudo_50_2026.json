@@ -1,123 +1,833 @@
 {
-  "_nota": "FIXTURE DE TESTE (Fase 1). Dados representativos do Laudo Nº 50/2026 — Edifício Otoni, recriados no formato das tabelas do schema `laudos`. Os textos periciais e os valores G/U/T são exemplos plausíveis: a Paula deve substituir pelos dados reais do laudo antes da emissão.",
+  "_nota": "DADOS REAIS do Laudo de Engenharia Nº 50/2026 — Edifício Comercial Otoni, extraídos do documento assinado (com ART MG20264991347). Textos periciais, classificações GR e valores G/U/T conforme o laudo emitido. As fotos usam placeholder até o upload dos arquivos reais (legendas = FIG. 08–83 do relatório fotográfico).",
   "id": "50-2026",
   "numero": "50/2026",
   "tipo": "condominial_nao_judicial",
-  "cliente_nome": "Condomínio do Edifício Otoni",
-  "cliente_cnpj_cpf": "00.000.000/0001-00",
-  "endereco": "Rua Otoni, nº 000 — Bairro Centro, Belo Horizonte/MG",
-  "data_emissao": "2026-07-10",
-  "status": "em_redacao",
-  "datas_diligencia": ["12/06/2026", "19/06/2026"],
-  "acompanhamento": "Síndico — Sr. Murilo",
-
-  "ambientes": [
-    { "id": "amb-subsolo2", "nome": "2º Subsolo", "pavimento": "2º Subsolo", "ordem": 1 },
-    { "id": "amb-garagem", "nome": "Garagem (laje de cobertura)", "pavimento": "1º Subsolo", "ordem": 2 },
-    { "id": "amb-terreo", "nome": "Hall Térreo", "pavimento": "Térreo", "ordem": 3 },
-    { "id": "amb-fachada", "nome": "Fachada Frontal", "pavimento": "Externo", "ordem": 4 },
-    { "id": "amb-reservatorio", "nome": "Casa de Bombas / Reservatório Inferior", "pavimento": "2º Subsolo", "ordem": 5 }
+  "cliente_nome": "Condomínio do Edifício Comercial Otoni",
+  "cliente_cnpj_cpf": "12.963.873/0001-89",
+  "endereco": "Av. do Contorno, 3772 — Santa Efigênia, Belo Horizonte/MG, CEP 30110-022",
+  "data_emissao": "2026-07-09",
+  "status": "finalizado",
+  "datas_diligencia": [
+    "06/05/2026",
+    "17/06/2026"
   ],
-
-  "anomalias": [
+  "acompanhamento": "Síndico — Sr. Murilo; Zeladora — Sra. Maria; Prestador de Serviço — Sr. Guilherme",
+  "ambientes": [
     {
-      "id": "an-01",
-      "ordem": 1,
-      "ambiente_id": "amb-fachada",
-      "sistema_construtivo": "impermeabilização e drenagem",
-      "titulo": "Jardineira da fachada frontal com impermeabilização comprometida",
-      "descricao_fenomenologica": "Constatou-se na jardineira da fachada frontal a presença de manchas de umidade, eflorescências e destacamento do revestimento na face inferior adjacente, com escorrimento persistente para os panos de parede internos.",
-      "mecanismo": "Percolação de água pela camada de substrato em razão da ausência ou ruptura da manta de impermeabilização e da deficiência do sistema de drenagem, com migração da umidade por capilaridade e gravidade para os elementos vizinhos.",
-      "causa_provavel": "Impermeabilização com vida útil esgotada e/ou executada sem rodapé de arremate e sem dreno adequado, associada à retenção de água no substrato da jardineira.",
-      "consequencias": "Deterioração progressiva do revestimento, risco de corrosão de armaduras nos elementos de concreto adjacentes e potencial destacamento de material sobre a via de circulação.",
-      "origem_taxonomia": "construtiva",
-      "vicio_ou_falha_manutencao": "indeterminado",
-      "gr": 3, "g": 5, "u": 5, "t": 4,
-      "alerta_juridico": true
+      "id": "amb-jardineira",
+      "nome": "Frente do Prédio — Jardineira",
+      "pavimento": "Térreo / Externo",
+      "ordem": 1
     },
     {
-      "id": "an-02",
-      "ordem": 2,
-      "ambiente_id": "amb-subsolo2",
-      "sistema_construtivo": "estrutura",
-      "titulo": "Fissuras em viga de concreto armado do 2º subsolo",
-      "descricao_fenomenologica": "Verificou-se fissuração mapeada e trinca de abertura relevante em viga de concreto armado do 2º subsolo, acompanhada de manchas de umidade e indícios de exposição de armadura em ponto localizado.",
-      "mecanismo": "Solicitação combinada de esforços e ingresso de agentes agressivos pela fissura, favorecendo a despassivação e a corrosão da armadura, com expansão e lascamento do cobrimento.",
-      "causa_provavel": "Infiltração persistente associada a possível deficiência de cobrimento e/ou sobrecarga não prevista, a ser confirmada por investigação complementar.",
-      "consequencias": "Redução da capacidade resistente do elemento estrutural, com risco à segurança de pessoas e bens caso não haja intervenção.",
-      "origem_taxonomia": "adquirida",
-      "vicio_ou_falha_manutencao": "indeterminado",
-      "gr": 3, "g": 5, "u": 4, "t": 4,
-      "alerta_juridico": true
+      "id": "amb-comuns",
+      "nome": "Áreas Comuns — Halls, Corredores e Escadas",
+      "pavimento": "Pavimentos 4, 7 e 8",
+      "ordem": 2
     },
     {
-      "id": "an-03",
-      "ordem": 3,
-      "ambiente_id": "amb-garagem",
-      "sistema_construtivo": "impermeabilização e drenagem",
-      "titulo": "Infiltração na laje de cobertura da garagem",
-      "descricao_fenomenologica": "Observaram-se manchas de umidade, estalactites e pingamento na face inferior da laje de cobertura da garagem, com concentração nas proximidades de ralos e juntas.",
-      "mecanismo": "Percolação de água pluvial através de falhas na impermeabilização da laje e de arremates deficientes junto a ralos e juntas de dilatação.",
-      "causa_provavel": "Sistema de impermeabilização sem manutenção e caimentos insuficientes para os pontos de captação.",
-      "consequencias": "Comprometimento estético e funcional, risco de corrosão de armaduras a médio prazo e danos a veículos estacionados.",
-      "origem_taxonomia": "funcional",
-      "vicio_ou_falha_manutencao": "falha_manutencao",
-      "gr": 2, "g": 4, "u": 3, "t": 3,
-      "alerta_juridico": false
+      "id": "amb-salas",
+      "nome": "Salas (unidades privativas)",
+      "pavimento": "Diversos pavimentos",
+      "ordem": 3
     },
     {
-      "id": "an-04",
-      "ordem": 4,
-      "ambiente_id": "amb-terreo",
-      "sistema_construtivo": "vedações e alvenarias",
-      "titulo": "Umidade ascendente em parede do hall térreo",
-      "descricao_fenomenologica": "Identificou-se faixa de umidade ascendente até cerca de 60 cm da base da parede do hall térreo, com eflorescências, bolhas na pintura e destacamento do revestimento.",
-      "mecanismo": "Ascensão capilar de água do solo/contrapiso pela alvenaria em razão da ausência ou ineficiência de barreira horizontal de impermeabilização.",
-      "causa_provavel": "Corte de umidade inexistente ou deteriorado na base da parede.",
-      "consequencias": "Degradação do revestimento e da pintura, com recorrência caso não tratada a origem.",
-      "origem_taxonomia": "construtiva",
-      "vicio_ou_falha_manutencao": "vicio_construtivo",
-      "gr": 2, "g": 3, "u": 3, "t": 4,
-      "alerta_juridico": false
+      "id": "amb-sala404",
+      "nome": "Sala 404",
+      "pavimento": "4º Pavimento",
+      "ordem": 4
     },
     {
-      "id": "an-05",
-      "ordem": 5,
-      "ambiente_id": "amb-reservatorio",
-      "sistema_construtivo": "instalações hidráulicas",
-      "titulo": "Sinais de vazamento no reservatório inferior",
-      "descricao_fenomenologica": "Constataram-se manchas de umidade e gotejamento na parede externa do reservatório inferior, além de eflorescências no piso da casa de bombas.",
-      "mecanismo": "Perda de estanqueidade da parede do reservatório por deterioração da impermeabilização interna e/ou fissuração da estrutura de contenção.",
-      "causa_provavel": "Impermeabilização interna do reservatório com vida útil esgotada.",
-      "consequencias": "Desperdício de água tratada, risco de contaminação e agravamento de patologias em elementos estruturais vizinhos.",
-      "origem_taxonomia": "funcional",
-      "vicio_ou_falha_manutencao": "indeterminado",
-      "gr": 2, "g": 4, "u": 4, "t": 3,
-      "alerta_juridico": false
+      "id": "amb-2pav",
+      "nome": "2º Pavimento",
+      "pavimento": "2º Pavimento",
+      "ordem": 5
     },
     {
-      "id": "an-06",
-      "ordem": 6,
-      "ambiente_id": "amb-garagem",
-      "sistema_construtivo": "revestimentos e pisos",
-      "titulo": "Destacamento de rejunte no piso da garagem",
-      "descricao_fenomenologica": "Verificou-se perda de rejuntamento e destacamento pontual de placas cerâmicas em trecho do piso da garagem, sem comprometimento estrutural.",
-      "mecanismo": "Movimentação térmica e ausência de juntas de dessolidarização, com fadiga do rejunte e da argamassa colante.",
-      "causa_provavel": "Especificação/execução do rejunte incompatível com a solicitação de tráfego.",
-      "consequencias": "Progressão do destacamento e risco de infiltração pontual pelas juntas abertas.",
-      "origem_taxonomia": "construtiva",
-      "vicio_ou_falha_manutencao": "vicio_construtivo",
-      "gr": 1, "g": 2, "u": 2, "t": 2,
-      "alerta_juridico": false
+      "id": "amb-garagens",
+      "nome": "Garagens e Áreas Comuns",
+      "pavimento": "1º Subsolo",
+      "ordem": 6
+    },
+    {
+      "id": "amb-2ss",
+      "nome": "2º Subsolo",
+      "pavimento": "2º Subsolo",
+      "ordem": 7
+    },
+    {
+      "id": "amb-cobertura",
+      "nome": "Cobertura — Telhado, Platibandas e Caixa d'Água",
+      "pavimento": "Cobertura",
+      "ordem": 8
+    },
+    {
+      "id": "amb-corredor",
+      "nome": "Corredor Lateral Descoberto",
+      "pavimento": "Térreo",
+      "ordem": 9
     }
   ],
-
+  "anomalias": [
+    {
+      "id": "an-jardineira",
+      "ordem": 1,
+      "ambiente_id": "amb-jardineira",
+      "sistema_construtivo": "impermeabilização e drenagem",
+      "titulo": "Jardineira da fachada frontal (Av. do Contorno) com repercussão na laje de teto da garagem",
+      "descricao_fenomenologica": "Constatou-se, na jardineira implantada junto à fachada frontal da edificação, voltada para a Avenida do Contorno, quadro de infiltração que se manifesta no pavimento imediatamente inferior, com indícios de infiltração e perda de rejunte no próprio elemento e infiltração no teto da garagem na projeção da jardineira.",
+      "mecanismo": "Perda de estanqueidade do sistema impermeabilizante de fundo e paredes do reservatório de terra, associada à ação de raízes, ao acúmulo de umidade constante do substrato vegetal e à ausência ou insuficiência de camada drenante — condições que mantêm a manta ou membrana sob umidade permanente e aceleram sua deterioração. Rompida a estanqueidade, a água infiltra-se pela laje de fundo da jardineira, manifestando-se no teto do pavimento imediatamente inferior (NBR 9575).",
+      "causa_provavel": "Perda de estanqueidade do sistema de impermeabilização da jardineira, agravada pela ausência ou deficiência de sistema drenante, permitindo a infiltração progressiva de água para os pavimentos inferiores.",
+      "consequencias": "Evolução com surgimento de eflorescências, deterioração de revestimentos e, a médio prazo, exposição da armadura da laje de teto da garagem à umidade constante, com risco de corrosão. Reclassificar para GR3 caso constatada, em inspeção complementar, exposição de armadura com sinais de corrosão.",
+      "vicio_ou_falha_manutencao": "indeterminado",
+      "gr": 2,
+      "g": 3,
+      "u": 3,
+      "t": 4,
+      "prazo_sugerido": "médio prazo"
+    },
+    {
+      "id": "an-sacada",
+      "ordem": 2,
+      "ambiente_id": "amb-salas",
+      "sistema_construtivo": "impermeabilização e drenagem",
+      "titulo": "Sacada do 4º Pavimento — acúmulo de água e falhas de drenagem e rejunte",
+      "descricao_fenomenologica": "Verificou-se acúmulo de água acompanhado de formação de lodo e proliferação de vegetação nas frestas do piso, além de falhas na drenagem e na vedação dos rejuntes dos revestimentos cerâmicos, com manifestação de umidade na base da parede interna em contato com a referida sacada.",
+      "mecanismo": "Retenção de água sobre a superfície, que penetra pelas frestas e juntas deficientes até a camada impermeabilizante ou, na sua ausência, diretamente ao substrato construtivo, migrando lateralmente até a base da alvenaria adjacente por capilaridade e ação da gravidade. A presença de lodo e vegetação evidencia umidade constante e insuficiência de escoamento.",
+      "causa_provavel": "Deficiência do sistema de drenagem da sacada, associada a falhas no rejuntamento dos revestimentos, permitindo o acúmulo e a infiltração progressiva de água para a base da alvenaria interna.",
+      "consequencias": "Agravamento com desenvolvimento de mofo, deterioração de revestimentos internos e comprometimento da salubridade do ambiente.",
+      "vicio_ou_falha_manutencao": "indeterminado",
+      "gr": 2,
+      "g": 3,
+      "u": 3,
+      "t": 3,
+      "prazo_sugerido": "médio prazo"
+    },
+    {
+      "id": "an-laje-descoberta",
+      "ordem": 3,
+      "ambiente_id": "amb-corredor",
+      "sistema_construtivo": "impermeabilização e drenagem",
+      "titulo": "Laje descoberta lateral e de fundos — trincas no contrapiso e falhas de vedação",
+      "descricao_fenomenologica": "Na laje descoberta que contorna uma das laterais e os fundos da edificação, foram constatadas trincas no contrapiso, falhas na vedação dos ralos e falhas no rejuntamento dos peitoris do muro perimetral.",
+      "mecanismo": "Movimentação térmica do contrapiso exposto ao sol e à chuva que, na ausência de juntas de dilatação adequadas ou de argamassa com módulo de elasticidade compatível, tende a fissurar; as trincas resultantes tornam-se caminhos preferenciais de infiltração, somando-se às falhas pontuais de vedação em ralos e peitoris, que comprometem a estanqueidade do sistema como um todo.",
+      "causa_provavel": "Associação entre fissuração do contrapiso, por movimentação térmica e/ou retração, e falhas localizadas de vedação em ralos e peitoris, resultando em múltiplos pontos de infiltração na laje descoberta.",
+      "consequencias": "Aumento da extensão fissurada e infiltração para os ambientes inferiores.",
+      "vicio_ou_falha_manutencao": "indeterminado",
+      "gr": 2,
+      "g": 2,
+      "u": 2,
+      "t": 3,
+      "prazo_sugerido": "médio prazo"
+    },
+    {
+      "id": "an-areas-privativas",
+      "ordem": 4,
+      "ambiente_id": "amb-salas",
+      "sistema_construtivo": "impermeabilização e drenagem",
+      "titulo": "Áreas externas descobertas das unidades privativas — vulnerabilidade de estanqueidade",
+      "descricao_fenomenologica": "Nas unidades privativas com área externa descoberta, foram constatados pontos com susceptibilidade à passagem de água, notadamente falhas na vedação dos revestimentos e ralos com deficiência de vedação. Manifestação em estágio inicial, sem quadro de infiltração ativa consolidada.",
+      "mecanismo": "A deficiência de vedação nos ralos e nas juntas de revestimento tende a evoluir para infiltração ativa na medida em que a exposição às intempéries se prolonga, sobretudo em períodos de maior precipitação.",
+      "causa_provavel": "Deficiência de vedação nas interfaces entre revestimento e ralos das áreas externas descobertas das unidades privativas.",
+      "consequencias": "Evolução para infiltração ativa, com repercussão nos ambientes internos das próprias unidades ou nos pavimentos inferiores; recomenda-se acompanhamento e correção antes da consolidação do quadro.",
+      "vicio_ou_falha_manutencao": "indeterminado",
+      "gr": 1,
+      "g": 2,
+      "u": 1,
+      "t": 3,
+      "prazo_sugerido": "longo prazo"
+    },
+    {
+      "id": "an-peitoril",
+      "ordem": 5,
+      "ambiente_id": "amb-cobertura",
+      "sistema_construtivo": "impermeabilização e drenagem",
+      "titulo": "Peitoril solto na platibanda da cobertura",
+      "descricao_fenomenologica": "Constatou-se, na platibanda da cobertura, a existência de peitoril solto — elemento de arremate com aderência comprometida ao suporte, apresentando mobilidade e risco de desprendimento, em cota elevada em relação a pavimentos inferiores e áreas de circulação.",
+      "mecanismo": "Deterioração da argamassa de assentamento e/ou do rejunte de fixação, associada a ciclos de dilatação e contração térmica e à infiltração de água pela junta entre o peitoril e a platibanda, com perda progressiva de aderência e mobilidade crescente do elemento, que tende a agravar-se até o desprendimento total.",
+      "causa_provavel": "Perda de aderência do peitoril ao seu suporte, por deterioração da argamassa/rejunte de fixação, associada à ação de intempéries e, eventualmente, a fixação inicial inadequada.",
+      "consequencias": "Risco iminente de queda de material em altura sobre áreas de circulação, com risco direto à integridade física de pessoas e bens. Intervenção prioritária, com isolamento preventivo da área sob risco de queda até a execução do reparo.",
+      "vicio_ou_falha_manutencao": "indeterminado",
+      "gr": 3,
+      "g": 5,
+      "u": 5,
+      "t": 4,
+      "prazo_sugerido": "imediato",
+      "alerta_juridico": true
+    },
+    {
+      "id": "an-condensadoras",
+      "ordem": 6,
+      "ambiente_id": "amb-comuns",
+      "sistema_construtivo": "climatização",
+      "titulo": "Escoamento livre do condensado das unidades condensadoras pela fachada (shaft técnico)",
+      "descricao_fenomenologica": "O shaft técnico que atravessa a totalidade dos pavimentos acomoda as unidades condensadoras dos sistemas de ar-condicionado de todas as unidades autônomas. A água gerada pelos equipamentos não dispõe de sistema de coleta e condução adequado, escoando livremente pela fachada, com acúmulo de água no 2º Pavimento, degradação das vigas de fachada em diversos pavimentos e infiltrações nas paredes adjacentes.",
+      "mecanismo": "Umidade constante sobre as superfícies que, associada a eventuais microfissuras ou à porosidade do revestimento e do concreto de cobrimento das vigas, permite a penetração progressiva de água até a armadura.",
+      "causa_provavel": "Lançamento livre e contínuo da água das condensadoras sobre a fachada, sem sistema de coleta e condução adequado, promovendo umedecimento permanente das superfícies.",
+      "consequencias": "Acúmulo de água no 2º Pavimento, infiltrações nas paredes adjacentes e infiltração progressiva até as armaduras das vigas de fachada.",
+      "vicio_ou_falha_manutencao": "vicio_construtivo",
+      "gr": 2,
+      "g": 3,
+      "u": 3,
+      "t": 4,
+      "prazo_sugerido": "médio prazo"
+    },
+    {
+      "id": "an-teto2pav",
+      "ordem": 7,
+      "ambiente_id": "amb-2pav",
+      "sistema_construtivo": "climatização",
+      "titulo": "Manchas de infiltração no teto do 2º Pavimento",
+      "descricao_fenomenologica": "Manchas de infiltração no teto do 2º Pavimento, associadas ao acúmulo de água decorrente do escoamento livre do condensado das condensadoras pela fachada.",
+      "mecanismo": "Percolação da água acumulada através da laje e dos revestimentos do teto do pavimento.",
+      "causa_provavel": "Acúmulo de água no 2º Pavimento proveniente do escoamento livre do condensado das condensadoras, sem sistema de coleta e condução.",
+      "consequencias": "Persistência das manchas e degradação progressiva dos revestimentos enquanto não eliminada a fonte de umidade.",
+      "vicio_ou_falha_manutencao": "vicio_construtivo",
+      "gr": 2,
+      "g": 3,
+      "u": 2,
+      "t": 3,
+      "prazo_sugerido": "médio prazo"
+    },
+    {
+      "id": "an-vigas",
+      "ordem": 8,
+      "ambiente_id": "amb-comuns",
+      "sistema_construtivo": "estrutura",
+      "titulo": "Corrosão de armadura e eflorescência nas vigas de fachada",
+      "descricao_fenomenologica": "As vigas de fachada situadas na região afetada pelo escoamento livre desde as condensadoras apresentam degradação caracterizada por eflorescência e corrosão de armaduras.",
+      "mecanismo": "A eflorescência denuncia percolação continuada de água pela massa de concreto (lixiviação, com formação de carbonato de cálcio na superfície). A corrosão instala-se quando umidade e oxigênio atingem a armadura em condição de despassivação — por carbonatação do cobrimento ou redução de sua espessura efetiva —, formando óxidos expansivos que fissuram o cobrimento e, em estágios avançados, causam desplacamento e exposição da armadura. A evolução é cumulativa e não reversível sem intervenção técnica.",
+      "causa_provavel": "Umidade permanente proveniente do escoamento livre do condensado pela fachada, acelerando a carbonatação e/ou a penetração de agentes agressivos até a armadura.",
+      "consequencias": "Redução da seção resistente da armadura, perda de aderência aço-concreto, fissuração e desplacamento adicional do cobrimento, podendo comprometer, a longo prazo, a capacidade resistente do elemento estrutural. Recomenda-se avaliação estrutural específica com a maior brevidade possível.",
+      "vicio_ou_falha_manutencao": "vicio_construtivo",
+      "gr": 3,
+      "g": 5,
+      "u": 4,
+      "t": 4,
+      "prazo_sugerido": "imediato",
+      "alerta_juridico": true
+    },
+    {
+      "id": "an-trincas",
+      "ordem": 9,
+      "ambiente_id": null,
+      "sistema_construtivo": "vedações e alvenarias",
+      "titulo": "Trincas nas alvenarias — halls dos Pavimentos 4, 7 e 8, 2º Pavimento e 2º Subsolo",
+      "descricao_fenomenologica": "Nos halls de circulação dos Pavimentos 4, 7 e 8, trincas nas mesmas posições construtivas das respectivas paredes, com orientação predominantemente inclinada e vertical; no 2º Pavimento, inclinadas; no 2º Subsolo, predominantemente horizontais. Não foram identificados indícios de recalque de fundação nem de movimentação estrutural expressiva, e não há trincas correlatas nas vigas da garagem.",
+      "mecanismo": "Deformação diferencial entre a alvenaria de vedação (não estrutural) e a estrutura de concreto armado que a envolve — trincas inclinadas associadas a solicitação por cisalhamento; verticais, à retração de argamassa ou movimentação térmica diferencial. A recorrência do padrão na mesma posição em três pavimentos distintos constitui indício técnico relevante de causa sistêmica, associada à geometria construtiva repetida, e não a fenômeno pontual.",
+      "causa_provavel": "Deformação diferencial entre a alvenaria de vedação e a estrutura de concreto armado adjacente, em posição construtiva recorrente nos três pavimentos, sem relação com recalque de fundação.",
+      "consequencias": "Tendência de estabilidade (se o fenômeno gerador for predominantemente térmico e cíclico) ou progressão lenta (se decorrer de fluência da estrutura); risco predominantemente estético e de estanqueidade da vedação, sem indícios de comprometimento estrutural. Recomenda-se instalação de fissurômetros para monitoramento da evolução.",
+      "origem_taxonomia": "construtiva e/ou natural",
+      "vicio_ou_falha_manutencao": "indeterminado",
+      "gr": 2,
+      "g": 3,
+      "u": 3,
+      "t": 3,
+      "prazo_sugerido": "curto/médio prazo"
+    },
+    {
+      "id": "an-reservatorio",
+      "ordem": 10,
+      "ambiente_id": "amb-cobertura",
+      "sistema_construtivo": "instalações hidráulicas",
+      "titulo": "Infiltração no entorno da conexão de tubulação sob o reservatório superior",
+      "descricao_fenomenologica": "Constatou-se infiltração no entorno da conexão de tubulação situada imediatamente abaixo do reservatório superior de água da edificação — ponto crítico de estanqueidade, pela carga hidráulica permanente e pela relevância estrutural da laje de apoio do reservatório.",
+      "mecanismo": "Falha de vedação na junta (rosca, flange, anel de vedação ou conexão soldada/colada) que permite gotejamento ou escoamento contínuo; a água escorre e acumula-se sobre a superfície de apoio, podendo infiltrar-se pela interface tubulação-laje ou pelas juntas de concretagem, atingindo a armadura ao longo do tempo.",
+      "causa_provavel": "Perda de estanqueidade na conexão da tubulação situada abaixo do reservatório superior, por deterioração do elemento de vedação da junta.",
+      "consequencias": "Manutenção ou agravamento sob a ação contínua da pressão hidráulica do reservatório, com umedecimento constante da laje de apoio e, a médio/longo prazo, risco de corrosão da armadura desse elemento estrutural crítico. Reclassificar para GR3 caso constatada exposição ou corrosão de armadura em inspeção complementar.",
+      "vicio_ou_falha_manutencao": "indeterminado",
+      "gr": 2,
+      "g": 4,
+      "u": 4,
+      "t": 3,
+      "prazo_sugerido": "curto prazo"
+    },
+    {
+      "id": "an-shaft401",
+      "ordem": 11,
+      "ambiente_id": "amb-salas",
+      "sistema_construtivo": "instalações hidráulicas",
+      "titulo": "Suspeita de infiltração na tubulação do shaft hidráulico (Sala 401 × banheiro dos funcionários)",
+      "descricao_fenomenologica": "Há suspeita de infiltração na tubulação situada no interior do shaft hidráulico embutido na alvenaria entre a Sala 401 e o banheiro dos funcionários.",
+      "mecanismo": "A água extravasada no interior do shaft tende a migrar através da alvenaria por capilaridade, manifestando-se na superfície do revestimento de forma diferida e, frequentemente, distante do ponto real de origem do vazamento, o que dificulta a localização precisa sem ensaios complementares.",
+      "causa_provavel": "Perda de estanqueidade em conexão ou trecho da tubulação embutida no shaft hidráulico, ainda não confirmada visualmente.",
+      "consequencias": "Comprometimento progressivo da alvenaria adjacente, com desenvolvimento de umidade, eflorescência e eventual proliferação de bolor nos ambientes lindeiros. Classificação GR2 como medida de precaução técnica até a confirmação diagnóstica.",
+      "vicio_ou_falha_manutencao": "indeterminado",
+      "gr": 2,
+      "g": 3,
+      "u": 3,
+      "t": 3,
+      "prazo_sugerido": "curto prazo"
+    },
+    {
+      "id": "an-furo-laje",
+      "ordem": 12,
+      "ambiente_id": "amb-2pav",
+      "sistema_construtivo": "instalações hidráulicas",
+      "titulo": "Infiltração no furo de laje da tubulação de esgoto do banheiro dos funcionários",
+      "descricao_fenomenologica": "Por ocasião da implantação do banheiro dos funcionários — intervenção posterior à concepção original da edificação —, foi executado furo na laje para passagem da tubulação de esgoto. No entorno desse furo verificou-se infiltração, indicativa de falha na vedação do sistema de passagem da tubulação através da laje.",
+      "mecanismo": "A ausência ou deficiência do tratamento de vedação na interface tubulação-concreto (anéis de vedação, argamassa expansiva ou selante apropriado) resulta em caminho preferencial de infiltração ao longo de toda a espessura da laje, no entorno da tubulação.",
+      "causa_provavel": "Vedação inadequada ou insuficiente executada no entorno da tubulação de esgoto, no ponto de passagem pela laje, por ocasião da reforma de implantação do banheiro dos funcionários — falha executiva da intervenção posterior (vício construtivo da reforma).",
+      "consequencias": "Manifestação ativa permanente, por tratar-se de rede de esgoto em uso contínuo, com risco de deterioração progressiva da laje e comprometimento da salubridade do ambiente inferior, pela possível veiculação de efluente sanitário ao longo do trajeto de infiltração. Correção prioritária da vedação.",
+      "origem_taxonomia": "construtiva (intervenção posterior)",
+      "vicio_ou_falha_manutencao": "vicio_construtivo",
+      "gr": 2,
+      "g": 3,
+      "u": 4,
+      "t": 3,
+      "prazo_sugerido": "curto prazo"
+    },
+    {
+      "id": "an-divisa",
+      "ordem": 13,
+      "ambiente_id": null,
+      "sistema_construtivo": "vedações e alvenarias",
+      "titulo": "Infiltração na parede de divisa dos fundos (1º Pavimento)",
+      "descricao_fenomenologica": "Na divisa dos fundos da edificação, constatou-se infiltração que se manifesta na parede do 1º Pavimento.",
+      "mecanismo": "Migração de água através da alvenaria e/ou de sua interface com elementos estruturais adjacentes, tornando-se visível na face interna sob a forma de manchas de umidade, bolor ou eflorescência, cuja localização na superfície nem sempre corresponde à posição exata do ponto de entrada da água.",
+      "causa_provavel": "Múltiplas fontes possíveis: deficiência de impermeabilização ou drenagem da laje descoberta lateral/de fundos em cota superior, umidade proveniente do terreno ou de propriedade confrontante, falha de rejuntamento externo da própria parede ou tubulação embutida na alvenaria de divisa — demanda investigação complementar para elucidação definitiva.",
+      "consequencias": "Aumento da área afetada e possível degradação do revestimento e da alvenaria.",
+      "vicio_ou_falha_manutencao": "indeterminado",
+      "gr": 1,
+      "g": 2,
+      "u": 2,
+      "t": 2,
+      "prazo_sugerido": "longo prazo"
+    }
+  ],
   "fotos": [
-    { "id": "f-01", "anomalia_id": "an-01", "ambiente_id": "amb-fachada", "ordem": 1, "legenda": "vista da jardineira com destacamento do revestimento e eflorescências" },
-    { "id": "f-02", "anomalia_id": "an-02", "ambiente_id": "amb-subsolo2", "ordem": 2, "legenda": "trinca em viga de concreto com indício de exposição de armadura" },
-    { "id": "f-03", "anomalia_id": "an-03", "ambiente_id": "amb-garagem", "ordem": 3, "legenda": "manchas de umidade e estalactites na face inferior da laje" },
-    { "id": "f-04", "anomalia_id": "an-04", "ambiente_id": "amb-terreo", "ordem": 4, "legenda": "faixa de umidade ascendente com bolhas na pintura" },
-    { "id": "f-05", "anomalia_id": "an-05", "ambiente_id": "amb-reservatorio", "ordem": 5, "legenda": "gotejamento na parede externa do reservatório inferior" },
-    { "id": "f-06", "anomalia_id": "an-06", "ambiente_id": "amb-garagem", "ordem": 6, "legenda": "perda de rejunte e destacamento de placas cerâmicas" }
+    {
+      "id": "f-01",
+      "anomalia_id": "an-jardineira",
+      "ambiente_id": "amb-jardineira",
+      "ordem": 1,
+      "legenda": "Frente do prédio: jardineira"
+    },
+    {
+      "id": "f-02",
+      "anomalia_id": "an-jardineira",
+      "ambiente_id": "amb-jardineira",
+      "ordem": 2,
+      "legenda": "indícios de infiltração e perda do rejunte na jardineira"
+    },
+    {
+      "id": "f-03",
+      "anomalia_id": "an-jardineira",
+      "ambiente_id": "amb-jardineira",
+      "ordem": 3,
+      "legenda": "detalhes de infiltração e perda do rejunte na jardineira"
+    },
+    {
+      "id": "f-04",
+      "anomalia_id": "an-jardineira",
+      "ambiente_id": "amb-jardineira",
+      "ordem": 4,
+      "legenda": "detalhe da perda do rejunte do peitoril da jardineira"
+    },
+    {
+      "id": "f-05",
+      "anomalia_id": null,
+      "ambiente_id": "amb-comuns",
+      "ordem": 5,
+      "legenda": "Fachada: vidro trincado"
+    },
+    {
+      "id": "f-06",
+      "anomalia_id": "an-reservatorio",
+      "ambiente_id": "amb-comuns",
+      "ordem": 6,
+      "legenda": "infiltração abaixo do reservatório superior"
+    },
+    {
+      "id": "f-07",
+      "anomalia_id": "an-condensadoras",
+      "ambiente_id": "amb-comuns",
+      "ordem": 7,
+      "legenda": "shaft técnico das condensadoras"
+    },
+    {
+      "id": "f-08",
+      "anomalia_id": "an-condensadoras",
+      "ambiente_id": "amb-comuns",
+      "ordem": 8,
+      "legenda": "shaft técnico das condensadoras"
+    },
+    {
+      "id": "f-09",
+      "anomalia_id": "an-condensadoras",
+      "ambiente_id": "amb-comuns",
+      "ordem": 9,
+      "legenda": "umidade no shaft técnico das condensadoras"
+    },
+    {
+      "id": "f-10",
+      "anomalia_id": "an-condensadoras",
+      "ambiente_id": "amb-comuns",
+      "ordem": 10,
+      "legenda": "umidade no shaft técnico das condensadoras"
+    },
+    {
+      "id": "f-11",
+      "anomalia_id": "an-trincas",
+      "ambiente_id": "amb-comuns",
+      "ordem": 11,
+      "legenda": "trincas nas paredes dos 4º, 7º e 8º pavimentos"
+    },
+    {
+      "id": "f-12",
+      "anomalia_id": "an-trincas",
+      "ambiente_id": "amb-comuns",
+      "ordem": 12,
+      "legenda": "trincas nas paredes dos 4º, 7º e 8º pavimentos"
+    },
+    {
+      "id": "f-13",
+      "anomalia_id": "an-trincas",
+      "ambiente_id": "amb-comuns",
+      "ordem": 13,
+      "legenda": "trincas nas paredes dos 4º, 7º e 8º pavimentos"
+    },
+    {
+      "id": "f-14",
+      "anomalia_id": "an-trincas",
+      "ambiente_id": "amb-comuns",
+      "ordem": 14,
+      "legenda": "trincas nas paredes dos 4º, 7º e 8º pavimentos"
+    },
+    {
+      "id": "f-15",
+      "anomalia_id": "an-trincas",
+      "ambiente_id": "amb-comuns",
+      "ordem": 15,
+      "legenda": "trincas nas paredes dos 4º, 7º e 8º pavimentos"
+    },
+    {
+      "id": "f-16",
+      "anomalia_id": "an-trincas",
+      "ambiente_id": "amb-comuns",
+      "ordem": 16,
+      "legenda": "trincas nas paredes dos 4º, 7º e 8º pavimentos"
+    },
+    {
+      "id": "f-17",
+      "anomalia_id": "an-trincas",
+      "ambiente_id": "amb-comuns",
+      "ordem": 17,
+      "legenda": "trincas nas paredes dos 4º, 7º e 8º pavimentos"
+    },
+    {
+      "id": "f-18",
+      "anomalia_id": "an-trincas",
+      "ambiente_id": "amb-comuns",
+      "ordem": 18,
+      "legenda": "trincas nas paredes dos 4º, 7º e 8º pavimentos"
+    },
+    {
+      "id": "f-19",
+      "anomalia_id": "an-trincas",
+      "ambiente_id": "amb-comuns",
+      "ordem": 19,
+      "legenda": "trincas nas paredes dos 4º, 7º e 8º pavimentos"
+    },
+    {
+      "id": "f-20",
+      "anomalia_id": "an-condensadoras",
+      "ambiente_id": "amb-comuns",
+      "ordem": 20,
+      "legenda": "infiltração na base da parede próxima ao shaft das condensadoras"
+    },
+    {
+      "id": "f-21",
+      "anomalia_id": "an-vigas",
+      "ambiente_id": "amb-comuns",
+      "ordem": 21,
+      "legenda": "umidade vinda das condensadoras: ataque ao concreto e ao aço das vigas"
+    },
+    {
+      "id": "f-22",
+      "anomalia_id": "an-vigas",
+      "ambiente_id": "amb-comuns",
+      "ordem": 22,
+      "legenda": "umidade vinda das condensadoras: ataque ao concreto e ao aço das vigas"
+    },
+    {
+      "id": "f-23",
+      "anomalia_id": "an-trincas",
+      "ambiente_id": "amb-comuns",
+      "ordem": 23,
+      "legenda": "trincas nas paredes dos 4º, 7º e 8º pavimentos"
+    },
+    {
+      "id": "f-24",
+      "anomalia_id": "an-trincas",
+      "ambiente_id": "amb-comuns",
+      "ordem": 24,
+      "legenda": "trincas nas paredes dos 4º, 7º e 8º pavimentos"
+    },
+    {
+      "id": "f-25",
+      "anomalia_id": "an-sacada",
+      "ambiente_id": "amb-comuns",
+      "ordem": 25,
+      "legenda": "umidade nas paredes do 4º pavimento"
+    },
+    {
+      "id": "f-26",
+      "anomalia_id": "an-sacada",
+      "ambiente_id": "amb-comuns",
+      "ordem": 26,
+      "legenda": "umidade nas paredes do 4º pavimento"
+    },
+    {
+      "id": "f-27",
+      "anomalia_id": "an-areas-privativas",
+      "ambiente_id": "amb-comuns",
+      "ordem": 27,
+      "legenda": "inspeção de área descoberta de sala"
+    },
+    {
+      "id": "f-28",
+      "anomalia_id": "an-condensadoras",
+      "ambiente_id": "amb-comuns",
+      "ordem": 28,
+      "legenda": "local de deságue das condensadoras"
+    },
+    {
+      "id": "f-29",
+      "anomalia_id": "an-areas-privativas",
+      "ambiente_id": "amb-salas",
+      "ordem": 29,
+      "legenda": "espaço na alvenaria que possibilita a passagem de água"
+    },
+    {
+      "id": "f-30",
+      "anomalia_id": "an-condensadoras",
+      "ambiente_id": "amb-salas",
+      "ordem": 30,
+      "legenda": "infiltração devido à água que escorre pela fachada"
+    },
+    {
+      "id": "f-31",
+      "anomalia_id": "an-sacada",
+      "ambiente_id": "amb-salas",
+      "ordem": 31,
+      "legenda": "umidade na base da parede da sala"
+    },
+    {
+      "id": "f-32",
+      "anomalia_id": "an-sacada",
+      "ambiente_id": "amb-salas",
+      "ordem": 32,
+      "legenda": "umidade na base da parede da sala"
+    },
+    {
+      "id": "f-33",
+      "anomalia_id": "an-areas-privativas",
+      "ambiente_id": "amb-salas",
+      "ordem": 33,
+      "legenda": "falhas em rejuntes de revestimentos"
+    },
+    {
+      "id": "f-34",
+      "anomalia_id": "an-areas-privativas",
+      "ambiente_id": "amb-salas",
+      "ordem": 34,
+      "legenda": "falhas em rejuntes de revestimentos"
+    },
+    {
+      "id": "f-35",
+      "anomalia_id": null,
+      "ambiente_id": "amb-sala404",
+      "ordem": 35,
+      "legenda": "inspeção de sala"
+    },
+    {
+      "id": "f-36",
+      "anomalia_id": "an-areas-privativas",
+      "ambiente_id": "amb-sala404",
+      "ordem": 36,
+      "legenda": "eflorescência no piso"
+    },
+    {
+      "id": "f-37",
+      "anomalia_id": "an-areas-privativas",
+      "ambiente_id": "amb-sala404",
+      "ordem": 37,
+      "legenda": "falha em vedação e rejunte nas proximidades do ralo"
+    },
+    {
+      "id": "f-38",
+      "anomalia_id": "an-areas-privativas",
+      "ambiente_id": "amb-sala404",
+      "ordem": 38,
+      "legenda": "falha em vedação e rejunte nas proximidades do ralo"
+    },
+    {
+      "id": "f-39",
+      "anomalia_id": "an-areas-privativas",
+      "ambiente_id": "amb-sala404",
+      "ordem": 39,
+      "legenda": "inspeção do ralo"
+    },
+    {
+      "id": "f-40",
+      "anomalia_id": "an-areas-privativas",
+      "ambiente_id": "amb-sala404",
+      "ordem": 40,
+      "legenda": "saída de água do ralo insuficiente"
+    },
+    {
+      "id": "f-41",
+      "anomalia_id": "an-trincas",
+      "ambiente_id": "amb-2pav",
+      "ordem": 41,
+      "legenda": "trincas em alvenaria no 2º Pavimento"
+    },
+    {
+      "id": "f-42",
+      "anomalia_id": "an-trincas",
+      "ambiente_id": "amb-2pav",
+      "ordem": 42,
+      "legenda": "trincas em alvenaria no 2º Pavimento"
+    },
+    {
+      "id": "f-43",
+      "anomalia_id": "an-trincas",
+      "ambiente_id": "amb-2pav",
+      "ordem": 43,
+      "legenda": "trincas em alvenaria no 2º Pavimento"
+    },
+    {
+      "id": "f-44",
+      "anomalia_id": "an-trincas",
+      "ambiente_id": "amb-2pav",
+      "ordem": 44,
+      "legenda": "trincas em alvenaria no 2º Pavimento"
+    },
+    {
+      "id": "f-45",
+      "anomalia_id": "an-jardineira",
+      "ambiente_id": "amb-2pav",
+      "ordem": 45,
+      "legenda": "infiltração através da laje de teto da garagem"
+    },
+    {
+      "id": "f-46",
+      "anomalia_id": "an-divisa",
+      "ambiente_id": "amb-2pav",
+      "ordem": 46,
+      "legenda": "umidade na divisa"
+    },
+    {
+      "id": "f-47",
+      "anomalia_id": "an-jardineira",
+      "ambiente_id": "amb-garagens",
+      "ordem": 47,
+      "legenda": "infiltração através da laje de teto da garagem"
+    },
+    {
+      "id": "f-48",
+      "anomalia_id": "an-divisa",
+      "ambiente_id": "amb-garagens",
+      "ordem": 48,
+      "legenda": "umidade na divisa"
+    },
+    {
+      "id": "f-49",
+      "anomalia_id": "an-trincas",
+      "ambiente_id": "amb-garagens",
+      "ordem": 49,
+      "legenda": "trincas em alvenaria no 2º Pavimento"
+    },
+    {
+      "id": "f-50",
+      "anomalia_id": "an-jardineira",
+      "ambiente_id": "amb-garagens",
+      "ordem": 50,
+      "legenda": "infiltração através da laje de teto da garagem"
+    },
+    {
+      "id": "f-51",
+      "anomalia_id": null,
+      "ambiente_id": "amb-garagens",
+      "ordem": 51,
+      "legenda": "rodapé solto no hall de entrada"
+    },
+    {
+      "id": "f-52",
+      "anomalia_id": "an-jardineira",
+      "ambiente_id": "amb-garagens",
+      "ordem": 52,
+      "legenda": "infiltração no teto da garagem na projeção da jardineira da rua"
+    },
+    {
+      "id": "f-53",
+      "anomalia_id": "an-trincas",
+      "ambiente_id": "amb-2ss",
+      "ordem": 53,
+      "legenda": "trincas nas alvenarias do 2º Subsolo"
+    },
+    {
+      "id": "f-54",
+      "anomalia_id": "an-trincas",
+      "ambiente_id": "amb-2ss",
+      "ordem": 54,
+      "legenda": "trincas nas alvenarias do 2º Subsolo"
+    },
+    {
+      "id": "f-55",
+      "anomalia_id": "an-trincas",
+      "ambiente_id": "amb-2ss",
+      "ordem": 55,
+      "legenda": "trincas nas alvenarias do 2º Subsolo"
+    },
+    {
+      "id": "f-56",
+      "anomalia_id": "an-trincas",
+      "ambiente_id": "amb-2ss",
+      "ordem": 56,
+      "legenda": "trincas nas alvenarias do 2º Subsolo"
+    },
+    {
+      "id": "f-57",
+      "anomalia_id": "an-trincas",
+      "ambiente_id": "amb-2ss",
+      "ordem": 57,
+      "legenda": "trincas nas alvenarias do 2º Subsolo"
+    },
+    {
+      "id": "f-58",
+      "anomalia_id": "an-trincas",
+      "ambiente_id": "amb-2ss",
+      "ordem": 58,
+      "legenda": "trincas nas alvenarias do 2º Subsolo"
+    },
+    {
+      "id": "f-59",
+      "anomalia_id": "an-divisa",
+      "ambiente_id": "amb-2ss",
+      "ordem": 59,
+      "legenda": "umidade na divisa"
+    },
+    {
+      "id": "f-60",
+      "anomalia_id": "an-trincas",
+      "ambiente_id": "amb-2ss",
+      "ordem": 60,
+      "legenda": "trinca na alvenaria do cômodo do reservatório inferior"
+    },
+    {
+      "id": "f-61",
+      "anomalia_id": "an-trincas",
+      "ambiente_id": "amb-2ss",
+      "ordem": 61,
+      "legenda": "trincas nas alvenarias do 2º Subsolo"
+    },
+    {
+      "id": "f-62",
+      "anomalia_id": "an-trincas",
+      "ambiente_id": "amb-2ss",
+      "ordem": 62,
+      "legenda": "trincas nas alvenarias do 2º Subsolo"
+    },
+    {
+      "id": "f-63",
+      "anomalia_id": "an-peitoril",
+      "ambiente_id": "amb-cobertura",
+      "ordem": 63,
+      "legenda": "peitoris soltos na platibanda"
+    },
+    {
+      "id": "f-64",
+      "anomalia_id": "an-peitoril",
+      "ambiente_id": "amb-cobertura",
+      "ordem": 64,
+      "legenda": "peitoris soltos na platibanda"
+    },
+    {
+      "id": "f-65",
+      "anomalia_id": "an-laje-descoberta",
+      "ambiente_id": "amb-corredor",
+      "ordem": 65,
+      "legenda": "trincas no contrapiso"
+    },
+    {
+      "id": "f-66",
+      "anomalia_id": "an-laje-descoberta",
+      "ambiente_id": "amb-corredor",
+      "ordem": 66,
+      "legenda": "trincas no contrapiso"
+    },
+    {
+      "id": "f-67",
+      "anomalia_id": "an-laje-descoberta",
+      "ambiente_id": "amb-corredor",
+      "ordem": 67,
+      "legenda": "vedação comprometida nos ralos"
+    },
+    {
+      "id": "f-68",
+      "anomalia_id": "an-laje-descoberta",
+      "ambiente_id": "amb-corredor",
+      "ordem": 68,
+      "legenda": "trincas no contrapiso"
+    },
+    {
+      "id": "f-69",
+      "anomalia_id": "an-laje-descoberta",
+      "ambiente_id": "amb-corredor",
+      "ordem": 69,
+      "legenda": "trincas no contrapiso"
+    },
+    {
+      "id": "f-70",
+      "anomalia_id": "an-laje-descoberta",
+      "ambiente_id": "amb-corredor",
+      "ordem": 70,
+      "legenda": "vedação comprometida nos ralos"
+    },
+    {
+      "id": "f-71",
+      "anomalia_id": "an-laje-descoberta",
+      "ambiente_id": "amb-corredor",
+      "ordem": 71,
+      "legenda": "trincas no contrapiso"
+    },
+    {
+      "id": "f-72",
+      "anomalia_id": "an-laje-descoberta",
+      "ambiente_id": "amb-corredor",
+      "ordem": 72,
+      "legenda": "trincas no contrapiso"
+    },
+    {
+      "id": "f-73",
+      "anomalia_id": "an-laje-descoberta",
+      "ambiente_id": "amb-corredor",
+      "ordem": 73,
+      "legenda": "vedação comprometida nos ralos"
+    },
+    {
+      "id": "f-74",
+      "anomalia_id": "an-laje-descoberta",
+      "ambiente_id": "amb-corredor",
+      "ordem": 74,
+      "legenda": "ausência de rejunte nos peitoris dos muros"
+    },
+    {
+      "id": "f-75",
+      "anomalia_id": null,
+      "ambiente_id": "amb-corredor",
+      "ordem": 75,
+      "legenda": "falta de acabamento na alvenaria de divisa entre o corredor e a sala ao lado"
+    },
+    {
+      "id": "f-76",
+      "anomalia_id": null,
+      "ambiente_id": "amb-corredor",
+      "ordem": 76,
+      "legenda": "falta de acabamento na alvenaria de divisa entre o corredor e a sala ao lado"
+    }
   ]
 }

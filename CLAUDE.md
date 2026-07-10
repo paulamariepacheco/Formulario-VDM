@@ -63,8 +63,11 @@ Migração versionada em `sistema_laudos/supabase/migrations/0001_schema_laudos.
 `faixa_prioridade` são **colunas geradas** (calculadas, nunca digitadas). As
 mesmas regras existem no motor Python (`gerador/risco.py`) — DB e motor batem.
 
-Faixas de prioridade sobre G×U×T (1–125):
-`Imediata ≥100 · Alta ≥60 · Média ≥30 · Programada ≥10 · Monitoramento <10`.
+Faixas de prioridade sobre G×U×T (1–125), **calibradas pelas matrizes reais do
+Laudo 50/2026 assinado**:
+`Imediata ≥80 · Alta ≥40 · Média ≥20 · Programada ≥8 · Monitoramento <8`.
+(Se o padrão oficial da Paula tiver cortes diferentes nos valores não
+observados, ajustar em `gerador/risco.py`, migração `0004` e nos dois apps.)
 
 ---
 
@@ -130,13 +133,16 @@ preencher, selecionar tudo (Ctrl+A) e apertar **F9**.
 O motor consome apenas o objeto `Laudo`; trocar a fonte (JSON→Supabase) **não
 altera o motor** — é a ponte para a Fase 2.
 
-### Fixture de teste
+### Dados do Laudo 50/2026 — REAIS
 
-`dados/laudo_50_2026.json` recria o **Laudo Nº 50/2026 — Edifício Otoni**
-(6 anomalias, 6 fotos, 5 ambientes). Os mesmos dados estão semeados no Supabase.
-⚠️ **Textos e valores G/U/T são exemplos plausíveis** — substituir pelos dados
-reais do laudo antes da emissão. Fotos ausentes viram placeholders "FOTO DE
-EXEMPLO".
+`dados/laudo_50_2026.json` contém os **dados reais** do Laudo Nº 50/2026 —
+Edifício Comercial Otoni (Av. do Contorno, 3772), extraídos do documento
+assinado com ART MG20264991347: **13 anomalias** (2 GR3 com alerta jurídico:
+peitoril da platibanda e corrosão das vigas de fachada), **9 ambientes** e as
+**76 legendas** do relatório fotográfico (FIG. 08–83 do original). Os mesmos
+dados estão semeados no Supabase. As **imagens** ainda são placeholders — subir
+as fotos reais pelo app (Fase 2/3). Fotos **sem vínculo com anomalia** entram
+no capítulo Vistoria como registro complementar.
 
 ### Critério de aceite (Fase 1) — atendido
 
