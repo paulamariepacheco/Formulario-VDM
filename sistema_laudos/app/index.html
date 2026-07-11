@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sistema de Laudos — Captura · Paula Pacheco</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  /* Tokens da marca (sincronizados de design/tokens.json) */
+  :root{
+    --azul:#171f3d; --chumbo:#292929; --cinza:#5e6161; --branco:#fff;
+    --terracota:#BE7C4D; --petroleo:#4A7A8C;
+    --gr1:#4C8C4A; --gr2:#D9A441; --gr3:#B23A32;
+    --gr1-s:#e9f2e9; --gr2-s:#f9f0dd; --gr3-s:#f5e5e3;
+    --linha:#d6d8d8; --linha-soft:#e4e5e5; --texto:#45494a; --suave:#767a7a;
+    --surface:#f7f8f8; --font:'Montserrat',system-ui,Arial,sans-serif;
+    --radius:12px; --shadow:0 2px 8px rgba(23,31,61,.06);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:var(--font);color:var(--texto);background:var(--surface);font-size:15px;line-height:1.5}
+  h1,h2,h3{color:var(--azul);font-weight:700;letter-spacing:.01em;margin:0}
+  a{color:var(--petroleo)}
+  button{font-family:var(--font);cursor:pointer;border:none;border-radius:8px;padding:.6rem 1rem;font-weight:600;font-size:.9rem}
+  .btn{background:var(--azul);color:#fff}
+  .btn:hover{background:#212c54}
+  .btn-ghost{background:transparent;color:var(--azul);border:1px solid var(--linha)}
+  .btn-ghost:hover{background:#eef0ef}
+  .btn-terra{background:var(--terracota);color:#fff}
+  .btn-danger{background:transparent;color:var(--gr3);border:1px solid var(--gr3-s)}
+  .btn-sm{padding:.35rem .7rem;font-size:.8rem}
+  input,select,textarea{width:100%;font-family:var(--font);font-size:.92rem;padding:.55rem .7rem;border:1px solid var(--linha);border-radius:8px;background:#fff;color:var(--chumbo)}
+  textarea{min-height:70px;resize:vertical}
+  label{display:block;font-size:.72rem;text-transform:uppercase;letter-spacing:.12em;color:var(--suave);margin:0 0 .3rem;font-weight:600}
+  .field{margin-bottom:.9rem}
+  .grid{display:grid;gap:.9rem}
+  .g2{grid-template-columns:1fr 1fr}
+  .g3{grid-template-columns:1fr 1fr 1fr}
+  .g4{grid-template-columns:repeat(4,1fr)}
+  @media(max-width:720px){.g2,.g3,.g4{grid-template-columns:1fr}}
+
+  /* Topbar */
+  header.topbar{background:var(--azul);color:#fff;padding:.85rem 1.4rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10}
+  .brand{display:flex;align-items:center;gap:.7rem}
+  .brand .mark{width:34px;height:34px;border:2px solid var(--terracota);border-radius:8px;display:grid;place-items:center;font-weight:800;color:var(--terracota);font-size:.9rem}
+  .brand b{font-weight:700;letter-spacing:.08em;font-size:.95rem}
+  .brand span{display:block;font-weight:300;font-size:.68rem;letter-spacing:.22em;color:#aeb7cf;text-transform:uppercase}
+  .userbox{display:flex;align-items:center;gap:.8rem;font-size:.82rem;color:#dde1ec}
+
+  main{max-width:1000px;margin:0 auto;padding:1.6rem 1.2rem 4rem}
+  .card{background:#fff;border:1px solid var(--linha-soft);border-radius:var(--radius);box-shadow:var(--shadow);padding:1.4rem}
+  .muted{color:var(--suave);font-size:.85rem}
+  .row{display:flex;align-items:center;justify-content:space-between;gap:1rem}
+  .hidden{display:none!important}
+
+  /* Auth */
+  #view-auth{max-width:420px;margin:5vh auto}
+  #view-auth .card{text-align:center}
+  #view-auth h2{margin-bottom:.4rem}
+
+  /* Lista de laudos */
+  .laudo-item{display:flex;align-items:center;justify-content:space-between;padding:.9rem 1rem;border:1px solid var(--linha-soft);border-radius:10px;margin-bottom:.6rem;background:#fff;cursor:pointer;transition:.15s}
+  .laudo-item:hover{border-color:var(--petroleo);box-shadow:var(--shadow)}
+  .laudo-item .n{font-weight:700;color:var(--azul)}
+  .pill{display:inline-block;font-size:.68rem;padding:.2rem .55rem;border-radius:20px;background:var(--surface);color:var(--cinza);letter-spacing:.06em;text-transform:uppercase;font-weight:600}
+
+  /* Tabs */
+  .tabs{display:flex;gap:.3rem;border-bottom:1px solid var(--linha);margin:1.2rem 0}
+  .tab{background:none;border:none;border-bottom:3px solid transparent;color:var(--suave);border-radius:0;padding:.6rem .9rem;font-weight:600}
+  .tab.active{color:var(--azul);border-bottom-color:var(--terracota)}
+
+  /* Item cards em listas (ambiente/anomalia/foto) */
+  .item{border:1px solid var(--linha-soft);border-radius:10px;padding:.9rem 1rem;margin-bottom:.7rem;background:#fff}
+  .item .row{align-items:flex-start}
+  .item h4{margin:0 0 .2rem;color:var(--chumbo);font-size:.98rem}
+  .gr-badge{font-size:.7rem;font-weight:700;padding:.2rem .5rem;border-radius:6px}
+  .gr1{background:var(--gr1-s);color:var(--gr1)} .gr2{background:var(--gr2-s);color:#9a7433} .gr3{background:var(--gr3-s);color:var(--gr3)}
+  .gutbox{display:inline-flex;gap:.4rem;align-items:center;font-size:.78rem;color:var(--cinza);margin-top:.35rem}
+  .gutbox b{color:var(--azul)}
+
+  .toast{position:fixed;bottom:1.2rem;left:50%;transform:translateX(-50%);background:var(--chumbo);color:#fff;padding:.7rem 1.1rem;border-radius:8px;font-size:.85rem;box-shadow:0 6px 18px rgba(0,0,0,.25);z-index:50;opacity:0;transition:.25s}
+  .toast.show{opacity:1}
+  .toast.err{background:var(--gr3)}
+  .thumb{width:70px;height:52px;object-fit:cover;border-radius:6px;border:1px solid var(--linha)}
+  .callout{background:var(--gr3-s);border-left:4px solid var(--gr3);padding:.7rem .9rem;border-radius:8px;font-size:.82rem;color:#7a2a24;margin-top:.5rem}
+  .info{background:#eef4f6;border-left:4px solid var(--petroleo);padding:.7rem .9rem;border-radius:8px;font-size:.82rem;margin:.6rem 0}
+  code{background:#eef0ef;padding:.12rem .4rem;border-radius:5px;font-size:.82rem}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <div class="mark">PP</div>
+    <div><b>SISTEMA DE LAUDOS</b><span>Paula Pacheco · Engenharia e Perícias</span></div>
+  </div>
+  <div class="userbox hidden" id="userbox">
+    <span id="user-email"></span>
+    <button class="btn-ghost btn-sm" style="color:#fff;border-color:#47578f" onclick="app.signOut()">Sair</button>
+  </div>
+</header>
+
+<main>
+  <!-- LOGIN -->
+  <section id="view-auth" class="hidden">
+    <div class="card">
+      <h2>Entrar</h2>
+      <p class="muted">Você receberá um link de acesso por e-mail.</p>
+      <div class="field" style="margin-top:1rem;text-align:left">
+        <label>E-mail</label>
+        <input id="auth-email" type="email" placeholder="paula.mariesp@gmail.com" />
+      </div>
+      <button class="btn" style="width:100%" onclick="app.sendMagicLink()">Enviar link de acesso</button>
+      <p class="muted" id="auth-msg" style="margin-top:.9rem"></p>
+    </div>
+  </section>
+
+  <!-- LISTA -->
+  <section id="view-list" class="hidden">
+    <div class="row" style="margin-bottom:1.2rem">
+      <h1>Laudos</h1>
+      <button class="btn" onclick="app.newLaudo()">+ Novo laudo</button>
+    </div>
+    <div id="laudos-list"></div>
+    <p class="muted hidden" id="laudos-empty">Nenhum laudo ainda. Crie o primeiro com “Novo laudo”.</p>
+  </section>
+
+  <!-- EDITOR -->
+  <section id="view-editor" class="hidden">
+    <button class="btn-ghost btn-sm" onclick="app.backToList()">← Laudos</button>
+    <div class="row" style="margin:.8rem 0">
+      <h1 id="editor-title">Laudo</h1>
+      <span class="pill" id="editor-status"></span>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" data-tab="dados" onclick="app.tab('dados')">Dados</button>
+      <button class="tab" data-tab="ambientes" onclick="app.tab('ambientes')">Ambientes</button>
+      <button class="tab" data-tab="anomalias" onclick="app.tab('anomalias')">Anomalias</button>
+      <button class="tab" data-tab="fotos" onclick="app.tab('fotos')">Fotos</button>
+      <button class="tab" data-tab="gerar" onclick="app.tab('gerar')">Gerar .docx</button>
+    </div>
+
+    <div id="tab-dados" class="tabpanel"></div>
+    <div id="tab-ambientes" class="tabpanel hidden"></div>
+    <div id="tab-anomalias" class="tabpanel hidden"></div>
+    <div id="tab-fotos" class="tabpanel hidden"></div>
+    <div id="tab-gerar" class="tabpanel hidden"></div>
+  </section>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+/* ============================================================
+   Configuração — chaves PÚBLICAS (seguras no cliente).
+   O acesso real é protegido por login + RLS no Supabase.
+   ============================================================ */
+const SUPABASE_URL = "https://noknoebspmrbigwhyucn.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5va25vZWJzcG1yYmlnd2h5dWNuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4MzA2ODMsImV4cCI6MjA5MTQwNjY4M30.N4ClwgCEZaKPd4RpwsBdCb-qsDS5RS6iUsNjQalhKko";
+const BUCKET = "laudos-fotos";
+
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  db: { schema: "laudos" },
+  auth: { detectSessionInUrl: true, persistSession: true }
+});
+
+/* ---- Enums / listas ---- */
+const TIPOS = {condominial_nao_judicial:"Condominial (não judicial)",contratual_extrajudicial:"Contratual/Extrajudicial",unidade_correlacao:"Unidade/Correlação",individual:"Individual"};
+const STATUS = {em_vistoria:"Em vistoria",em_redacao:"Em redação",revisao:"Revisão",finalizado:"Finalizado"};
+const VICIO = {vicio_construtivo:"Vício construtivo",falha_manutencao:"Falha de manutenção",indeterminado:"Indeterminado (gera ressalva)"};
+const ORIGENS = ["exógena","adquirida","congênita","construtiva","funcional","natural","endógena"];
+const SISTEMAS = ["impermeabilização e drenagem","estrutura","vedações e alvenarias","instalações hidráulicas","instalações elétricas","climatização","revestimentos e pisos","esquadrias","cobertura"];
+
+/* ---- Regras de risco (espelham gerador/risco.py) ---- */
+function calcGut(g,u,t){return (+g)*(+u)*(+t)}
+function faixa(gut){return gut>=80?"Imediata":gut>=40?"Alta":gut>=20?"Média":gut>=8?"Programada":"Monitoramento"}
+function grClass(gr){return gr==3?"gr3":gr==2?"gr2":"gr1"}
+
+/* ---- Utils ---- */
+const $=s=>document.querySelector(s);
+const esc=s=>(s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const opt=(o,sel,fn)=>Object.entries(o).map(([k,v])=>`<option value="${k}" ${k==sel?"selected":""}>${fn?fn(v):v}</option>`).join("");
+function toast(msg,err){const t=$("#toast");t.textContent=msg;t.className="toast show"+(err?" err":"");setTimeout(()=>t.className="toast",2600)}
+function view(id){["auth","list","editor"].forEach(v=>$("#view-"+v).classList.toggle("hidden",v!==id))}
+
+/* ============================================================
+   App
+   ============================================================ */
+const app = {
+  state:{ email:null, laudos:[], laudo:null, ambientes:[], anomalias:[], fotos:[] },
+
+  async init(){
+    sb.auth.onAuthStateChange((_e,session)=>this.onAuth(session));
+    const {data}=await sb.auth.getSession();
+    this.onAuth(data.session);
+  },
+  onAuth(session){
+    if(session){
+      this.state.email=session.user.email;
+      $("#user-email").textContent=session.user.email;
+      $("#userbox").classList.remove("hidden");
+      this.loadLaudos();
+    }else{
+      $("#userbox").classList.add("hidden");
+      view("auth");
+    }
+  },
+  async sendMagicLink(){
+    const email=$("#auth-email").value.trim();
+    if(!email) return toast("Informe o e-mail",true);
+    const {error}=await sb.auth.signInWithOtp({email,options:{emailRedirectTo:window.location.href}});
+    $("#auth-msg").textContent=error?("Erro: "+error.message):("Link enviado para "+email+". Confira o e-mail.");
+  },
+  async signOut(){await sb.auth.signOut();location.reload()},
+
+  /* ---------- LAUDOS ---------- */
+  async loadLaudos(){
+    view("list");
+    const {data,error}=await sb.from("laudos").select("*").order("created_at",{ascending:false});
+    if(error) return toast(error.message,true);
+    this.state.laudos=data||[];
+    const box=$("#laudos-list"); box.innerHTML="";
+    $("#laudos-empty").classList.toggle("hidden",this.state.laudos.length>0);
+    this.state.laudos.forEach(l=>{
+      const d=document.createElement("div");
+      d.className="laudo-item";
+      d.innerHTML=`<div><div class="n">Nº ${esc(l.numero)}</div><div class="muted">${esc(l.cliente_nome||"—")}</div></div>
+                   <div style="text-align:right"><span class="pill">${STATUS[l.status]||l.status}</span><br><span class="muted" style="font-size:.72rem">${TIPOS[l.tipo]||l.tipo}</span></div>`;
+      d.onclick=()=>this.openLaudo(l.id);
+      box.appendChild(d);
+    });
+  },
+  async newLaudo(){
+    const numero=prompt("Número do laudo (ex.: 51/2026):");
+    if(!numero) return;
+    const {data,error}=await sb.from("laudos").insert({numero,tipo:"individual",status:"em_vistoria"}).select().single();
+    if(error) return toast(error.message,true);
+    this.openLaudo(data.id);
+  },
+  async openLaudo(id){
+    const {data:l}=await sb.from("laudos").select("*").eq("id",id).single();
+    this.state.laudo=l;
+    const [{data:amb},{data:ano},{data:fot}]=await Promise.all([
+      sb.from("ambientes").select("*").eq("laudo_id",id).order("ordem"),
+      sb.from("anomalias").select("*").eq("laudo_id",id).order("ordem"),
+      sb.from("fotos").select("*").eq("laudo_id",id).order("ordem")
+    ]);
+    this.state.ambientes=amb||[]; this.state.anomalias=ano||[]; this.state.fotos=fot||[];
+    $("#editor-title").textContent="Laudo Nº "+l.numero;
+    $("#editor-status").textContent=STATUS[l.status]||l.status;
+    view("editor"); this.tab("dados");
+  },
+  backToList(){this.state.laudo=null;this.loadLaudos()},
+
+  tab(name){
+    document.querySelectorAll(".tab").forEach(t=>t.classList.toggle("active",t.dataset.tab===name));
+    document.querySelectorAll(".tabpanel").forEach(p=>p.classList.add("hidden"));
+    $("#tab-"+name).classList.remove("hidden");
+    ({dados:this.renderDados,ambientes:this.renderAmbientes,anomalias:this.renderAnomalias,fotos:this.renderFotos,gerar:this.renderGerar})[name].call(this);
+  },
+
+  /* ---------- DADOS ---------- */
+  renderDados(){
+    const l=this.state.laudo;
+    $("#tab-dados").innerHTML=`<div class="card"><div class="grid g2">
+      <div class="field"><label>Número</label><input id="f-numero" value="${esc(l.numero)}"></div>
+      <div class="field"><label>Tipo</label><select id="f-tipo">${opt(TIPOS,l.tipo)}</select></div>
+      <div class="field"><label>Cliente</label><input id="f-cliente" value="${esc(l.cliente_nome)}"></div>
+      <div class="field"><label>CNPJ/CPF</label><input id="f-doc" value="${esc(l.cliente_cnpj_cpf)}"></div>
+      <div class="field" style="grid-column:1/-1"><label>Endereço</label><input id="f-end" value="${esc(l.endereco)}"></div>
+      <div class="field"><label>Data de emissão</label><input id="f-data" type="date" value="${l.data_emissao||""}"></div>
+      <div class="field"><label>Status</label><select id="f-status">${opt(STATUS,l.status)}</select></div>
+      <div class="field"><label>Datas de diligência (separadas por vírgula)</label><input id="f-dilig" value="${esc((l.datas_diligencia||[]).join(', '))}"></div>
+      <div class="field"><label>Acompanhamento</label><input id="f-acomp" value="${esc(l.acompanhamento)}"></div>
+      </div><button class="btn" onclick="app.saveDados()">Salvar dados</button></div>`;
+  },
+  async saveDados(){
+    const dil=$("#f-dilig").value.split(",").map(s=>s.trim()).filter(Boolean);
+    const patch={numero:$("#f-numero").value.trim(),tipo:$("#f-tipo").value,cliente_nome:$("#f-cliente").value,
+      cliente_cnpj_cpf:$("#f-doc").value,endereco:$("#f-end").value,data_emissao:$("#f-data").value||null,
+      status:$("#f-status").value,datas_diligencia:dil,acompanhamento:$("#f-acomp").value};
+    const {error}=await sb.from("laudos").update(patch).eq("id",this.state.laudo.id);
+    if(error) return toast(error.message,true);
+    Object.assign(this.state.laudo,patch);
+    $("#editor-title").textContent="Laudo Nº "+patch.numero;
+    $("#editor-status").textContent=STATUS[patch.status];
+    toast("Dados salvos");
+  },
+
+  /* ---------- AMBIENTES ---------- */
+  renderAmbientes(){
+    const list=this.state.ambientes.map(a=>`<div class="item"><div class="row">
+      <div><h4>${esc(a.nome)}</h4><div class="muted">${esc(a.pavimento||"")} · ordem ${a.ordem}</div></div>
+      <button class="btn-danger btn-sm" onclick="app.delAmbiente('${a.id}')">Excluir</button></div></div>`).join("");
+    $("#tab-ambientes").innerHTML=`${list||'<p class="muted">Nenhum ambiente.</p>'}
+      <div class="card" style="margin-top:1rem"><h3>Novo ambiente</h3><div class="grid g3" style="margin-top:.8rem">
+      <div class="field"><label>Nome</label><input id="a-nome" placeholder="2º Subsolo"></div>
+      <div class="field"><label>Pavimento</label><input id="a-pav" placeholder="2º Subsolo"></div>
+      <div class="field"><label>Ordem</label><input id="a-ord" type="number" value="${this.state.ambientes.length+1}"></div>
+      </div><button class="btn" onclick="app.addAmbiente()">Adicionar</button></div>`;
+  },
+  async addAmbiente(){
+    const nome=$("#a-nome").value.trim(); if(!nome) return toast("Nome obrigatório",true);
+    const {error}=await sb.from("ambientes").insert({laudo_id:this.state.laudo.id,nome,pavimento:$("#a-pav").value,ordem:+$("#a-ord").value||0});
+    if(error) return toast(error.message,true);
+    await this.reloadChildren(); this.renderAmbientes(); toast("Ambiente adicionado");
+  },
+  async delAmbiente(id){if(!confirm("Excluir ambiente?"))return;await sb.from("ambientes").delete().eq("id",id);await this.reloadChildren();this.renderAmbientes()},
+
+  /* ---------- ANOMALIAS ---------- */
+  renderAnomalias(){
+    const ambOpts=this.state.ambientes.map(a=>`<option value="${a.id}">${esc(a.nome)}</option>`).join("");
+    const sisList=SISTEMAS.map(s=>`<option value="${s}">`).join("");
+    const list=this.state.anomalias.map(an=>{
+      const gut=calcGut(an.g,an.u,an.t);
+      return `<div class="item"><div class="row">
+        <div><h4>${esc(an.titulo)}</h4><div class="muted">${esc(an.sistema_construtivo)}</div>
+        <div class="gutbox"><span class="gr-badge ${grClass(an.gr)}">GR${an.gr}</span>
+        <span>G${an.g}·U${an.u}·T${an.t} → <b>GUT ${gut}</b> · ${faixa(gut)}</span>
+        ${an.alerta_juridico?'<span class="gr-badge gr3">alerta jurídico</span>':''}</div></div>
+        <button class="btn-danger btn-sm" onclick="app.delAnomalia('${an.id}')">Excluir</button></div></div>`;
+    }).join("");
+    $("#tab-anomalias").innerHTML=`${list||'<p class="muted">Nenhuma anomalia.</p>'}
+      <datalist id="dl-sistemas">${sisList}</datalist>
+      <div class="card" style="margin-top:1rem"><h3>Nova anomalia</h3><div class="grid g2" style="margin-top:.8rem">
+        <div class="field"><label>Título</label><input id="n-tit" placeholder="Jardineira da fachada frontal"></div>
+        <div class="field"><label>Sistema construtivo</label><input id="n-sis" list="dl-sistemas" placeholder="estrutura"></div>
+        <div class="field"><label>Ambiente</label><select id="n-amb"><option value="">—</option>${ambOpts}</select></div>
+        <div class="field"><label>Origem (taxonomia)</label><select id="n-ori">${ORIGENS.map(o=>`<option>${o}</option>`).join("")}</select></div>
+        <div class="field" style="grid-column:1/-1"><label>Descrição fenomenológica</label><textarea id="n-desc"></textarea></div>
+        <div class="field"><label>Mecanismo</label><textarea id="n-mec"></textarea></div>
+        <div class="field"><label>Causa provável</label><textarea id="n-cau"></textarea></div>
+        <div class="field" style="grid-column:1/-1"><label>Consequências</label><textarea id="n-con"></textarea></div>
+        <div class="field"><label>Vício ou falha</label><select id="n-vic">${opt(VICIO,"indeterminado")}</select></div>
+        <div class="field"><label>Grau IBAPE</label><select id="n-gr" onchange="app.previewGut()"><option value="1">GR1 · Baixo</option><option value="2">GR2 · Médio</option><option value="3">GR3 · Alto</option></select></div>
+      </div>
+      <div class="grid g4">
+        <div class="field"><label>Gravidade (1-5)</label><select id="n-g" onchange="app.previewGut()">${[1,2,3,4,5].map(i=>`<option>${i}</option>`).join("")}</select></div>
+        <div class="field"><label>Urgência (1-5)</label><select id="n-u" onchange="app.previewGut()">${[1,2,3,4,5].map(i=>`<option>${i}</option>`).join("")}</select></div>
+        <div class="field"><label>Tendência (1-5)</label><select id="n-t" onchange="app.previewGut()">${[1,2,3,4,5].map(i=>`<option>${i}</option>`).join("")}</select></div>
+        <div class="field"><label>Ordem</label><input id="n-ord" type="number" value="${this.state.anomalias.length+1}"></div>
+      </div>
+      <div class="info" id="gut-preview">G×U×T = 1 · Faixa: Monitoramento</div>
+      <label style="display:flex;gap:.5rem;align-items:center;text-transform:none;letter-spacing:0;font-weight:500;color:var(--texto)">
+        <input type="checkbox" id="n-alerta" style="width:auto" onchange="app.previewGut()"> Alerta jurídico (Arts. 186/927/1.348 V CC) — automático em GR3</label>
+      <button class="btn" style="margin-top:.8rem" onclick="app.addAnomalia()">Adicionar anomalia</button></div>`;
+    this.previewGut();
+  },
+  previewGut(){
+    const g=$("#n-g").value,u=$("#n-u").value,t=$("#n-t").value,gr=$("#n-gr").value;
+    const gut=calcGut(g,u,t);
+    $("#gut-preview").innerHTML=`G×U×T = <b>${gut}</b> · Faixa: <b>${faixa(gut)}</b>${gr==3?' · <span style="color:var(--gr3)">GR3 aciona alerta jurídico automático</span>':''}`;
+  },
+  async addAnomalia(){
+    const tit=$("#n-tit").value.trim(), sis=$("#n-sis").value.trim();
+    if(!tit||!sis) return toast("Título e sistema são obrigatórios",true);
+    const rec={laudo_id:this.state.laudo.id,titulo:tit,sistema_construtivo:sis,
+      ambiente_id:$("#n-amb").value||null,origem_taxonomia:$("#n-ori").value,
+      descricao_fenomenologica:$("#n-desc").value,mecanismo:$("#n-mec").value,
+      causa_provavel:$("#n-cau").value,consequencias:$("#n-con").value,
+      vicio_ou_falha_manutencao:$("#n-vic").value,gr:+$("#n-gr").value,
+      g:+$("#n-g").value,u:+$("#n-u").value,t:+$("#n-t").value,ordem:+$("#n-ord").value||0,
+      alerta_juridico:$("#n-alerta").checked||(+$("#n-gr").value===3)};
+    const {error}=await sb.from("anomalias").insert(rec);
+    if(error) return toast(error.message,true);
+    await this.reloadChildren(); this.renderAnomalias(); toast("Anomalia adicionada");
+  },
+  async delAnomalia(id){if(!confirm("Excluir anomalia?"))return;await sb.from("anomalias").delete().eq("id",id);await this.reloadChildren();this.renderAnomalias()},
+
+  /* ---------- FOTOS ---------- */
+  async renderFotos(){
+    const anoOpts=this.state.anomalias.map(a=>`<option value="${a.id}">${esc(a.titulo)}</option>`).join("");
+    const box=$("#tab-fotos");
+    box.innerHTML=`<div id="fotos-list"></div>
+      <div class="card" style="margin-top:1rem"><h3>Nova foto</h3><div class="grid g2" style="margin-top:.8rem">
+        <div class="field"><label>Arquivo</label><input id="ft-file" type="file" accept="image/*"></div>
+        <div class="field"><label>Anomalia vinculada</label><select id="ft-ano"><option value="">—</option>${anoOpts}</select></div>
+        <div class="field" style="grid-column:1/-1"><label>Legenda</label><input id="ft-leg" placeholder="descrição objetiva da anomalia"></div>
+        <div class="field"><label>Ordem (define o nº da figura)</label><input id="ft-ord" type="number" value="${this.state.fotos.length+1}"></div>
+      </div><button class="btn" onclick="app.addFoto()">Enviar foto</button>
+      <p class="muted" style="margin-top:.5rem">A imagem é reduzida (máx. 1600px) antes do upload.</p></div>`;
+    const list=$("#fotos-list"); list.innerHTML=this.state.fotos.length?"":'<p class="muted">Nenhuma foto.</p>';
+    for(const f of this.state.fotos){
+      const div=document.createElement("div"); div.className="item";
+      let thumb="";
+      if(f.arquivo_url){const {data}=await sb.storage.from(BUCKET).createSignedUrl(f.arquivo_url,3600);if(data)thumb=`<img class="thumb" src="${data.signedUrl}">`}
+      div.innerHTML=`<div class="row"><div style="display:flex;gap:.8rem;align-items:center">${thumb}
+        <div><h4>FIG (ordem ${f.ordem})</h4><div class="muted">${esc(f.legenda||"")}</div></div></div>
+        <button class="btn-danger btn-sm" onclick="app.delFoto('${f.id}','${f.arquivo_url||""}')">Excluir</button></div>`;
+      list.appendChild(div);
+    }
+  },
+  async downscale(file,max=1600){
+    const img=await createImageBitmap(file);
+    const scale=Math.min(1,max/Math.max(img.width,img.height));
+    const c=document.createElement("canvas"); c.width=Math.round(img.width*scale); c.height=Math.round(img.height*scale);
+    c.getContext("2d").drawImage(img,0,0,c.width,c.height);
+    return await new Promise(r=>c.toBlob(r,"image/jpeg",0.8));
+  },
+  async addFoto(){
+    const file=$("#ft-file").files[0]; if(!file) return toast("Escolha um arquivo",true);
+    toast("Enviando…");
+    const blob=await this.downscale(file);
+    const path=`${this.state.laudo.numero.replace(/\//g,'-')}/${crypto.randomUUID()}.jpg`;
+    const up=await sb.storage.from(BUCKET).upload(path,blob,{contentType:"image/jpeg"});
+    if(up.error) return toast(up.error.message,true);
+    const {error}=await sb.from("fotos").insert({laudo_id:this.state.laudo.id,anomalia_id:$("#ft-ano").value||null,
+      ambiente_id:null,arquivo_url:path,legenda:$("#ft-leg").value,ordem:+$("#ft-ord").value||0});
+    if(error) return toast(error.message,true);
+    await this.reloadChildren(); this.renderFotos(); toast("Foto enviada");
+  },
+  async delFoto(id,path){
+    if(!confirm("Excluir foto?"))return;
+    if(path) await sb.storage.from(BUCKET).remove([path]);
+    await sb.from("fotos").delete().eq("id",id);
+    await this.reloadChildren(); this.renderFotos();
+  },
+
+  /* ---------- GERAR ---------- */
+  renderGerar(){
+    const n=this.state.laudo.numero, out="saida/Laudo-"+n.replace(/\//g,'-')+".docx";
+    $("#tab-gerar").innerHTML=`<div class="card">
+      <h3>Gerar o documento (.docx)</h3>
+      <div class="info">A montagem do <code>.docx</code> roda pelo motor Python (Fase 1), lendo estes dados direto do Supabase. No computador com o projeto:</div>
+      <pre style="background:#0d1226;color:#dde1ec;padding:1rem;border-radius:8px;overflow:auto;font-size:.8rem"><code>cd sistema_laudos
+pip install -r requirements.txt supabase
+export SUPABASE_URL="${SUPABASE_URL}"
+export SUPABASE_SERVICE_KEY="&lt;service role key&gt;"
+python -m gerador.gerar_do_supabase "${n}" "${out}"</code></pre>
+      <p class="muted">Resumo atual: ${this.state.ambientes.length} ambientes · ${this.state.anomalias.length} anomalias · ${this.state.fotos.length} fotos.</p>
+    </div>`;
+  },
+
+  async reloadChildren(){
+    const id=this.state.laudo.id;
+    const [{data:amb},{data:ano},{data:fot}]=await Promise.all([
+      sb.from("ambientes").select("*").eq("laudo_id",id).order("ordem"),
+      sb.from("anomalias").select("*").eq("laudo_id",id).order("ordem"),
+      sb.from("fotos").select("*").eq("laudo_id",id).order("ordem")
+    ]);
+    this.state.ambientes=amb||[]; this.state.anomalias=ano||[]; this.state.fotos=fot||[];
+  }
+};
+
+app.init();
+</script>
+</body>
+</html>

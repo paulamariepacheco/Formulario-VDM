@@ -1,0 +1,6 @@
+# Deploy do app de captura (Fase 2) no Netlify.
+# Ao criar o site, defina "Base directory" = sistema_laudos (assim `publish=app`
+# aponta para sistema_laudos/app). Não há etapa de build — é HTML estático.
+[build]
+  publish = "app"
+  command = ""
