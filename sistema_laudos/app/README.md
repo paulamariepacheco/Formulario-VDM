@@ -51,10 +51,27 @@ Depois, adicionar a URL do Netlify nas Redirect URLs (passo 1).
 
 ## Gerar o documento a partir do que foi capturado
 
+**Configuração única** (não precisa repetir depois):
+
+1. Instalar o [Python](https://www.python.org/downloads/) no computador (marcar
+   "Add python.exe to PATH" no instalador do Windows).
+2. Baixar o código deste repositório (Code → Download ZIP no GitHub, ou `git clone`).
+3. Abrir o terminal/PowerShell na pasta `sistema_laudos` e rodar:
+   ```bash
+   pip install -r requirements.txt -r requirements-supabase.txt
+   ```
+4. Copiar `sistema_laudos/.env.example` para `sistema_laudos/.env` e colar a
+   **service role key** (Supabase → Settings → API → service_role key — é
+   secreta, nunca compartilhar nem subir ao Git; o `.env` já está no `.gitignore`).
+
+**Uso do dia a dia** — depois da configuração acima, é só:
+- **Windows:** dar duplo clique em `Gerar Laudo.bat` (dentro de `sistema_laudos/`).
+- **Mac:** dar duplo clique em `Gerar Laudo.command`.
+- Digite o número do laudo (ex.: `52/2026`) e aperte Enter. O `.docx` sai em
+  `sistema_laudos/saida/`, com as fotos reais do Storage já embutidas.
+
+Prefere linha de comando? O atalho acima só chama:
 ```bash
 cd sistema_laudos
-pip install -r requirements.txt -r requirements-supabase.txt
-export SUPABASE_URL="https://noknoebspmrbigwhyucn.supabase.co"
-export SUPABASE_SERVICE_KEY="<service role key>"   # máquina de confiança
-python -m gerador.gerar_do_supabase "51/2026" "saida/Laudo-51-2026.docx"
+python gerar.py "51/2026"
 ```
