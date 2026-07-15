@@ -20,7 +20,7 @@ from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_BREAK
 from docx.enum.table import WD_TABLE_ALIGNMENT
 from docx.shared import Cm, Pt, RGBColor
 
-from . import risco, textos
+from . import render_paginas, risco, textos
 from .docx_util import (
     atualizar_campos_ao_abrir,
     carregar_tokens,
@@ -28,18 +28,14 @@ from .docx_util import (
     configurar_cabecalho_rodape,
     gerar_placeholder,
     hexnum,
+    inserir_imagem_pagina_inteira,
     inserir_sumario,
     sombrear_celula,
 )
 from .fonte_dados import carregar_de_json
 from .modelos import Laudo
 
-TIPO_ROTULO = {
-    "condominial_nao_judicial": "Condominial (não judicial)",
-    "contratual_extrajudicial": "Contratual / Extrajudicial",
-    "unidade_correlacao": "Unidade / Correlação",
-    "individual": "Individual",
-}
+TIPO_ROTULO = textos.TIPO_ROTULO  # rótulos de exibição (movidos p/ textos.py)
 
 
 class GeradorLaudo:
@@ -123,6 +119,29 @@ class GeradorLaudo:
 
     # ----------------------------------------------------------------- capa
     def _capa(self):
+        """Capa como página-imagem renderizada do template do Claude Design.
+
+        Fidelidade visual total: o template A4 (LaudoCapa) é resolvido com os
+        dados do laudo e renderizado em PNG ~300 dpi, inserido full-bleed
+        (âncora à página, sem margens). Sem foto de capa, o próprio template
+        cai na variante `azul-marinho`. Se Playwright/Chromium não estiverem
+        disponíveis, degrada para a capa nativa (texto Word) com aviso.
+        """
+        try:
+            self.dir_img.mkdir(parents=True, exist_ok=True)
+            png = render_paginas.renderizar_capa(
+                self.laudo, self.tokens, self.dir_img / "capa.png")
+        except render_paginas.RenderIndisponivel as exc:
+            print(f"[aviso] capa nativa (render indisponível: {exc})")
+            self._capa_nativa()
+            return
+        p = self.doc.add_paragraph()
+        p.paragraph_format.space_after = Pt(0)
+        inserir_imagem_pagina_inteira(p, png)
+        self._quebra_pagina()
+
+    def _capa_nativa(self):
+        """Capa em texto nativo do Word (fallback sem Chromium/Playwright)."""
         t = self.tokens
         lau = self.laudo
         for _ in range(3):

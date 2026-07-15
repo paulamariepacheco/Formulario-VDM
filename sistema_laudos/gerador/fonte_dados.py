@@ -34,6 +34,8 @@ def carregar_de_json(caminho: str | Path) -> Laudo:
         status=dados.get("status", "em_redacao"),
         datas_diligencia=dados.get("datas_diligencia", []),
         acompanhamento=dados.get("acompanhamento", ""),
+        nome_imovel=dados.get("nome_imovel", ""),
+        capa_fundo=dados.get("capa_fundo", ""),
     )
 
     laudo.ambientes = [
@@ -66,6 +68,8 @@ def carregar_de_json(caminho: str | Path) -> Laudo:
         p = Path(caminho_foto)
         return str(p if p.is_absolute() else (base / p))
 
+    laudo.foto_capa = resolver(dados.get("foto_capa", ""))
+
     laudo.fotos = [
         Foto(id=f["id"], arquivo=resolver(f.get("arquivo", "")),
              legenda=f.get("legenda", ""), ordem=f.get("ordem", 0),
@@ -95,6 +99,11 @@ def carregar_do_supabase(numero: str, client=None) -> Laudo:
         endereco=lr.get("endereco", ""), data_emissao=lr.get("data_emissao", ""),
         status=lr.get("status", ""), datas_diligencia=lr.get("datas_diligencia", []),
         acompanhamento=lr.get("acompanhamento", ""),
+        # colunas da capa ainda não existem no schema (migração futura);
+        # .get() mantém compatibilidade até lá
+        nome_imovel=lr.get("nome_imovel", "") or "",
+        foto_capa=lr.get("foto_capa_url", "") or "",
+        capa_fundo=lr.get("capa_fundo", "") or "",
     )
     laudo.ambientes = [Ambiente(**{k: a[k] for k in ("id", "nome", "pavimento", "ordem")})
                        for a in db.table("ambientes").select("*").eq("laudo_id", lr["id"]).execute().data]

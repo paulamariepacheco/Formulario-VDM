@@ -1,0 +1,116 @@
+<!--
+  AVISO: TEMPLATE PROVISORIO, nao e o LaudoCapa.dc.html original do Claude Design.
+
+  O arquivo pixel-perfect vive no projeto "Paula Pacheco Design System"
+  (Claude Design, projectId 1429c6fb-e92f-4c44-a2bd-3c70304f9031), em
+  templates/laudo-capa/LaudoCapa.dc.html. A tool DesignSync nao estava
+  disponivel nesta sessao; este provisorio reproduz a ESTRUTURA e a LOGICA do
+  original (prop "fundo": azul-marinho x foto-com-overlay) usando apenas os
+  design tokens (CSS vars pp-*, injetadas de design/tokens.json).
+
+  Para atingir a fidelidade visual total:
+    1. Substituir este arquivo pelo conteudo real (o miolo da tag x-dc) do
+       LaudoCapa.dc.html sincronizado do Claude Design;
+    2. Anotar os nos de dado com os placeholders de chaves duplas abaixo
+       (trocando o texto de exemplo do laudo 54/2026) e envolver cada ramo do
+       sc-if do fundo com um par de comentarios "dc:variante:NOME" e
+       "/dc:variante:NOME" (ver os pares ja usados no markup abaixo);
+    3. Copiar os assets referenciados (logo double-P, fontes Visia Pro) para
+       ../../assets/ mantendo os caminhos relativos do projeto.
+
+  Campos do contrato de anotacao (lido por gerador/render_paginas.py):
+    numero, nome_imovel, endereco, tipo_rotulo, cliente_linha, emissao_linha,
+    diligencias_linha, foto_capa, perita, perita_titulo, credenciais_linha.
+
+  IMPORTANTE: neste comentario de cabecalho, nunca escrever a tag x-dc
+  literal, marcadores dc:variante entre delimitadores de comentario, nem a
+  sequencia que fecha comentario HTML: o extrator descarta este bloco, mas
+  esses tokens confundiriam o parse se o descarte falhar.
+-->
+<x-dc>
+<style>
+  .pp-capa{
+    position:relative;width:794px;height:1123px;overflow:hidden;
+    background:var(--pp-azul);color:var(--pp-texto-sobre_escuro);
+    font-family:var(--pp-fonte-corpo);
+    display:flex;flex-direction:column;
+  }
+  .pp-capa__conteudo{position:relative;z-index:1;display:flex;flex-direction:column;flex:1;padding:56px 64px 48px;}
+
+  /* fundo foto-com-overlay */
+  .pp-capa__foto{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+  .pp-capa__overlay{position:absolute;inset:0;
+    background:linear-gradient(180deg,
+      color-mix(in srgb, var(--pp-azul) 84%, transparent) 0%,
+      color-mix(in srgb, var(--pp-azul) 96%, transparent) 100%);}
+
+  /* cabeçalho de marca */
+  .pp-capa__marca{display:flex;align-items:center;gap:16px;}
+  .pp-capa__monograma{
+    width:52px;height:52px;border:1.5px solid var(--pp-terracota);
+    display:flex;align-items:center;justify-content:center;
+    font-family:var(--pp-fonte-titulo);font-size:22px;letter-spacing:2px;
+    color:var(--pp-texto-sobre_escuro);}
+  .pp-capa__wordmark{font-size:14px;font-weight:600;letter-spacing:4px;}
+  .pp-capa__wordmark small{display:block;font-size:9px;font-weight:400;
+    letter-spacing:5px;opacity:.75;margin-top:3px;}
+
+  /* miolo */
+  .pp-capa__miolo{flex:1;display:flex;flex-direction:column;justify-content:center;}
+  .pp-capa__eyebrow{font-size:13px;font-weight:600;letter-spacing:7px;
+    color:var(--pp-terracota);text-transform:uppercase;}
+  .pp-capa__numero{font-family:var(--pp-fonte-titulo);font-size:64px;
+    font-weight:700;line-height:1.08;margin:10px 0 26px;}
+  .pp-capa__regua{width:72px;height:3px;background:var(--pp-terracota);margin-bottom:30px;}
+  .pp-capa__imovel{font-size:27px;font-weight:600;line-height:1.25;max-width:560px;}
+  .pp-capa__endereco{font-size:13.5px;line-height:1.55;opacity:.82;margin-top:12px;max-width:520px;}
+  .pp-capa__tipo{display:inline-block;margin-top:26px;padding:7px 16px;
+    border:1px solid color-mix(in srgb, var(--pp-texto-sobre_escuro) 45%, transparent);
+    font-size:10.5px;letter-spacing:3px;text-transform:uppercase;align-self:flex-start;}
+
+  /* rodapé */
+  .pp-capa__rodape{border-top:1px solid color-mix(in srgb, var(--pp-texto-sobre_escuro) 22%, transparent);
+    padding-top:22px;font-size:11.5px;line-height:1.7;}
+  .pp-capa__meta{opacity:.8;}
+  .pp-capa__perita{margin-top:16px;font-size:13px;font-weight:600;}
+  .pp-capa__perita-titulo{font-size:11px;opacity:.8;}
+  .pp-capa__credenciais{font-size:11px;letter-spacing:1.5px;color:var(--pp-terracota);margin-top:2px;}
+</style>
+
+<div class="pp-capa">
+  <!-- dc:variante:foto-com-overlay -->
+  <img class="pp-capa__foto" src="{{foto_capa}}" alt="">
+  <div class="pp-capa__overlay"></div>
+  <!-- /dc:variante:foto-com-overlay -->
+  <!-- dc:variante:azul-marinho -->
+  <!-- fundo sólido navy: apenas o background da .pp-capa -->
+  <!-- /dc:variante:azul-marinho -->
+
+  <div class="pp-capa__conteudo">
+    <header class="pp-capa__marca">
+      <div class="pp-capa__monograma">PP</div>
+      <div class="pp-capa__wordmark">PAULA&nbsp;PACHECO
+        <small>ENGENHARIA&nbsp;E&nbsp;PERÍCIAS</small>
+      </div>
+    </header>
+
+    <main class="pp-capa__miolo">
+      <div class="pp-capa__eyebrow">Laudo de Engenharia</div>
+      <h1 class="pp-capa__numero">Nº {{numero}}</h1>
+      <div class="pp-capa__regua"></div>
+      <div class="pp-capa__imovel">{{nome_imovel}}</div>
+      <div class="pp-capa__endereco">{{endereco}}</div>
+      <span class="pp-capa__tipo">{{tipo_rotulo}}</span>
+    </main>
+
+    <footer class="pp-capa__rodape">
+      <div class="pp-capa__meta">{{cliente_linha}}</div>
+      <div class="pp-capa__meta">{{diligencias_linha}}</div>
+      <div class="pp-capa__meta">{{emissao_linha}}</div>
+      <div class="pp-capa__perita">{{perita}}</div>
+      <div class="pp-capa__perita-titulo">{{perita_titulo}}</div>
+      <div class="pp-capa__credenciais">{{credenciais_linha}}</div>
+    </footer>
+  </div>
+</div>
+</x-dc>

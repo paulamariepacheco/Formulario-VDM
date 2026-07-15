@@ -1,0 +1,7 @@
+# Render dos capítulos-template (fidelidade visual — páginas-imagem 300 dpi).
+# Dependência OPCIONAL: sem ela o motor degrada para a capa nativa (texto).
+#
+# O Chromium já vem PRÉ-INSTALADO no ambiente de execução (Claude Code) em
+# /opt/pw-browsers/chromium — NÃO rodar `playwright install`. Fora desse
+# ambiente, aponte a variável CHROMIUM_PATH para um Chromium/Chrome local.
+playwright>=1.40

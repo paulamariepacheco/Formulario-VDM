@@ -153,6 +153,54 @@ def sombrear_celula(cell, cor_hex: str):
 
 
 # --------------------------------------------------------------------------
+# Página-imagem full-bleed (capítulos renderizados dos templates do design)
+# --------------------------------------------------------------------------
+def inserir_imagem_pagina_inteira(paragraph, caminho_img: str | Path,
+                                  largura=None, altura=None):
+    """Insere uma imagem ancorada à PÁGINA, cobrindo-a por inteiro (full-bleed).
+
+    Usa `wp:anchor` posicionado em (0,0) relativo à página, atrás do texto —
+    independe das margens da seção e não ocupa espaço no fluxo (não há risco
+    de a linha "não caber" e empurrar uma página em branco). O parágrafo deve
+    estar na página desejada (ex.: primeiro parágrafo da capa).
+    """
+    from docx.oxml import parse_xml
+    from docx.oxml.ns import nsdecls
+    from docx.shared import Cm
+
+    largura = largura if largura is not None else Cm(21.0)   # A4
+    altura = altura if altura is not None else Cm(29.7)
+    rid, _ = paragraph.part.get_or_add_image(str(caminho_img))
+    nome = Path(caminho_img).name
+    xml = (
+        f'<w:drawing {nsdecls("w", "wp", "a", "pic", "r")}>'
+        '<wp:anchor distT="0" distB="0" distL="0" distR="0" simplePos="0"'
+        ' relativeHeight="0" behindDoc="1" locked="0" layoutInCell="1"'
+        ' allowOverlap="1">'
+        '<wp:simplePos x="0" y="0"/>'
+        '<wp:positionH relativeFrom="page"><wp:posOffset>0</wp:posOffset></wp:positionH>'
+        '<wp:positionV relativeFrom="page"><wp:posOffset>0</wp:posOffset></wp:positionV>'
+        f'<wp:extent cx="{int(largura)}" cy="{int(altura)}"/>'
+        '<wp:effectExtent l="0" t="0" r="0" b="0"/>'
+        '<wp:wrapNone/>'
+        f'<wp:docPr id="1001" name="{nome}"/>'
+        '<wp:cNvGraphicFramePr><a:graphicFrameLocks noChangeAspect="1"/></wp:cNvGraphicFramePr>'
+        '<a:graphic><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture">'
+        '<pic:pic>'
+        f'<pic:nvPicPr><pic:cNvPr id="1001" name="{nome}"/><pic:cNvPicPr/></pic:nvPicPr>'
+        f'<pic:blipFill><a:blip r:embed="{rid}"/><a:stretch><a:fillRect/></a:stretch></pic:blipFill>'
+        '<pic:spPr><a:xfrm><a:off x="0" y="0"/>'
+        f'<a:ext cx="{int(largura)}" cy="{int(altura)}"/></a:xfrm>'
+        '<a:prstGeom prst="rect"><a:avLst/></a:prstGeom></pic:spPr>'
+        '</pic:pic>'
+        '</a:graphicData></a:graphic>'
+        '</wp:anchor>'
+        '</w:drawing>'
+    )
+    paragraph.add_run()._r.append(parse_xml(xml))
+
+
+# --------------------------------------------------------------------------
 # Imagens — compressão no pipeline + placeholder
 # --------------------------------------------------------------------------
 def comprimir_imagem(origem: str | Path, destino: str | Path,

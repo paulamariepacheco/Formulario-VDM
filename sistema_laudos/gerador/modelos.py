@@ -72,6 +72,16 @@ class Laudo:
     status: str = "em_redacao"
     datas_diligencia: list[str] = field(default_factory=list)
     acompanhamento: str = ""
+    # ---- capa renderizada do template do design (fidelidade visual) ----
+    # Nome de exibição do imóvel na capa (ex.: "Edifício Comercial Otoni").
+    # Distinto de cliente_nome ("Condomínio do Edifício ..."); se vazio, a
+    # capa usa cliente_nome como fallback.
+    nome_imovel: str = ""
+    # Foto de capa (caminho local/URL baixada). Vazio => fundo azul-marinho.
+    foto_capa: str = ""
+    # Força a variante de fundo do template: "" (automático pela foto),
+    # "azul-marinho" ou "foto-com-overlay" (prop `fundo` do LaudoCapa).
+    capa_fundo: str = ""
     ambientes: list[Ambiente] = field(default_factory=list)
     anomalias: list[Anomalia] = field(default_factory=list)
     fotos: list[Foto] = field(default_factory=list)

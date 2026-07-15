@@ -17,6 +17,14 @@ IBAPE = "IBAPE/MG 1221"
 PERITA = "Paula Marie Siqueira Pacheco"
 PERITA_TITULO = "Engenheira Civil · Perita em Engenharia Diagnóstica"
 
+# Rótulos de exibição do tipo de laudo (usados na capa e no corpo).
+TIPO_ROTULO = {
+    "condominial_nao_judicial": "Condominial (não judicial)",
+    "contratual_extrajudicial": "Contratual / Extrajudicial",
+    "unidade_correlacao": "Unidade / Correlação",
+    "individual": "Individual",
+}
+
 # ---------------------------------------------------------------------------
 # Capítulos fixos (defaults). Chave -> (título, corpo).
 # ---------------------------------------------------------------------------
