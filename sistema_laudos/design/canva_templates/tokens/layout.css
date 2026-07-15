@@ -1,0 +1,61 @@
+/* ============================================================
+   SPACING, RADIUS, ELEVATION, MOTION
+   Tuned to the drafting aesthetic: crisp edges, small radii,
+   restrained shadows. The mark's own geometry favours squares —
+   so corners are subtle, never pill-soft (except explicit chips).
+   ============================================================ */
+
+:root {
+  /* Spacing — 4px base grid */
+  --space-0: 0;
+  --space-1: 0.25rem;   /* 4  */
+  --space-2: 0.5rem;    /* 8  */
+  --space-3: 0.75rem;   /* 12 */
+  --space-4: 1rem;      /* 16 */
+  --space-5: 1.5rem;    /* 24 */
+  --space-6: 2rem;      /* 32 */
+  --space-7: 2.5rem;    /* 40 */
+  --space-8: 3rem;      /* 48 */
+  --space-9: 4rem;      /* 64 */
+  --space-10: 5rem;     /* 80 */
+  --space-11: 6rem;     /* 96 */
+  --space-12: 8rem;     /* 128 */
+
+  /* Layout */
+  --container-max: 1200px;
+  --container-narrow: 760px;
+  --gutter: clamp(1.25rem, 5vw, 4rem); /* @kind spacing */
+
+  /* Radii — architectural, restrained. Matches the mark's soft-square. */
+  --radius-none: 0;
+  --radius-xs: 2px;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 10px;
+  --radius-xl: 16px;
+  --radius-pill: 999px;
+
+  /* Borders */
+  --border-hair: 1px;
+  --border-reg: 1.5px;
+  --border-thick: 2px;
+
+  /* Elevation — cool, low, precise. No coloured glows. */
+  --shadow-xs: 0 1px 2px rgba(25, 27, 27, 0.06);
+  --shadow-sm: 0 1px 3px rgba(25, 27, 27, 0.08), 0 1px 2px rgba(25, 27, 27, 0.04);
+  --shadow-md: 0 4px 12px rgba(25, 27, 27, 0.08), 0 2px 4px rgba(25, 27, 27, 0.04);
+  --shadow-lg: 0 12px 32px rgba(23, 31, 61, 0.10), 0 4px 10px rgba(25, 27, 27, 0.05);
+  --shadow-xl: 0 24px 60px rgba(23, 31, 61, 0.14);
+  --shadow-inset: inset 0 1px 2px rgba(25, 27, 27, 0.07);
+
+  /* Focus ring */
+  --ring-width: 3px;
+  --ring-color: rgba(47, 61, 111, 0.40);
+
+  /* Motion — brand is calm, measured. Ease, no bounce. */
+  --ease-standard: cubic-bezier(0.2, 0, 0.1, 1); /* @kind other */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1); /* @kind other */
+  --dur-fast: 120ms; /* @kind other */
+  --dur-med: 200ms; /* @kind other */
+  --dur-slow: 320ms; /* @kind other */
+}

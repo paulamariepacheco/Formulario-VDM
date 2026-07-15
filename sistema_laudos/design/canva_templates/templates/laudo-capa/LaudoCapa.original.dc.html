@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<!-- @template name="Laudo — 1. Capa" description="Capa A4 do laudo: título, imóvel, nº sequencial, solicitante, data e foto de capa" -->
+<helmet><script src="./ds-base.js"></script>
+<style>image-slot{display:block;width:100%;height:100%}</style>
+</helmet>
+<div data-screen-label="Capa do laudo" style="width:794px;height:1123px;position:relative;overflow:hidden;background:#171f3d;font-family:'Visia Pro',Montserrat,'Helvetica Neue',Arial,sans-serif;color:#ffffff;box-sizing:border-box">
+
+  <sc-if value="{{isFoto}}" hint-placeholder-val="{{false}}">
+    <div style="position:absolute;left:0;top:0;width:794px;height:1123px">
+      <x-import component-from-global-scope="image-slot" from="../../assets/js/image-slot.js" id="capa-foto-fundo" placeholder="Foto do imóvel — fundo da capa" shape="rect" radius="0" fit="cover" style="position:absolute;left:0;top:0;width:794px;height:1123px" hint-size="794px,1123px"></x-import>
+      <div style="position:absolute;left:0;top:0;width:794px;height:1123px;background:linear-gradient(180deg,rgba(23,31,61,0.90) 0%,rgba(23,31,61,0.80) 45%,rgba(13,18,38,0.94) 100%);pointer-events:none"></div>
+    </div>
+  </sc-if>
+
+  <img src="../../assets/logos/icone-branco.png" alt="" style="position:absolute;right:-150px;bottom:-60px;width:540px;opacity:0.05;pointer-events:none" />
+
+  <div style="position:absolute;left:0;top:0;width:794px;height:1123px;display:flex;flex-direction:column;padding:52px 64px 42px;box-sizing:border-box">
+
+    <div style="display:flex;justify-content:space-between;align-items:flex-start">
+      <img src="../../assets/logos/logo-tagline-branca.png" alt="Paula Pacheco Engenharia e Perícias" style="width:172px;display:block" />
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.08em;color:#7684af;text-align:right;padding-top:8px">DOCUMENTO TÉCNICO<br />USO RESTRITO</div>
+    </div>
+
+    <div style="height:44px"></div>
+
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:0.28em;color:#BE7C4D;text-transform:uppercase">Laudo de Engenharia Nº 54/2026</div>
+    <div style="height:16px"></div>
+    <h1 style="margin:0;font-weight:900;font-size:60px;line-height:1.08;letter-spacing:0.045em;color:#ffffff;text-transform:uppercase">Laudo Técnico<br />Pericial</h1>
+    <div style="height:20px"></div>
+    <div style="width:44px;height:3px;background:#BE7C4D"></div>
+    <div style="height:20px"></div>
+    <p style="margin:0;font-weight:300;font-size:27px;letter-spacing:0.03em;color:#ffffff">Edifício Jardins da Cidade</p>
+    <p style="margin:6px 0 0;font-weight:300;font-size:13px;letter-spacing:0.02em;color:#aeb7cf">R. Gentios, 273 — Coração de Jesus, Belo Horizonte/MG, 30380-490</p>
+
+    <div style="height:26px"></div>
+
+    <sc-if value="{{isNavy}}" hint-placeholder-val="{{true}}">
+      <div style="position:relative;width:100%;height:272px">
+        <x-import component-from-global-scope="image-slot" from="../../assets/js/image-slot.js" id="capa-foto" placeholder="Foto de capa do imóvel" shape="rect" radius="0" fit="cover" style="position:absolute;left:10px;top:10px;width:646px;height:252px" hint-size="646px,252px"></x-import>
+        <div style="position:absolute;left:0;top:0;width:16px;height:16px;border-left:2px solid rgba(255,255,255,0.45);border-top:2px solid rgba(255,255,255,0.45);pointer-events:none"></div>
+        <div style="position:absolute;right:0;top:0;width:16px;height:16px;border-right:2px solid rgba(255,255,255,0.45);border-top:2px solid rgba(255,255,255,0.45);pointer-events:none"></div>
+        <div style="position:absolute;left:0;bottom:0;width:16px;height:16px;border-left:2px solid rgba(255,255,255,0.45);border-bottom:2px solid rgba(255,255,255,0.45);pointer-events:none"></div>
+        <div style="position:absolute;right:0;bottom:0;width:16px;height:16px;border-right:2px solid rgba(255,255,255,0.45);border-bottom:2px solid rgba(255,255,255,0.45);pointer-events:none"></div>
+      </div>
+    </sc-if>
+
+    <div style="flex:1"></div>
+
+    <div style="display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:24px">
+      <div>
+        <div style="font-size:9px;font-weight:400;letter-spacing:0.22em;text-transform:uppercase;color:#7684af">Solicitante</div>
+        <div style="margin-top:6px;font-weight:400;font-size:13.5px;line-height:1.45;color:#ffffff">Condomínio do Edifício Jardins da Cidade</div>
+      </div>
+      <div>
+        <div style="font-size:9px;font-weight:400;letter-spacing:0.22em;text-transform:uppercase;color:#7684af">Data de emissão</div>
+        <div style="margin-top:6px;font-weight:400;font-size:13.5px;line-height:1.45;color:#ffffff">Julho de 2026</div>
+      </div>
+      <div>
+        <div style="font-size:9px;font-weight:400;letter-spacing:0.22em;text-transform:uppercase;color:#7684af">Responsável técnica</div>
+        <div style="margin-top:6px;font-weight:400;font-size:13.5px;line-height:1.45;color:#ffffff">Eng.ª Civil Paula Pacheco</div>
+      </div>
+    </div>
+
+    <div style="height:22px"></div>
+    <div style="height:1px;background:rgba(255,255,255,0.18)"></div>
+    <div style="height:16px"></div>
+
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:0.06em;color:#aeb7cf">CREA/MG 173.201 · IBAPE/MG 1221 · pericias@pachecoeng.com.br</div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:0.06em;color:#aeb7cf">Atendimento em todo o Brasil</div>
+    </div>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:794,&quot;height&quot;:1123},&quot;fundo&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;azul-marinho&quot;,&quot;foto-com-overlay&quot;],&quot;default&quot;:&quot;azul-marinho&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Capa&quot;}}">
+class Component extends DCLogic {
+  renderVals() {
+    const fundo = this.props.fundo ?? 'azul-marinho';
+    const isFoto = fundo === 'foto-com-overlay';
+    return { isFoto: isFoto, isNavy: !isFoto };
+  }
+}
+
+</script>
+</body>
+</html>

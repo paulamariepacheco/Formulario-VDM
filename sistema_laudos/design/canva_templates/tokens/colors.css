@@ -1,0 +1,144 @@
+/* ============================================================
+   COLOR — Paula Pacheco Engenharia e Perícias
+   The palette maps to materials of engineering:
+     chumbo  = ferragens (rebar / metalwork)   -> ink, near-black
+     azul    = vidraças (glazing / glass)       -> navy, the brand accent
+     cinza   = concreto (concrete)              -> mid gray, body & structure
+     branco  = projetos & laudos (reports)      -> paper, the ground
+   ============================================================ */
+
+:root {
+  /* ---- Brand primaries (verbatim from the brand guide) ---- */
+  --pp-chumbo: #292929;   /* rebar / ink            R41  G41  B41  */
+  --pp-azul:   #171f3d;   /* glass / brand accent   R23  G31  B61  */
+  --pp-cinza:  #5e6161;   /* concrete / structure   R94  G97  B97  */
+  --pp-branco: #ffffff;   /* reports / paper                        */
+
+  /* ---- Navy (glass) scale — derived from --pp-azul ---- */
+  --navy-900: #0d1226;
+  --navy-800: #12193a;
+  --navy-700: #171f3d;   /* = brand azul */
+  --navy-600: #212c54;
+  --navy-500: #2f3d6f;
+  --navy-400: #47578f;
+  --navy-300: #7684af;
+  --navy-200: #aeb7cf;
+  --navy-100: #dde1ec;
+  --navy-50:  #f0f2f7;
+
+  /* ---- Concrete (neutral) scale — cool grays ---- */
+  --concrete-950: #191b1b;
+  --concrete-900: #242727;
+  --concrete-800: #333636;
+  --concrete-700: #45494a;
+  --concrete-600: #5e6161;   /* = brand cinza */
+  --concrete-500: #767a7a;
+  --concrete-400: #969a9a;
+  --concrete-300: #b9bcbc;
+  --concrete-200: #d6d8d8;
+  --concrete-150: #e4e5e5;
+  --concrete-100: #eef0ef;
+  --concrete-50:  #f7f8f8;
+
+  /* ---- Ink (chumbo) scale — warm-neutral near-blacks ---- */
+  --ink-900: #1c1c1c;
+  --ink-800: #292929;    /* = brand chumbo */
+  --ink-700: #3a3a3a;
+
+  /* ---- Laudo accent palette (complementar ao azul-marinho, matiz ≈227°) ---- */
+  --pp-terracota: #BE7C4D;   /* complementar direta (≈47°) — tempero: nº de página, ícones de seção, filete sob títulos */
+  --terracota-600: #a5683f;
+  --terracota-100: #f2e4d8;
+  --terracota-50:  #f9f1ea;
+  --pp-petroleo:  #4A7A8C;   /* análoga clara — apoio: fundos leves, tags, divisores, watermarks */
+  --petroleo-600: #3d6675;
+  --petroleo-100: #dde9ed;
+  --petroleo-50:  #eef4f6;
+
+  /* ---- Grau de Risco (laudos — só em tabelas e classificações, nunca decorativo) ---- */
+  --gr-1: #4C8C4A;   /* baixo  / GR1 */
+  --gr-2: #D9A441;   /* médio  / GR2 */
+  --gr-3: #B23A32;   /* alto   / GR3 */
+  --gr-1-surface: #e9f2e9;
+  --gr-2-surface: #f9f0dd;
+  --gr-3-surface: #f5e5e3;
+
+  /* ---- Proposta comercial (verde-petróleo + dourado + creme) ----
+     Identidade da proposta comercial: rompe com o azul-marinho.
+     Fundos escuros em verde-petróleo, destaque em dourado envelhecido,
+     páginas de leitura em creme com texto verde-escuro/grafite. */
+  --pp-verde:   #0B2224;   /* fundo principal escuro (petróleo) */
+  --pp-dourado: #C9A76D;   /* destaque: títulos, filetes, numeração */
+  --pp-creme:   #F4F0E6;   /* texto sobre escuro / fundo das páginas claras */
+  --verde-950: #071819;
+  --verde-900: #0B2224;    /* = pp-verde */
+  --verde-800: #123234;
+  --verde-700: #1B4245;
+  --verde-ink: #12292B;    /* texto forte sobre creme */
+  --dourado-300: #DCC49A;
+  --dourado-500: #C9A76D;  /* = pp-dourado */
+  --dourado-600: #B08F55;
+  --dourado-700: #9A7B45;  /* dourado legível sobre creme */
+  --dourado-line:  rgba(201, 167, 109, 0.45);  /* filetes / divisores */
+  --dourado-faint: rgba(201, 167, 109, 0.22);  /* hairlines discretas */
+  --creme-200: #F1EBDD;
+  --creme-300: #E7DFCC;
+  --creme-muted: rgba(244, 240, 230, 0.62);    /* texto secundário sobre verde */
+  --grafite-proposta: #3A3A34;                 /* corpo de texto sobre creme */
+
+  /* ---- Semantic status (measured, muted — engineering register) ---- */
+  --signal-ok:    #3f6b52;   /* approved / conforme */
+  --signal-warn:  #9a7433;   /* attention / ressalva */
+  --signal-alert: #8f3b34;   /* critical / anomalia */
+  --signal-ok-surface:    #eaf1ec;
+  --signal-warn-surface:  #f5efe1;
+  --signal-alert-surface: #f5e9e7;
+
+  /* ============================================================
+     SEMANTIC ALIASES — reference these in components
+     ============================================================ */
+
+  /* Text */
+  --text-strong:   var(--pp-chumbo);     /* headings, primary ink */
+  --text-body:     var(--concrete-700);  /* running copy */
+  --text-muted:    var(--concrete-500);  /* captions, meta */
+  --text-faint:    var(--concrete-400);  /* disabled, placeholder */
+  --text-on-dark:  var(--pp-branco);
+  --text-on-dark-muted: var(--concrete-300);
+  --text-brand:    var(--pp-azul);
+  --text-link:     var(--navy-600);
+
+  /* Surfaces */
+  --surface-page:   var(--pp-branco);
+  --surface-raised: var(--pp-branco);
+  --surface-sunken: var(--concrete-50);
+  --surface-muted:  var(--concrete-100);
+  --surface-inset:  var(--concrete-150);
+  --surface-brand:  var(--pp-azul);
+  --surface-ink:    var(--pp-chumbo);
+  --surface-dark:   var(--navy-900);
+
+  /* Borders / lines — the drafting register */
+  --line-hairline: var(--concrete-200);   /* dimension lines, dividers */
+  --line-soft:     var(--concrete-150);
+  --line-strong:   var(--concrete-400);
+  --line-ink:      var(--pp-chumbo);
+  --line-brand:    var(--pp-azul);
+  --line-on-dark:  rgba(255, 255, 255, 0.18);
+
+  /* Interactive (navy accent) */
+  --action:            var(--pp-azul);
+  --action-hover:      var(--navy-600);
+  --action-active:     var(--navy-800);
+  --action-contrast:   var(--pp-branco);
+  --focus-ring:        var(--navy-400);
+
+  /* Selection */
+  --selection-bg: var(--navy-100);
+  --selection-fg: var(--pp-azul);
+}
+
+::selection {
+  background: var(--selection-bg);
+  color: var(--selection-fg);
+}

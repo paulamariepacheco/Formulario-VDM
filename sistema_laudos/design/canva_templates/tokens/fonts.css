@@ -1,0 +1,73 @@
+/* Visia Pro — the Paula Pacheco brand typeface.
+   Fine strokes for precision; large body for solidity. */
+
+@font-face {
+  font-family: "Visia Pro";
+  src: url("../assets/fonts/VisiaPro-ExtraLight.otf") format("opentype");
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Visia Pro";
+  src: url("../assets/fonts/VisiaPro-Light.otf") format("opentype");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Visia Pro";
+  src: url("../assets/fonts/VisiaPro-Regular.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Visia Pro";
+  src: url("../assets/fonts/VisiaPro-Italic.otf") format("opentype");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Visia Pro";
+  src: url("../assets/fonts/VisiaPro-SemiBold.otf") format("opentype");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Visia Pro";
+  src: url("../assets/fonts/VisiaPro-SemiBoldItalic.otf") format("opentype");
+  font-weight: 600;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Visia Pro";
+  src: url("../assets/fonts/VisiaPro-Bold.otf") format("opentype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Visia Pro";
+  src: url("../assets/fonts/VisiaPro-ExtraBold.otf") format("opentype");
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Visia Pro";
+  src: url("../assets/fonts/VisiaPro-Heavy.otf") format("opentype");
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Visia Pro";
+  src: url("../assets/fonts/VisiaPro-HeavyItalic.otf") format("opentype");
+  font-weight: 900;
+  font-style: italic;
+  font-display: swap;
+}
