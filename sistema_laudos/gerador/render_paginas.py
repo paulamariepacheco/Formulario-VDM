@@ -145,10 +145,16 @@ def _extrair_xdc(texto: str) -> str:
     return corpo
 
 
-def _resolver_variantes(corpo: str, escolhida: str) -> str:
-    """Mantém só o bloco <!-- dc:variante:X -->…<!-- /dc:variante:X --> ativo."""
+def _resolver_variantes(corpo: str, ativas: str | set[str]) -> str:
+    """Mantém só os blocos <!-- dc:variante:X -->…<!-- /dc:variante:X --> ativos.
+
+    `ativas` aceita um nome único ou um conjunto — um template pode combinar
+    dimensões independentes (ex.: fundo da capa × moldura de foto).
+    """
+    if isinstance(ativas, str):
+        ativas = {ativas}
     def _sub(m: re.Match) -> str:
-        return m.group(2) if m.group(1) == escolhida else ""
+        return m.group(2) if m.group(1) in ativas else ""
     return re.sub(
         r"<!--\s*dc:variante:([\w-]+)\s*-->(.*?)<!--\s*/dc:variante:\1\s*-->",
         _sub, corpo, flags=re.S)
@@ -179,16 +185,39 @@ def _css_tokens(tokens: dict) -> str:
     return ":root{" + "".join(linhas) + "}"
 
 
-# Fontes espelhadas em design/canva_templates/assets/fonts/. Montserrat é a
-# variável oficial (google/fonts, OFL). "Visia Pro" é comercial: os arquivos
-# devem vir dos assets do projeto Claude Design (drop-in nos caminhos abaixo);
-# na ausência deles o Chromium cai no fallback declarado em tokens.json.
-_CSS_FONTES = """
-@font-face{font-family:"Montserrat";src:url("assets/fonts/Montserrat-wght.ttf") format("truetype");font-weight:100 900;font-style:normal;}
-@font-face{font-family:"Montserrat";src:url("assets/fonts/Montserrat-Italic-wght.ttf") format("truetype");font-weight:100 900;font-style:italic;}
-@font-face{font-family:"Visia Pro";src:url("assets/fonts/VisiaPro-Regular.woff2") format("woff2"),url("assets/fonts/VisiaPro-Regular.otf") format("opentype");font-weight:400;font-style:normal;}
-@font-face{font-family:"Visia Pro";src:url("assets/fonts/VisiaPro-Bold.woff2") format("woff2"),url("assets/fonts/VisiaPro-Bold.otf") format("opentype");font-weight:700;font-style:normal;}
-"""
+# Fontes espelhadas em design/canva_templates/assets/fonts/ (sincronizadas do
+# projeto Claude Design). Visia Pro: os 5 pesos que os templates de laudo usam
+# (200/300/400/600/900). IBM Plex Mono (códigos/cotas — o styles.css do design
+# a importa do Google Fonts, inviável offline): servida local (google/fonts,
+# OFL). Montserrat variável: fallback de corpo. URLs absolutas file:// para
+# não depender do <base href> do documento.
+_FONTES_VISIA = [(200, "ExtraLight"), (300, "Light"), (400, "Regular"),
+                 (600, "SemiBold"), (900, "Heavy")]
+_FONTES_MONO = [(400, "Regular"), (500, "Medium"), (600, "SemiBold")]
+
+
+def _css_fontes(assets_dir: Path | None = None) -> str:
+    fontes = (assets_dir or TEMPLATES_DIR / "assets" / "fonts").resolve()
+    if not fontes.is_dir():  # espelho ausente: fallback declarado em tokens.json
+        return ""
+    uri = lambda nome: (fontes / nome).as_uri()
+    css = [
+        f'@font-face{{font-family:"Montserrat";src:url("{uri("Montserrat-wght.ttf")}") '
+        'format("truetype");font-weight:100 900;font-style:normal;}',
+    ]
+    for peso, nome in _FONTES_VISIA:
+        arq = fontes / f"VisiaPro-{nome}.otf"
+        if arq.exists():
+            css.append(
+                f'@font-face{{font-family:"Visia Pro";src:url("{uri(arq.name)}") '
+                f'format("opentype");font-weight:{peso};font-style:normal;}}')
+    for peso, nome in _FONTES_MONO:
+        arq = fontes / f"IBMPlexMono-{nome}.ttf"
+        if arq.exists():
+            css.append(
+                f'@font-face{{font-family:"IBM Plex Mono";src:url("{uri(arq.name)}") '
+                f'format("truetype");font-weight:{peso};font-style:normal;}}')
+    return "".join(css)
 
 _CSS_PAGINA = (
     "*{margin:0;padding:0;box-sizing:border-box}"
@@ -200,12 +229,17 @@ _CSS_PAGINA = (
 
 def montar_pagina_html(fragmento: str, tokens: dict,
                        base_dir: Path = TEMPLATES_DIR) -> str:
-    """Envelopa um fragmento de template resolvido num documento HTML A4."""
+    """Envelopa um fragmento de template resolvido num documento HTML A4.
+
+    `base_dir` deve ser o diretório do PRÓPRIO template (ex.:
+    templates/laudo-capa/) para os caminhos relativos do markup original
+    (`../../assets/...`) resolverem como no projeto Claude Design.
+    """
     base = base_dir.resolve().as_uri() + "/"
     return (
         "<!doctype html><html><head><meta charset=\"utf-8\">"
         f"<base href=\"{base}\">"
-        f"<style>{_CSS_PAGINA}{_CSS_FONTES}{_css_tokens(tokens)}</style>"
+        f"<style>{_CSS_PAGINA}{_css_fontes()}{_css_tokens(tokens)}</style>"
         f"</head><body>{fragmento}</body></html>"
     )
 
@@ -218,6 +252,15 @@ def _data_extenso(iso: str) -> str:
     try:
         d = date.fromisoformat(iso)
         return f"{d.day} de {_MESES_PT[d.month - 1]} de {d.year}"
+    except (ValueError, TypeError):
+        return iso or ""
+
+
+def _mes_ano(iso: str) -> str:
+    """'2026-07-09' -> 'Julho de 2026' (formato da capa no design original)."""
+    try:
+        d = date.fromisoformat(iso)
+        return f"{_MESES_PT[d.month - 1].capitalize()} de {d.year}"
     except (ValueError, TypeError):
         return iso or ""
 
@@ -242,7 +285,12 @@ def montar_html_capa(laudo, tokens: dict) -> str:
         "foto-com-overlay" if tem_foto else "azul-marinho")
     if fundo == "foto-com-overlay" and not tem_foto:
         fundo = "azul-marinho"  # fallback obrigatório: sem foto, navy sólido
-    corpo = _resolver_variantes(corpo, fundo)
+    # fundo azul-marinho + foto disponível => foto emoldurada (cantoneiras),
+    # como no preview padrão do template original.
+    ativas = {fundo}
+    if fundo == "azul-marinho" and tem_foto:
+        ativas.add("foto-moldura")
+    corpo = _resolver_variantes(corpo, ativas)
 
     cliente_linha = laudo.cliente_nome
     if laudo.cliente_cnpj_cpf:
@@ -254,6 +302,7 @@ def montar_html_capa(laudo, tokens: dict) -> str:
         "endereco": laudo.endereco,
         "tipo_rotulo": textos.TIPO_ROTULO.get(laudo.tipo, laudo.tipo),
         "cliente_linha": cliente_linha,
+        "emissao": _mes_ano(laudo.data_emissao),
         "emissao_linha": (f"Emitido em {_data_extenso(laudo.data_emissao)}"
                           if laudo.data_emissao else ""),
         "diligencias_linha": (
@@ -261,11 +310,12 @@ def montar_html_capa(laudo, tokens: dict) -> str:
             if laudo.datas_diligencia else ""),
         "foto_capa": foto.resolve().as_uri() if tem_foto else "",
         "perita": textos.PERITA,
+        "perita_capa": textos.PERITA_CAPA,
         "perita_titulo": textos.PERITA_TITULO,
         "credenciais_linha": f"{textos.CREA} · {textos.IBAPE}",
     }
     corpo = _substituir_campos(corpo, campos)
-    return montar_pagina_html(corpo, tokens)
+    return montar_pagina_html(corpo, tokens, base_dir=caminho.parent)
 
 
 def renderizar_capa(laudo, tokens: dict, destino: str | Path) -> Path:

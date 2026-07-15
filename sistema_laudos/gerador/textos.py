@@ -16,6 +16,8 @@ CREA = "CREA/MG 173201"
 IBAPE = "IBAPE/MG 1221"
 PERITA = "Paula Marie Siqueira Pacheco"
 PERITA_TITULO = "Engenheira Civil · Perita em Engenharia Diagnóstica"
+# Forma curta usada na grade "Responsável técnica" da capa (template original).
+PERITA_CAPA = "Eng.ª Civil Paula Pacheco"
 
 # Rótulos de exibição do tipo de laudo (usados na capa e no corpo).
 TIPO_ROTULO = {
