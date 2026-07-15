@@ -36,6 +36,10 @@ def carregar_de_json(caminho: str | Path) -> Laudo:
         acompanhamento=dados.get("acompanhamento", ""),
         nome_imovel=dados.get("nome_imovel", ""),
         capa_fundo=dados.get("capa_fundo", ""),
+        legenda_mapa=dados.get("legenda_mapa", ""),
+        legenda_fachada=dados.get("legenda_fachada", ""),
+        caracteristicas=dados.get("caracteristicas", []),
+        cidade_emissao=dados.get("cidade_emissao", ""),
     )
 
     laudo.ambientes = [
@@ -69,6 +73,9 @@ def carregar_de_json(caminho: str | Path) -> Laudo:
         return str(p if p.is_absolute() else (base / p))
 
     laudo.foto_capa = resolver(dados.get("foto_capa", ""))
+    laudo.mapa_localizacao = resolver(dados.get("mapa_localizacao", ""))
+    laudo.foto_fachada = resolver(dados.get("foto_fachada", ""))
+    laudo.assinatura = resolver(dados.get("assinatura", ""))
 
     laudo.fotos = [
         Foto(id=f["id"], arquivo=resolver(f.get("arquivo", "")),
@@ -104,6 +111,13 @@ def carregar_do_supabase(numero: str, client=None) -> Laudo:
         nome_imovel=lr.get("nome_imovel", "") or "",
         foto_capa=lr.get("foto_capa_url", "") or "",
         capa_fundo=lr.get("capa_fundo", "") or "",
+        mapa_localizacao=lr.get("mapa_localizacao_url", "") or "",
+        legenda_mapa=lr.get("legenda_mapa", "") or "",
+        foto_fachada=lr.get("foto_fachada_url", "") or "",
+        legenda_fachada=lr.get("legenda_fachada", "") or "",
+        caracteristicas=lr.get("caracteristicas", []) or [],
+        cidade_emissao=lr.get("cidade_emissao", "") or "",
+        assinatura=lr.get("assinatura_url", "") or "",
     )
     laudo.ambientes = [Ambiente(**{k: a[k] for k in ("id", "nome", "pavimento", "ordem")})
                        for a in db.table("ambientes").select("*").eq("laudo_id", lr["id"]).execute().data]

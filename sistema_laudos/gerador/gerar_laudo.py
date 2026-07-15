@@ -22,6 +22,8 @@ from docx.shared import Cm, Pt, RGBColor
 
 from . import render_paginas, risco, textos
 from .docx_util import (
+    PX_PARA_EMU,
+    aplicar_cabecalho_rodape,
     atualizar_campos_ao_abrir,
     carregar_tokens,
     comprimir_imagem,
@@ -29,7 +31,9 @@ from .docx_util import (
     gerar_placeholder,
     hexnum,
     inserir_imagem_pagina_inteira,
+    inserir_numero_pagina_flutuante,
     inserir_sumario,
+    secao_sem_cabecalho,
     sombrear_celula,
 )
 from .fonte_dados import carregar_de_json
@@ -46,6 +50,8 @@ class GeradorLaudo:
         self.doc = Document()
         self.dir_img = self.saida.parent / "img"
         self._fig_seq = 0
+        # páginas-imagem pré-renderizadas: chave -> (png, rects medidos)
+        self._paginas: dict[str, tuple[Path, dict]] = {}
 
     @staticmethod
     def _sentenca(texto: str) -> str:
@@ -117,6 +123,126 @@ class GeradorLaudo:
     def _quebra_pagina(self):
         self.doc.add_paragraph().add_run().add_break(WD_BREAK.PAGE)
 
+    # ------------------------------------------- páginas-imagem (templates)
+    def _preparar_paginas(self):
+        """Renderiza TODAS as páginas-template do laudo numa única sessão de
+        Chromium (capa + capítulos 2, 3, 4, 7, 9, 10) antes da montagem.
+
+        A numeração de figuras é determinística e calculada aqui: mapa (01) e
+        fachada (02) na página de Vistoria, fotos avulsas e de anomalias na
+        sequência, e as três figuras do Referencial por último. Se Playwright/
+        Chromium não estiverem disponíveis, `self._paginas` fica vazio e a
+        montagem degrada para os capítulos nativos (texto Word), com aviso.
+        """
+        lau = self.laudo
+        rp = render_paginas
+        try:
+            with rp.SessaoRender() as sr:
+                self.dir_img.mkdir(parents=True, exist_ok=True)
+                png, _ = sr.render(rp.montar_html_capa(lau, self.tokens),
+                                   self.dir_img / "capa.png")
+                self._paginas["capa"] = (png, {})
+
+                # numeração de figuras (ordem de aparição no documento)
+                ids_anom = {an.id for an in lau.anomalias}
+                n_avulsas = sum(1 for f in lau.fotos if not f.anomalia_id)
+                n_de_anom = sum(1 for f in lau.fotos
+                                if f.anomalia_id in ids_anom)
+                self._fig_seq = 2          # 01=mapa, 02=fachada; avulsas em 03+
+                base_ref = 2 + n_avulsas + n_de_anom
+
+                mapa = Path(lau.mapa_localizacao or "")
+                if not (lau.mapa_localizacao and mapa.exists()):
+                    mapa = gerar_placeholder(
+                        self.dir_img / "mapa-localizacao.jpg",
+                        "Mapa de localização — captura do Google Maps",
+                        1364, 556)
+                fachada = Path(lau.foto_fachada or "")
+                if not (lau.foto_fachada and fachada.exists()):
+                    fachada = gerar_placeholder(
+                        self.dir_img / "foto-fachada.jpg",
+                        "Foto da fachada", 900, 696)
+
+                campos_v, raw_v = rp.campos_vistoria(
+                    lau, mapa.resolve().as_uri(), fachada.resolve().as_uri(),
+                    fig_mapa=1, fig_fachada=2)
+                campos_m, raw_m = rp.campos_metodos()
+                campos_e, variantes_e = rp.campos_encerramento(lau)
+                paginas = [
+                    ("motivacao", 2, rp.campos_motivacao(lau), None, None),
+                    ("vistoria", 3, campos_v, raw_v, None),
+                    ("metodos", 4, campos_m, raw_m, None),
+                    ("especificacoes", 7, None, None, None),
+                    ("referencial", 9,
+                     rp.campos_referencial(base_ref + 1, base_ref + 2,
+                                           base_ref + 3), None, None),
+                    ("encerramento", 10, campos_e, None, variantes_e),
+                ]
+                for chave, num, campos, raw, variantes in paginas:
+                    html = rp.montar_html_capitulo(
+                        chave, lau, self.tokens, num,
+                        campos_extra=campos, raw=raw, variantes=variantes)
+                    png, rects = sr.render(
+                        html, self.dir_img / f"pag-{chave}.png",
+                        medir=["pagina"])
+                    self._paginas[chave] = (png, rects)
+        except rp.RenderIndisponivel as exc:
+            print(f"[aviso] capítulos nativos (render indisponível: {exc})")
+            self._paginas = {}
+            self._fig_seq = 0
+
+    def _secao_imagem(self):
+        """Nova seção (sempre) para UMA página-imagem: sem cabeçalho/rodapé
+        do Word (o template full-bleed traz os próprios) e garante que cada
+        página-template comece em página nova."""
+        from docx.enum.section import WD_SECTION
+        s = self.doc.add_section(WD_SECTION.NEW_PAGE)
+        secao_sem_cabecalho(s)
+        self._em_imagem = True
+        return s
+
+    def _garantir_miolo(self):
+        """Volta (se preciso) para uma seção de miolo nativo, reaplicando o
+        cabeçalho/rodapé padrão. Idempotente: em miolo, não faz nada."""
+        if not getattr(self, "_em_imagem", False):
+            return
+        from docx.enum.section import WD_SECTION
+        s = self.doc.add_section(WD_SECTION.NEW_PAGE)
+        aplicar_cabecalho_rodape(s, self.tokens, self.laudo.numero)
+        self._em_imagem = False
+        return s
+
+    def _pagina_imagem(self, chave: str, titulo_toc: str | None = None):
+        """Insere uma página-template pré-renderizada na página corrente.
+
+        `titulo_toc`: heading nível 1 invisível (1pt, branco) que ancora o
+        capítulo no Sumário e mantém a numeração — o título visível é o do
+        próprio template. O slot de nº de página medido no render recebe uma
+        caixa flutuante com o campo PAGE (numeração viva, visual do design).
+        """
+        png, rects = self._paginas[chave]
+        if titulo_toc:
+            h = self.doc.add_heading(titulo_toc, level=1)
+            for run in h.runs:
+                run.font.size = Pt(1)
+                run.font.color.rgb = RGBColor.from_string("FFFFFF")
+            pf = h.paragraph_format
+            pf.space_before = Pt(0)
+            pf.space_after = Pt(0)
+            pf.line_spacing = 1.0
+        p = self.doc.add_paragraph()
+        p.paragraph_format.space_after = Pt(0)
+        inserir_imagem_pagina_inteira(p, png)
+        if "pagina" in rects:
+            x, y, w, _alt = rects["pagina"]
+            inserir_numero_pagina_flutuante(
+                p,
+                x_emu=int((x + w) * PX_PARA_EMU),
+                y_emu=int(y * PX_PARA_EMU),
+                fonte="IBM Plex Mono",
+                tamanho_pt=8.25,   # 11 px CSS a 96 dpi
+                cor_hex=hexnum(self.tokens["marca"]["terracota"]))
+
     # ----------------------------------------------------------------- capa
     def _capa(self):
         """Capa como página-imagem renderizada do template do Claude Design.
@@ -127,14 +253,10 @@ class GeradorLaudo:
         cai na variante `azul-marinho`. Se Playwright/Chromium não estiverem
         disponíveis, degrada para a capa nativa (texto Word) com aviso.
         """
-        try:
-            self.dir_img.mkdir(parents=True, exist_ok=True)
-            png = render_paginas.renderizar_capa(
-                self.laudo, self.tokens, self.dir_img / "capa.png")
-        except render_paginas.RenderIndisponivel as exc:
-            print(f"[aviso] capa nativa (render indisponível: {exc})")
+        if "capa" not in self._paginas:
             self._capa_nativa()
             return
+        png, _ = self._paginas["capa"]
         p = self.doc.add_paragraph()
         p.paragraph_format.space_after = Pt(0)
         inserir_imagem_pagina_inteira(p, png)
@@ -216,6 +338,32 @@ class GeradorLaudo:
                     bold=True, space_after=2)
             for foto in avulsas:
                 self._figura(foto, lau.ambiente(foto.ambiente_id))
+
+    def _vistoria_complemento(self, numero: int):
+        """Continuação nativa do cap. Vistoria (após a página-template):
+        ambientes vistoriados e registro fotográfico complementar — conteúdo
+        de tamanho variável que não cabe na página fixa do design."""
+        lau = self.laudo
+        avulsas = [f for f in sorted(lau.fotos, key=lambda f: f.ordem)
+                   if not f.anomalia_id]
+        if not (lau.ambientes or avulsas):
+            return False
+        self._garantir_miolo()
+        self.doc.add_heading(
+            f"{numero}.2 — Ambientes vistoriados e registro complementar",
+            level=2)
+        if lau.ambientes:
+            self._p("Ambientes vistoriados:", bold=True, space_after=2)
+            for amb in sorted(lau.ambientes, key=lambda a: a.ordem):
+                p = self.doc.add_paragraph(style="List Bullet")
+                pav = f" — {amb.pavimento}" if amb.pavimento else ""
+                p.add_run(f"{amb.nome}{pav}")
+        if avulsas:
+            self._p("Registro fotográfico complementar (condições gerais "
+                    "observadas):", bold=True, space_after=2)
+            for foto in avulsas:
+                self._figura(foto, lau.ambiente(foto.ambiente_id))
+        return True
 
     # ---------------------------------------------- relatório / diagnóstico
     def _diagnostico(self, numero: int):
@@ -427,18 +575,63 @@ class GeradorLaudo:
     def gerar(self) -> Path:
         self._estilos()
         configurar_cabecalho_rodape(self.doc, self.tokens, self.laudo.numero)
+        self._preparar_paginas()
+        tem = self._paginas.__contains__
+
+        self._em_imagem = False
         self._capa()
         self._sumario()
         self._capitulo_fixo("pressupostos", 1)
-        self._capitulo_fixo("motivacao", 2)
-        self._vistoria(3)
-        self._capitulo_fixo("metodos", 4)
+
+        if tem("motivacao"):
+            self._secao_imagem()
+            self._pagina_imagem("motivacao", "2. Motivação")
+        else:
+            self._garantir_miolo()
+            self._capitulo_fixo("motivacao", 2)
+
+        if tem("vistoria"):
+            self._secao_imagem()
+            self._pagina_imagem("vistoria", "3. Vistoria")
+            self._vistoria_complemento(3)
+        else:
+            self._garantir_miolo()
+            self._vistoria(3)
+
+        if tem("metodos"):
+            self._secao_imagem()
+            self._pagina_imagem("metodos", "4. Métodos e Procedimentos")
+        else:
+            self._garantir_miolo()
+            self._capitulo_fixo("metodos", 4)
+
+        self._garantir_miolo()
         self._diagnostico(5)
         self._plano_intervencao(6)
-        self._capitulo_fixo("especificacoes", 7)
+
+        if tem("especificacoes"):
+            self._secao_imagem()
+            self._pagina_imagem("especificacoes",
+                                "7. Especificações e Aceite")
+        else:
+            self._capitulo_fixo("especificacoes", 7)
+
+        self._garantir_miolo()
         self._conclusoes(8)
-        self._capitulo_fixo("referencial", 9)
-        self._encerramento(10)
+
+        if tem("referencial"):
+            self._secao_imagem()
+            self._pagina_imagem("referencial", "9. Referencial Técnico")
+        else:
+            self._capitulo_fixo("referencial", 9)
+
+        if tem("encerramento"):
+            self._secao_imagem()
+            self._pagina_imagem("encerramento", "10. Encerramento")
+        else:
+            self._garantir_miolo()
+            self._encerramento(10)
+
         atualizar_campos_ao_abrir(self.doc)
         self.saida.parent.mkdir(parents=True, exist_ok=True)
         self.doc.save(str(self.saida))

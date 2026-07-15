@@ -92,7 +92,22 @@ def configurar_cabecalho_rodape(document, tokens, numero_laudo: str):
     A primeira página (capa) fica limpa via 'different first page'."""
     section = document.sections[0]
     section.different_first_page_header_footer = True
+    aplicar_cabecalho_rodape(section, tokens, numero_laudo)
 
+
+def secao_sem_cabecalho(section):
+    """Desliga cabeçalho/rodapé herdados numa seção de páginas-imagem
+    (o template full-bleed carrega o próprio cabeçalho/rodapé)."""
+    for parte in (section.header, section.footer):
+        parte.is_linked_to_previous = False
+        for p in list(parte.paragraphs):
+            p.clear()
+
+
+def aplicar_cabecalho_rodape(section, tokens, numero_laudo: str):
+    """Aplica o cabeçalho/rodapé de miolo a uma seção (desvinculada)."""
+    section.header.is_linked_to_previous = False
+    section.footer.is_linked_to_previous = False
     fonte_corpo = tokens["tipografia"]["corpo"]
     cinza = hexnum(tokens["marca"]["cinza"])
     terracota = hexnum(tokens["marca"]["terracota"])
@@ -155,6 +170,14 @@ def sombrear_celula(cell, cor_hex: str):
 # --------------------------------------------------------------------------
 # Página-imagem full-bleed (capítulos renderizados dos templates do design)
 # --------------------------------------------------------------------------
+# ids de wp:docPr precisam ser únicos no documento (vários por laudo agora:
+# capa + páginas de capítulo + caixas de nº de página). Usa o alocador do
+# próprio python-docx (part.next_id varre todos os @id do documento) — o
+# mesmo que add_picture usa para as figuras inline, então nunca colide.
+def _novo_docpr_id(paragraph) -> int:
+    return paragraph.part.next_id
+
+
 def inserir_imagem_pagina_inteira(paragraph, caminho_img: str | Path,
                                   largura=None, altura=None):
     """Insere uma imagem ancorada à PÁGINA, cobrindo-a por inteiro (full-bleed).
@@ -168,6 +191,7 @@ def inserir_imagem_pagina_inteira(paragraph, caminho_img: str | Path,
     from docx.oxml.ns import nsdecls
     from docx.shared import Cm
 
+    did = _novo_docpr_id(paragraph)
     largura = largura if largura is not None else Cm(21.0)   # A4
     altura = altura if altura is not None else Cm(29.7)
     rid, _ = paragraph.part.get_or_add_image(str(caminho_img))
@@ -183,11 +207,11 @@ def inserir_imagem_pagina_inteira(paragraph, caminho_img: str | Path,
         f'<wp:extent cx="{int(largura)}" cy="{int(altura)}"/>'
         '<wp:effectExtent l="0" t="0" r="0" b="0"/>'
         '<wp:wrapNone/>'
-        f'<wp:docPr id="1001" name="{nome}"/>'
+        f'<wp:docPr id="{did}" name="{nome}"/>'
         '<wp:cNvGraphicFramePr><a:graphicFrameLocks noChangeAspect="1"/></wp:cNvGraphicFramePr>'
         '<a:graphic><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture">'
         '<pic:pic>'
-        f'<pic:nvPicPr><pic:cNvPr id="1001" name="{nome}"/><pic:cNvPicPr/></pic:nvPicPr>'
+        f'<pic:nvPicPr><pic:cNvPr id="{did}" name="{nome}"/><pic:cNvPicPr/></pic:nvPicPr>'
         f'<pic:blipFill><a:blip r:embed="{rid}"/><a:stretch><a:fillRect/></a:stretch></pic:blipFill>'
         '<pic:spPr><a:xfrm><a:off x="0" y="0"/>'
         f'<a:ext cx="{int(largura)}" cy="{int(altura)}"/></a:xfrm>'
@@ -198,6 +222,75 @@ def inserir_imagem_pagina_inteira(paragraph, caminho_img: str | Path,
         '</w:drawing>'
     )
     paragraph.add_run()._r.append(parse_xml(xml))
+
+
+def inserir_numero_pagina_flutuante(paragraph, x_emu: int, y_emu: int,
+                                    fonte: str, tamanho_pt: float,
+                                    cor_hex: str, sufixo: str = " | Pág.",
+                                    largura_emu: int = 1080000,
+                                    altura_emu: int = 240000):
+    """Nº de página VIVO sobre uma página-imagem, no visual do design.
+
+    Caixa de texto flutuante ancorada à página, alinhada à direita, cujo
+    conteúdo é o campo PAGE + sufixo. (x_emu, y_emu) é o canto superior
+    DIREITO do slot medido no render do template (data-dc-medir="pagina");
+    a caixa se estende `largura_emu` para a esquerda.
+    """
+    from docx.oxml import parse_xml
+    from docx.oxml.ns import nsdecls
+
+    did = _novo_docpr_id(paragraph)
+    # python-docx não registra o prefixo wps (wordprocessingShape): declarar à mão
+    ns_wps = ('xmlns:wps='
+              '"http://schemas.microsoft.com/office/word/2010/wordprocessingShape"')
+    xml = (
+        f'<w:drawing {nsdecls("w", "wp", "a", "r")} {ns_wps}>'
+        '<wp:anchor distT="0" distB="0" distL="0" distR="0" simplePos="0"'
+        ' relativeHeight="10" behindDoc="0" locked="0" layoutInCell="1"'
+        ' allowOverlap="1">'
+        '<wp:simplePos x="0" y="0"/>'
+        f'<wp:positionH relativeFrom="page"><wp:posOffset>{x_emu - largura_emu}'
+        '</wp:posOffset></wp:positionH>'
+        f'<wp:positionV relativeFrom="page"><wp:posOffset>{y_emu}'
+        '</wp:posOffset></wp:positionV>'
+        f'<wp:extent cx="{largura_emu}" cy="{altura_emu}"/>'
+        '<wp:effectExtent l="0" t="0" r="0" b="0"/>'
+        '<wp:wrapNone/>'
+        f'<wp:docPr id="{did}" name="pagina{did}"/>'
+        '<a:graphic><a:graphicData'
+        ' uri="http://schemas.microsoft.com/office/word/2010/wordprocessingShape">'
+        '<wps:wsp>'
+        f'<wps:cNvPr id="{did}" name="pagina{did}"/><wps:cNvSpPr txBox="1"/>'
+        '<wps:spPr><a:xfrm><a:off x="0" y="0"/>'
+        f'<a:ext cx="{largura_emu}" cy="{altura_emu}"/></a:xfrm>'
+        '<a:prstGeom prst="rect"><a:avLst/></a:prstGeom>'
+        '<a:noFill/><a:ln><a:noFill/></a:ln></wps:spPr>'
+        '<wps:txbx><w:txbxContent>'
+        '<w:p><w:pPr><w:jc w:val="right"/><w:spacing w:after="0"/><w:rPr>'
+        f'<w:rFonts w:ascii="{fonte}" w:hAnsi="{fonte}"/><w:b/>'
+        f'<w:color w:val="{cor_hex}"/><w:sz w:val="{int(tamanho_pt * 2)}"/>'
+        '</w:rPr></w:pPr>'
+        f'<w:fldSimple w:instr=" PAGE "><w:r><w:rPr>'
+        f'<w:rFonts w:ascii="{fonte}" w:hAnsi="{fonte}"/><w:b/>'
+        f'<w:color w:val="{cor_hex}"/><w:sz w:val="{int(tamanho_pt * 2)}"/>'
+        '</w:rPr><w:t>0</w:t></w:r></w:fldSimple>'
+        '<w:r><w:rPr>'
+        f'<w:rFonts w:ascii="{fonte}" w:hAnsi="{fonte}"/><w:b/>'
+        f'<w:color w:val="{cor_hex}"/><w:sz w:val="{int(tamanho_pt * 2)}"/>'
+        f'</w:rPr><w:t xml:space="preserve">{sufixo}</w:t></w:r>'
+        '</w:p>'
+        '</w:txbxContent></wps:txbx>'
+        '<wps:bodyPr rot="0" wrap="none" lIns="0" tIns="0" rIns="0" bIns="0"'
+        ' anchor="t"><a:noAutofit/></wps:bodyPr>'
+        '</wps:wsp>'
+        '</a:graphicData></a:graphic>'
+        '</wp:anchor>'
+        '</w:drawing>'
+    )
+    paragraph.add_run()._r.append(parse_xml(xml))
+
+
+PX_PARA_EMU = 360000 * 21.0 / 794  # px CSS (página 794 px = 21 cm) -> EMU
 
 
 # --------------------------------------------------------------------------

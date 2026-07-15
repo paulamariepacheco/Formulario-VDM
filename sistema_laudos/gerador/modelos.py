@@ -82,6 +82,19 @@ class Laudo:
     # Força a variante de fundo do template: "" (automático pela foto),
     # "azul-marinho" ou "foto-com-overlay" (prop `fundo` do LaudoCapa).
     capa_fundo: str = ""
+    # ---- página de Vistoria renderizada (template LaudoVistoria) ----
+    # Mapa de localização (captura) e foto da fachada — caminhos locais;
+    # ausentes => placeholder gerado no pipeline.
+    mapa_localizacao: str = ""
+    legenda_mapa: str = ""
+    foto_fachada: str = ""
+    legenda_fachada: str = ""
+    # Características gerais do imóvel: [{"rotulo": ..., "valor": ...}, ...]
+    # (a linha "Endereço" é acrescentada automaticamente de `endereco`).
+    caracteristicas: list[dict] = field(default_factory=list)
+    # ---- página de Encerramento renderizada (template LaudoEncerramento) --
+    cidade_emissao: str = ""      # vazio => "Belo Horizonte"
+    assinatura: str = ""          # assinatura digitalizada (opcional)
     ambientes: list[Ambiente] = field(default_factory=list)
     anomalias: list[Anomalia] = field(default_factory=list)
     fotos: list[Foto] = field(default_factory=list)

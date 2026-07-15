@@ -1,0 +1,143 @@
+<!--
+  Template REAL do Claude Design ("Paula Pacheco Design System"), anotado com
+  o contrato de dados de gerador/render_paginas.py. Gerado por
+  anotar_templates.py a partir do .original.dc.html ao lado (intocado) —
+  apos re-sync do design, rode o script de novo em vez de editar a mao.
+  Ver design/canva_templates/README.md para o contrato.
+-->
+<x-dc>
+<!-- @template name="Laudo — 2. Motivação" description="Objetivos, infográfico de tipos de anomalias (7 categorias) e escala de níveis de inspeção" -->
+<helmet>
+<script src="./ds-base.js"></script>
+<script src="https://unpkg.com/lucide@0.544.0/dist/umd/lucide.min.js"></script>
+</helmet>
+<div data-screen-label="Motivação" style="width:794px;height:1123px;position:relative;overflow:hidden;background:#ffffff;font-family:'Visia Pro',Montserrat,'Helvetica Neue',Arial,sans-serif;color:#292929;box-sizing:border-box;display:flex;flex-direction:column;padding:44px 56px 36px">
+
+  <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:12px;border-bottom:1px solid #d6d8d8">
+    <div style="display:flex;align-items:center;gap:10px">
+      <img src="../../assets/logos/icone-principal.png" alt="" style="height:20px;display:block" />
+      <span style="font-size:9.5px;letter-spacing:0.22em;text-transform:uppercase;color:#5e6161">Paula Pacheco · Engenharia e Perícias</span>
+    </div>
+    <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.08em;color:#5e6161">LAUDO Nº {{numero}}</span>
+  </div>
+
+  <div style="height:30px"></div>
+
+  <div style="display:flex;align-items:baseline;gap:16px">
+    <span style="font-weight:200;font-size:52px;line-height:1;color:#BE7C4D">{{cap_numero}}</span>
+    <div>
+      <h2 style="margin:0;font-weight:600;font-size:23px;letter-spacing:0.12em;text-transform:uppercase;color:#171f3d">Motivação</h2>
+      <div style="margin-top:8px;width:44px;height:3px;background:#BE7C4D"></div>
+    </div>
+  </div>
+
+  <div style="height:26px"></div>
+
+  <div style="display:flex;align-items:center;gap:10px">
+    <div style="width:28px;height:28px;background:#eef4f6;display:flex;align-items:center;justify-content:center"><i data-lucide="target" style="width:15px;height:15px;color:#4A7A8C"></i></div>
+    <h3 style="margin:0;font-weight:600;font-size:12.5px;letter-spacing:0.14em;text-transform:uppercase;color:#171f3d">{{cap_numero}}.1 — Objetivos</h3>
+  </div>
+  <div style="height:12px"></div>
+  <p style="margin:0;font-weight:300;font-size:12.5px;line-height:1.75;color:#45494a;text-wrap:pretty">{{objetivos_p1}}</p>
+  <p style="margin:8px 0 0;font-weight:300;font-size:12.5px;line-height:1.75;color:#45494a;text-wrap:pretty">{{objetivos_p2}}</p>
+
+  <div style="height:30px"></div>
+
+  <div style="display:flex;align-items:center;gap:10px">
+    <div style="width:28px;height:28px;background:#eef4f6;display:flex;align-items:center;justify-content:center"><i data-lucide="shapes" style="width:15px;height:15px;color:#4A7A8C"></i></div>
+    <h3 style="margin:0;font-weight:600;font-size:12.5px;letter-spacing:0.14em;text-transform:uppercase;color:#171f3d">{{cap_numero}}.2 — Tipos de anomalias</h3>
+  </div>
+  <div style="height:20px"></div>
+
+  <div style="position:relative">
+    <div style="position:absolute;left:44px;right:44px;top:26px;border-top:1px dashed #d6d8d8"></div>
+    <div style="position:relative;display:grid;grid-template-columns:repeat(7,1fr);gap:8px">
+      <div style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px">
+        <div style="width:52px;height:52px;border:1.5px solid #171f3d;border-radius:50%;background:#ffffff;display:flex;align-items:center;justify-content:center"><i data-lucide="external-link" style="width:19px;height:19px;color:#171f3d"></i></div>
+        <div style="font-weight:600;font-size:10.5px;letter-spacing:0.04em;color:#171f3d">Exógenas</div>
+        <div style="font-weight:300;font-size:8.5px;line-height:1.45;color:#767a7a">Fatores externos ao imóvel</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px">
+        <div style="width:52px;height:52px;border:1.5px solid #BE7C4D;border-radius:50%;background:#ffffff;display:flex;align-items:center;justify-content:center"><i data-lucide="history" style="width:19px;height:19px;color:#BE7C4D"></i></div>
+        <div style="font-weight:600;font-size:10.5px;letter-spacing:0.04em;color:#171f3d">Adquiridas</div>
+        <div style="font-weight:300;font-size:8.5px;line-height:1.45;color:#767a7a">Surgem ao longo do uso</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px">
+        <div style="width:52px;height:52px;border:1.5px solid #4A7A8C;border-radius:50%;background:#ffffff;display:flex;align-items:center;justify-content:center"><i data-lucide="pencil-ruler" style="width:19px;height:19px;color:#4A7A8C"></i></div>
+        <div style="font-weight:600;font-size:10.5px;letter-spacing:0.04em;color:#171f3d">Congênitas</div>
+        <div style="font-weight:300;font-size:8.5px;line-height:1.45;color:#767a7a">Origem no projeto</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px">
+        <div style="width:52px;height:52px;border:1.5px solid #292929;border-radius:50%;background:#ffffff;display:flex;align-items:center;justify-content:center"><i data-lucide="hard-hat" style="width:19px;height:19px;color:#292929"></i></div>
+        <div style="font-weight:600;font-size:10.5px;letter-spacing:0.04em;color:#171f3d">Construtivas</div>
+        <div style="font-weight:300;font-size:8.5px;line-height:1.45;color:#767a7a">Falhas de execução da obra</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px">
+        <div style="width:52px;height:52px;border:1.5px solid #a5683f;border-radius:50%;background:#ffffff;display:flex;align-items:center;justify-content:center"><i data-lucide="wrench" style="width:19px;height:19px;color:#a5683f"></i></div>
+        <div style="font-weight:600;font-size:10.5px;letter-spacing:0.04em;color:#171f3d">Funcionais</div>
+        <div style="font-weight:300;font-size:8.5px;line-height:1.45;color:#767a7a">Perda de desempenho no uso</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px">
+        <div style="width:52px;height:52px;border:1.5px solid #3d6675;border-radius:50%;background:#ffffff;display:flex;align-items:center;justify-content:center"><i data-lucide="cloud-rain" style="width:19px;height:19px;color:#3d6675"></i></div>
+        <div style="font-weight:600;font-size:10.5px;letter-spacing:0.04em;color:#171f3d">Naturais</div>
+        <div style="font-weight:300;font-size:8.5px;line-height:1.45;color:#767a7a">Ação de agentes da natureza</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px">
+        <div style="width:52px;height:52px;border:1.5px solid #2f3d6f;border-radius:50%;background:#ffffff;display:flex;align-items:center;justify-content:center"><i data-lucide="layers" style="width:19px;height:19px;color:#2f3d6f"></i></div>
+        <div style="font-weight:600;font-size:10.5px;letter-spacing:0.04em;color:#171f3d">Endógenas</div>
+        <div style="font-weight:300;font-size:8.5px;line-height:1.45;color:#767a7a">Origem na própria edificação</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="height:32px"></div>
+
+  <div style="display:flex;align-items:center;gap:10px">
+    <div style="width:28px;height:28px;background:#eef4f6;display:flex;align-items:center;justify-content:center"><i data-lucide="layers-3" style="width:15px;height:15px;color:#4A7A8C"></i></div>
+    <h3 style="margin:0;font-weight:600;font-size:12.5px;letter-spacing:0.14em;text-transform:uppercase;color:#171f3d">{{cap_numero}}.3 — Níveis de inspeção</h3>
+  </div>
+  <div style="height:20px"></div>
+
+  <div style="display:flex;align-items:flex-end;gap:0">
+    <div style="flex:1;height:128px;background:#eef4f6;border:1px solid #dde9ed;box-sizing:border-box;padding:14px 16px;display:flex;flex-direction:column">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:0.18em;color:#4A7A8C">NÍVEL 1</span>
+        <i data-lucide="eye" style="width:15px;height:15px;color:#4A7A8C"></i>
+      </div>
+      <div style="flex:1"></div>
+      <div style="font-weight:600;font-size:13px;color:#171f3d">Inspeção visual</div>
+      <div style="margin-top:4px;font-weight:300;font-size:9.5px;line-height:1.5;color:#5e6161">Análise sensorial, sem uso de equipamentos</div>
+    </div>
+    <div style="width:36px;height:128px;display:flex;align-items:center;justify-content:center;color:#BE7C4D;font-size:17px">→</div>
+    <div style="flex:1;height:162px;background:#dde9ed;border:1px solid #aeb7cf;box-sizing:border-box;padding:14px 16px;display:flex;flex-direction:column">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:0.18em;color:#3d6675">NÍVEL 2</span>
+        <i data-lucide="gauge" style="width:15px;height:15px;color:#3d6675"></i>
+      </div>
+      <div style="flex:1"></div>
+      <div style="font-weight:600;font-size:13px;color:#171f3d">Com equipamentos</div>
+      <div style="margin-top:4px;font-weight:300;font-size:9.5px;line-height:1.5;color:#45494a">Instrumentos de medição: umidade, fissurômetro e afins</div>
+    </div>
+    <div style="width:36px;height:162px;display:flex;align-items:center;justify-content:center;color:#BE7C4D;font-size:17px">→</div>
+    <div style="flex:1;height:196px;background:#171f3d;box-sizing:border-box;padding:14px 16px;display:flex;flex-direction:column">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:0.18em;color:#BE7C4D">NÍVEL 3</span>
+        <i data-lucide="flask-conical" style="width:15px;height:15px;color:#BE7C4D"></i>
+      </div>
+      <div style="flex:1"></div>
+      <div style="font-weight:600;font-size:13px;color:#ffffff">Ensaios e testes</div>
+      <div style="margin-top:4px;font-weight:300;font-size:9.5px;line-height:1.5;color:#aeb7cf">Ensaios específicos e análises laboratoriais</div>
+    </div>
+  </div>
+  <div style="height:10px"></div>
+  <div style="font-family:'IBM Plex Mono',monospace;font-size:8.5px;letter-spacing:0.06em;color:#969a9a;text-align:right">Escala progressiva de profundidade da investigação — Nível 1 → Nível 3</div>
+
+  <div style="flex:1"></div>
+
+  <div style="border-top:1px solid #e4e5e5;padding-top:12px;display:flex;justify-content:space-between;align-items:baseline">
+    <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:0.06em;color:#969a9a">Paula Pacheco Engenharia e Perícias · CREA/MG 173.201 · IBAPE/MG 1221</span>
+    <span data-dc-medir="pagina" style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;color:#BE7C4D">{{pagina_rotulo}}</span>
+  </div>
+</div>
+
+</x-dc>

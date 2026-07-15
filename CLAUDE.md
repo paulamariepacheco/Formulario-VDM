@@ -149,31 +149,33 @@ no capítulo Vistoria como registro complementar.
 Abrir o `.docx` no Word: sumário reflete os títulos reais; numeração de página
 contínua do início ao fim; figuras na ordem e numeração corretas (FIG. 01→06).
 
-### 5.0.1. Fidelidade visual — capa renderizada do template (prova de conceito)
+### 5.0.1. Fidelidade visual — páginas renderizadas dos templates do design
 
 Decisão da Paula: capítulos com template A4 no Claude Design ("Paula Pacheco
 Design System") são inseridos no `.docx` como **página-imagem 300 dpi**
 renderizada do próprio template com os dados do laudo — não mais texto nativo.
-Implementado para a **capa** (`gerador/render_paginas.py` +
-`design/canva_templates/`):
+**Implementado** para capa e capítulos 2 (Motivação), 3 (Vistoria — híbrido:
+página-template + continuação nativa 3.2 com ambientes/fotos avulsas),
+4 (Métodos), 7 (Especificações), 9 (Referencial ilustrado) e 10 (Encerramento)
+— `gerador/render_paginas.py` + `design/canva_templates/`:
 
 ```bash
 pip install -r requirements-render.txt   # playwright (opcional)
 # Chromium pré-instalado no ambiente (CHROMIUM_PATH=/opt/pw-browsers/chromium);
-# NÃO rodar `playwright install`. Sem Chromium, o motor degrada para a capa
-# nativa em texto (com aviso).
+# NÃO rodar `playwright install`. Sem Chromium, o motor degrada para TODOS os
+# capítulos nativos em texto (com aviso).
 ```
 
-- Template tratado como markup estático (miolo da tag `x-dc`); dados entram
-  por anotação `{{campo}}` + blocos `dc:variante:*` (fundo `azul-marinho` ×
-  `foto-com-overlay`, conforme `Laudo.foto_capa`/`capa_fundo`).
-- Cores/fontes viram CSS vars geradas de `design/tokens.json` no render —
-  nunca hardcodar.
-- O `LaudoCapa.dc.html` espelhado é **provisório** (DesignSync indisponível na
-  sessão de implementação); substituir pelo original sincronizado — ver
-  `design/canva_templates/README.md`. Capítulos de tamanho variável
-  (diagnóstico, plano, conclusões) permanecem nativos; mapeamento dos demais:
-  `design/NOTES-templates.md`.
+- Templates REAIS sincronizados (originais intocados `*.original.dc.html` +
+  anotados gerados por `design/canva_templates/anotar_templates.py`); dados
+  entram por `{{campo}}`, `{{{slot_raw}}}` e blocos `dc:variante:*`.
+- Cores primárias via `var(--pp-*, #hex)` geradas de `design/tokens.json`;
+  fontes reais espelhadas (Visia Pro, IBM Plex Mono) — nunca hardcodar no motor.
+- Nº de página vivo nas páginas-imagem: slot do design medido no Chromium +
+  caixa flutuante com campo `PAGE`; sumário ancorado por headings invisíveis;
+  seções sem cabeçalho do Word nas páginas-template. Detalhes:
+  `design/canva_templates/README.md` e `design/NOTES-templates.md`.
+- Capítulos de tamanho variável (1, 5, 6, 8) permanecem nativos.
 
 ## 5.1. Captura desktop (Fase 2) — como usar
 

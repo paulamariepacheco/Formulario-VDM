@@ -1,0 +1,122 @@
+<!--
+  Template REAL do Claude Design ("Paula Pacheco Design System"), anotado com
+  o contrato de dados de gerador/render_paginas.py. Gerado por
+  anotar_templates.py a partir do .original.dc.html ao lado (intocado) —
+  apos re-sync do design, rode o script de novo em vez de editar a mao.
+  Ver design/canva_templates/README.md para o contrato.
+-->
+<x-dc>
+<!-- @template name="Laudo — 7. Especificações de Materiais e Aceite" description="Caderno de especificações mínimas de materiais (6 grupos) e controle de qualidade com critérios gerais de aceite" -->
+<helmet>
+<script src="./ds-base.js"></script>
+<script src="https://unpkg.com/lucide@0.544.0/dist/umd/lucide.min.js"></script>
+</helmet>
+<div data-screen-label="Especificações de materiais e aceite" style="width:794px;height:1123px;position:relative;overflow:hidden;background:#ffffff;font-family:'Visia Pro',Montserrat,'Helvetica Neue',Arial,sans-serif;color:#292929;box-sizing:border-box;display:flex;flex-direction:column;padding:44px 56px 36px">
+
+  <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:12px;border-bottom:1px solid #d6d8d8">
+    <div style="display:flex;align-items:center;gap:10px">
+      <img src="../../assets/logos/icone-principal.png" alt="" style="height:20px;display:block" />
+      <span style="font-size:9.5px;letter-spacing:0.22em;text-transform:uppercase;color:#5e6161">Paula Pacheco · Engenharia e Perícias</span>
+    </div>
+    <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.08em;color:#5e6161">LAUDO Nº {{numero}}</span>
+  </div>
+
+  <div style="height:22px"></div>
+
+  <div style="display:flex;align-items:baseline;gap:16px">
+    <span style="font-weight:200;font-size:44px;line-height:1;color:#BE7C4D">{{cap_numero}}</span>
+    <div>
+      <h2 style="margin:0;font-weight:600;font-size:20px;letter-spacing:0.1em;text-transform:uppercase;color:#171f3d">Especificações de materiais e aceite</h2>
+      <div style="margin-top:8px;width:44px;height:3px;background:#BE7C4D"></div>
+    </div>
+  </div>
+
+  <div style="height:18px"></div>
+
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+    <div style="width:26px;height:26px;background:#eef4f6;display:flex;align-items:center;justify-content:center"><i data-lucide="package" style="width:14px;height:14px;color:#4A7A8C"></i></div>
+    <h3 style="margin:0;font-weight:600;font-size:11.5px;letter-spacing:0.14em;text-transform:uppercase;color:#171f3d">{{cap_numero}}.1 — Caderno de especificações mínimas</h3>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+    <div style="border:1px solid #e4e5e5;border-top:3px solid #171f3d;padding:11px 14px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+        <i data-lucide="hard-hat" style="width:14px;height:14px;color:#171f3d"></i>
+        <span style="font-weight:600;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:#171f3d">Recuperação de concreto armado</span>
+      </div>
+      <p style="margin:0;font-weight:300;font-size:9.5px;line-height:1.55;color:#45494a">Argamassas de reparo com retração compensada, boa aderência e resistência compatível com o elemento existente, indicadas para recuperação estrutural.</p>
+    </div>
+    <div style="border:1px solid #e4e5e5;border-top:3px solid #171f3d;padding:11px 14px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+        <i data-lucide="shield" style="width:14px;height:14px;color:#171f3d"></i>
+        <span style="font-weight:600;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:#171f3d">Tratamento de armaduras</span>
+      </div>
+      <p style="margin:0;font-weight:300;font-size:9.5px;line-height:1.55;color:#45494a">Passivador de armaduras compatível com o sistema de reparo, aplicado após a limpeza dos produtos de corrosão.</p>
+    </div>
+    <div style="border:1px solid #e4e5e5;border-top:3px solid #4A7A8C;padding:11px 14px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+        <i data-lucide="building-2" style="width:14px;height:14px;color:#3d6675"></i>
+        <span style="font-weight:600;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:#3d6675">Argamassas de fachada</span>
+      </div>
+      <p style="margin:0;font-weight:300;font-size:9.5px;line-height:1.55;color:#45494a">Em edificações antigas ou com detalhes arquitetônicos relevantes, priorizar argamassa mineral compatível, preferencialmente à base de cal — evitar argamassas rígidas ou ricas em cimento Portland.</p>
+    </div>
+    <div style="border:1px solid #e4e5e5;border-top:3px solid #4A7A8C;padding:11px 14px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+        <i data-lucide="pencil-ruler" style="width:14px;height:14px;color:#3d6675"></i>
+        <span style="font-weight:600;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:#3d6675">Selantes</span>
+      </div>
+      <p style="margin:0;font-weight:300;font-size:9.5px;line-height:1.55;color:#45494a">Selantes elastoméricos de poliuretano, silicone neutro ou MS Polymer, conforme substrato e exposição. <strong style="font-weight:600;color:#B23A32">Não utilizar</strong> massa acrílica ou argamassa rígida em juntas sujeitas à movimentação.</p>
+    </div>
+    <div style="border:1px solid #e4e5e5;border-top:3px solid #BE7C4D;padding:11px 14px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+        <i data-lucide="layers" style="width:14px;height:14px;color:#a5683f"></i>
+        <span style="font-weight:600;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:#a5683f">Impermeabilização</span>
+      </div>
+      <p style="margin:0;font-weight:300;font-size:9.5px;line-height:1.55;color:#45494a">Sistema escolhido conforme exposição, tráfego, geometria, ralos, platibandas, claraboias, juntas e manutenção. Em lajes expostas, priorizar sistemas deformáveis com detalhamento rigoroso dos pontos singulares.</p>
+    </div>
+    <div style="border:1px solid #e4e5e5;border-top:3px solid #BE7C4D;padding:11px 14px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+        <i data-lucide="paintbrush" style="width:14px;height:14px;color:#a5683f"></i>
+        <span style="font-weight:600;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:#a5683f">Pinturas e proteções superficiais</span>
+      </div>
+      <p style="margin:0;font-weight:300;font-size:9.5px;line-height:1.55;color:#45494a">Produtos compatíveis com exposição externa, substrato e permeabilidade ao vapor. Em fachadas históricas, evitar acabamentos que alterem textura, cor, espessura ou leitura arquitetônica.</p>
+    </div>
+  </div>
+
+  <div style="height:20px"></div>
+
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+    <div style="width:26px;height:26px;background:#eef4f6;display:flex;align-items:center;justify-content:center"><i data-lucide="badge-check" style="width:14px;height:14px;color:#4A7A8C"></i></div>
+    <h3 style="margin:0;font-weight:600;font-size:11.5px;letter-spacing:0.14em;text-transform:uppercase;color:#171f3d">{{cap_numero}}.2 — Controle de qualidade · critérios gerais de aceite</h3>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px 22px">
+    <div style="display:flex;gap:9px;align-items:baseline;padding:4.5px 0;border-bottom:1px solid #eef0ef"><span style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#4C8C4A;flex-shrink:0">a</span><span style="font-weight:300;font-size:9.5px;line-height:1.5;color:#45494a">Áreas de risco liberadas somente após eliminação de partes instáveis</span></div>
+    <div style="display:flex;gap:9px;align-items:baseline;padding:4.5px 0;border-bottom:1px solid #eef0ef"><span style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#4C8C4A;flex-shrink:0">g</span><span style="font-weight:300;font-size:9.5px;line-height:1.5;color:#45494a">Juntas tratadas com material compatível</span></div>
+    <div style="display:flex;gap:9px;align-items:baseline;padding:4.5px 0;border-bottom:1px solid #eef0ef"><span style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#4C8C4A;flex-shrink:0">b</span><span style="font-weight:300;font-size:9.5px;line-height:1.5;color:#45494a">Substratos limpos, firmes e sem material pulverulento</span></div>
+    <div style="display:flex;gap:9px;align-items:baseline;padding:4.5px 0;border-bottom:1px solid #eef0ef"><span style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#4C8C4A;flex-shrink:0">h</span><span style="font-weight:300;font-size:9.5px;line-height:1.5;color:#45494a">Pisos nivelados, aderentes e com caimento funcional</span></div>
+    <div style="display:flex;gap:9px;align-items:baseline;padding:4.5px 0;border-bottom:1px solid #eef0ef"><span style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#4C8C4A;flex-shrink:0">c</span><span style="font-weight:300;font-size:9.5px;line-height:1.5;color:#45494a">Armaduras tratadas e cobrimentos recompostos</span></div>
+    <div style="display:flex;gap:9px;align-items:baseline;padding:4.5px 0;border-bottom:1px solid #eef0ef"><span style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#4C8C4A;flex-shrink:0">i</span><span style="font-weight:300;font-size:9.5px;line-height:1.5;color:#45494a">Instalações aparentes protegidas e fixadas</span></div>
+    <div style="display:flex;gap:9px;align-items:baseline;padding:4.5px 0;border-bottom:1px solid #eef0ef"><span style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#4C8C4A;flex-shrink:0">d</span><span style="font-weight:300;font-size:9.5px;line-height:1.5;color:#45494a">Fachadas sem partes ocas, soltas ou vegetação</span></div>
+    <div style="display:flex;gap:9px;align-items:baseline;padding:4.5px 0;border-bottom:1px solid #eef0ef"><span style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#4C8C4A;flex-shrink:0">j</span><span style="font-weight:300;font-size:9.5px;line-height:1.5;color:#45494a">Acabamentos compatíveis com o sistema construtivo</span></div>
+    <div style="display:flex;gap:9px;align-items:baseline;padding:4.5px 0;border-bottom:1px solid #eef0ef"><span style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#4C8C4A;flex-shrink:0">e</span><span style="font-weight:300;font-size:9.5px;line-height:1.5;color:#45494a">Impermeabilizações contínuas e estanques</span></div>
+    <div style="display:flex;gap:9px;align-items:baseline;padding:4.5px 0;border-bottom:1px solid #eef0ef"><span style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#4C8C4A;flex-shrink:0">k</span><span style="font-weight:300;font-size:9.5px;line-height:1.5;color:#45494a">Limpeza final e registro fotográfico das etapas executadas</span></div>
+    <div style="display:flex;gap:9px;align-items:baseline;padding:4.5px 0;border-bottom:1px solid #eef0ef"><span style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#4C8C4A;flex-shrink:0">f</span><span style="font-weight:300;font-size:9.5px;line-height:1.5;color:#45494a">Ralos funcionais, limpos e vedados</span></div>
+  </div>
+
+  <div style="height:14px"></div>
+
+  <div style="display:flex;align-items:flex-start;gap:12px;padding:12px 16px;background:#eef4f6;border:1px solid #dde9ed;border-left:3px solid #4A7A8C">
+    <i data-lucide="info" style="width:15px;height:15px;color:#3d6675;flex-shrink:0;margin-top:1px"></i>
+    <p style="margin:0;font-weight:300;font-size:9.5px;line-height:1.6;color:#2b3138;text-wrap:pretty">O Plano de Intervenção prevê ainda: recomposição da geometria dos elementos de concreto, juntas livres para movimentação (sem preenchimentos rígidos), fissuras tratadas conforme sua natureza, pisos recompostos, ralos com bordas íntegras e limpeza final das áreas.</p>
+  </div>
+
+  <div style="flex:1"></div>
+
+  <div style="border-top:1px solid #e4e5e5;padding-top:12px;display:flex;justify-content:space-between;align-items:baseline">
+    <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:0.06em;color:#969a9a">Paula Pacheco Engenharia e Perícias · CREA/MG 173.201 · IBAPE/MG 1221</span>
+    <span data-dc-medir="pagina" style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;color:#BE7C4D">{{pagina_rotulo}}</span>
+  </div>
+</div>
+
+</x-dc>

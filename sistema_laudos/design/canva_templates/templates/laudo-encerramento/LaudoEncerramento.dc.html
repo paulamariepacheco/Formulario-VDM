@@ -1,0 +1,111 @@
+<!--
+  Template REAL do Claude Design ("Paula Pacheco Design System"), anotado com
+  o contrato de dados de gerador/render_paginas.py. Gerado por
+  anotar_templates.py a partir do .original.dc.html ao lado (intocado) —
+  apos re-sync do design, rode o script de novo em vez de editar a mao.
+  Ver design/canva_templates/README.md para o contrato.
+-->
+<x-dc>
+<!-- @template name="Laudo — Encerramento" description="Página de encerramento: declaração de imparcialidade, síntese metodológica, local/data, assinatura e credenciais da responsável técnica" -->
+<helmet>
+<script src="./ds-base.js"></script>
+<script src="https://unpkg.com/lucide@0.544.0/dist/umd/lucide.min.js"></script>
+<style>image-slot{display:block;width:100%;height:100%}</style>
+</helmet>
+<div data-screen-label="Encerramento" style="width:794px;height:1123px;position:relative;overflow:hidden;background:#ffffff;font-family:'Visia Pro',Montserrat,'Helvetica Neue',Arial,sans-serif;color:#292929;box-sizing:border-box;display:flex;flex-direction:column;padding:44px 56px 36px">
+
+  <img src="../../assets/logos/icone-principal.png" alt="" style="position:absolute;right:-120px;bottom:120px;width:420px;opacity:0.04;pointer-events:none" />
+
+  <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:12px;border-bottom:1px solid #d6d8d8">
+    <div style="display:flex;align-items:center;gap:10px">
+      <img src="../../assets/logos/icone-principal.png" alt="" style="height:20px;display:block" />
+      <span style="font-size:9.5px;letter-spacing:0.22em;text-transform:uppercase;color:#5e6161">Paula Pacheco · Engenharia e Perícias</span>
+    </div>
+    <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.08em;color:#5e6161">LAUDO Nº {{numero}}</span>
+  </div>
+
+  <div style="height:30px"></div>
+
+  <div style="display:flex;align-items:baseline;gap:16px">
+    <span style="font-weight:200;font-size:52px;line-height:1;color:#BE7C4D">{{cap_numero}}</span>
+    <div>
+      <h2 style="margin:0;font-weight:600;font-size:23px;letter-spacing:0.12em;text-transform:uppercase;color:#171f3d">Encerramento</h2>
+      <div style="margin-top:8px;width:44px;height:3px;background:#BE7C4D"></div>
+    </div>
+  </div>
+
+  <div style="height:26px"></div>
+
+  <div style="position:relative;background:#eef4f6;border:1px solid #dde9ed;border-left:3px solid #4A7A8C;padding:18px 22px">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+      <i data-lucide="scale" style="width:16px;height:16px;color:#3d6675"></i>
+      <span style="font-size:9.5px;letter-spacing:0.2em;text-transform:uppercase;color:#3d6675">Declaração de imparcialidade</span>
+    </div>
+    <p style="margin:0;font-weight:300;font-size:12px;line-height:1.75;color:#2b3138;text-wrap:pretty">A Engenheira, profissional independente e atuante em avaliações patrimoniais e perícias de engenharia, com registro no CREA/MG e no IBAPE, não possui vínculo societário com quaisquer das partes, assim como não tem interesse pessoal e/ou financeiro no local objeto de análise.</p>
+  </div>
+
+  <div style="height:22px"></div>
+
+  <p style="margin:0;font-weight:300;font-size:12px;line-height:1.75;color:#45494a;text-wrap:pretty">O trabalho foi conduzido com base em inspeção visual, análise técnica das manifestações patológicas, estudo das condições existentes, revisão das normas aplicáveis e aplicação de critérios periciais conforme a <span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#171f3d">ABNT NBR 13752</span>. Todos os registros, informações, metodologias e recomendações foram elaborados com rigor técnico, buscando oferecer a melhor orientação possível para a recuperação.</p>
+
+  <div style="height:14px"></div>
+
+  <div style="display:flex;align-items:flex-start;gap:12px;padding:14px 18px;border:1px solid #f2e4d8;background:#f9f1ea">
+    <i data-lucide="file-check-2" style="width:17px;height:17px;color:#BE7C4D;flex-shrink:0;margin-top:2px"></i>
+    <p style="margin:0;font-weight:400;font-size:12px;line-height:1.7;color:#292929;text-wrap:pretty">O laudo está <strong style="font-weight:600;color:#171f3d">encerrado e apto para emissão da ART</strong> correspondente, devendo sua execução ser acompanhada por profissional habilitado.</p>
+  </div>
+
+  <div style="height:16px"></div>
+
+  <p style="margin:0;font-weight:300;font-size:11px;line-height:1.7;color:#5e6161;text-wrap:pretty">{{folhas_frase}}</p>
+
+  <div style="flex:1"></div>
+
+  <div style="display:grid;grid-template-columns:1fr 300px;gap:36px;align-items:end">
+
+    <div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:#5e6161">{{local_data}}</div>
+      <div style="height:52px"></div>
+      <div style="position:relative;width:280px;height:64px">
+        <!-- dc:variante:com-assinatura --><div style="position:absolute;left:0;right:0;top:8px;height:48px"><img src="{{assinatura}}" alt="" style="width:100%;height:100%;object-fit:contain" /></div><!-- /dc:variante:com-assinatura -->
+      </div>
+      <div style="border-top:1px solid #292929;width:280px;padding-top:8px">
+        <div style="font-weight:700;font-size:13px;letter-spacing:0.08em;text-transform:uppercase;color:#171f3d">Paula Marie Siqueira Pacheco</div>
+        <div style="margin-top:2px;font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:0.04em;color:#5e6161">CREA/MG 173.201 · IBAPE/MG 1221</div>
+      </div>
+      <div style="height:14px"></div>
+      <div style="font-weight:300;font-size:9.5px;line-height:1.6;color:#5e6161">
+        Mestre em Engenharia Civil (CEFET-MG) · Engenheira de Produção/Civil (CEFET-MG)<br />
+        Filiada ao IBAPE/MG · Técnica em Transações Imobiliárias (SENAC-RS)<br />
+        Assistência Técnica, Perícias de Engenharia, Avaliação de Imóveis, Laudos e Vistoria Cautelar.
+      </div>
+    </div>
+
+    <div style="border:1px solid #e4e5e5;padding:16px 18px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+        <i data-lucide="badge-check" style="width:15px;height:15px;color:#BE7C4D"></i>
+        <span style="font-size:8.5px;letter-spacing:0.2em;text-transform:uppercase;color:#5e6161">Perita credenciada</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:9px">
+        <div style="display:flex;align-items:center;gap:9px"><span style="width:5px;height:5px;background:#171f3d;flex-shrink:0"></span><span style="font-weight:400;font-size:11px;color:#292929">TJMG — Tribunal de Justiça de MG</span></div>
+        <div style="display:flex;align-items:center;gap:9px"><span style="width:5px;height:5px;background:#171f3d;flex-shrink:0"></span><span style="font-weight:400;font-size:11px;color:#292929">MPMG — Ministério Público de MG</span></div>
+        <div style="display:flex;align-items:center;gap:9px"><span style="width:5px;height:5px;background:#171f3d;flex-shrink:0"></span><span style="font-weight:400;font-size:11px;color:#292929">Caixa Econômica Federal</span></div>
+      </div>
+      <div style="height:14px"></div>
+      <div style="border-top:1px solid #eef0ef;padding-top:12px;display:flex;flex-direction:column;gap:5px">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#5e6161">pericias@pachecoeng.com.br</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#5e6161">(31) 9 9752-6257</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#5e6161">@pacheco_eng_pericia</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="height:22px"></div>
+
+  <div style="border-top:1px solid #e4e5e5;padding-top:12px;display:flex;justify-content:space-between;align-items:baseline">
+    <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:0.06em;color:#969a9a">Paula Pacheco Engenharia e Perícias · Atendimento em todo o Brasil</span>
+    <span data-dc-medir="pagina" style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;color:#BE7C4D">{{pagina_rotulo}}</span>
+  </div>
+</div>
+
+</x-dc>

@@ -12,13 +12,13 @@ markup estático com dados de exemplo do laudo 54/2026 (Ed. Jardins da Cidade);
 
 | Template | Capítulo / uso no motor (`gerar_laudo.py`) | Observações |
 |---|---|---|
-| `laudo-capa` | `_capa()` — **feito** (PoC) | Variantes de fundo; foto de capa = `Laudo.foto_capa`. |
-| `laudo-motivacao` | cap. 2 — `_capitulo_fixo("motivacao")` | Texto fixo curto; 1 página. |
-| `laudo-vistoria` | cap. 3 — `_vistoria()` | Tem image-slots (mapa, fachada); dados: datas, acompanhamento, ambientes. Fotos avulsas hoje entram aqui — ver `laudo-fotografico`. |
-| `laudo-metodos` | cap. 4 — `_capitulo_fixo("metodos")` | Infográfico de metodologia. |
-| `laudo-especificacoes` | cap. 7 — `_capitulo_fixo("especificacoes")` | |
-| `laudo-referencial` | cap. 9 — `_capitulo_fixo("referencial")` | Normas ABNT/IBAPE. |
-| `laudo-encerramento` | cap. 10 — `_encerramento()` | ATENÇÃO: contagem de páginas usa campo NUMPAGES do Word; como imagem, o número precisa ser resolvido ANTES do render (2 passadas) ou mantido nativo. Assinatura física também pesa a favor de manter parte nativa — decidir com a Paula. |
+| `laudo-capa` | `_capa()` — **feito** | Variantes de fundo; foto de capa = `Laudo.foto_capa`. |
+| `laudo-motivacao` | cap. 2 — **feito** (página-imagem) | `{{objetivos_p1/p2}}` com defaults do design. |
+| `laudo-vistoria` | cap. 3 — **feito** (híbrido) | Página-template (mapa FIG. 01, fachada FIG. 02, características) + continuação nativa "3.2" (ambientes + fotos avulsas). Campos novos: `mapa_localizacao`, `foto_fachada`, `legenda_*`, `caracteristicas`. |
+| `laudo-metodos` | cap. 4 — **feito** (página-imagem) | Normas via slot raw (`NORMAS_PADRAO`); dica de edição do design removida na anotação. |
+| `laudo-especificacoes` | cap. 7 — **feito** (página-imagem) | Conteúdo fixo do padrão consolidado. |
+| `laudo-referencial` | cap. 9 — **feito** (página-imagem) | É o referencial ilustrado de trincas/umidade (não a lista de normas — esta vive no cap. 4). FIG. dinâmicas após todas as fotos do laudo. |
+| `laudo-encerramento` | cap. 10 — **feito** (página-imagem) | Frase de contagem referencia o rodapé (NUMPAGES não resolve dentro de imagem); assinatura digitalizada opcional (`Laudo.assinatura`, variante `com-assinatura`); local/data de `cidade_emissao` + `data_emissao`. |
 | `laudo-fotografico` | relatório fotográfico (FIG. 08–83 no laudo 50/2026) | Quantidade de fotos é variável ⇒ template deve ser página-grade repetível (N páginas) ou manter fotos nativas. Avaliar no arquivo real. |
 | `laudo-mapa-chave` | Fase 4 (mapas-chave com pins) | Fora do escopo atual. |
 | `laudo-inspecao-predial` | abertura/infográfico NBR 16747 (?) | Confirmar lendo o arquivo — sem capítulo 1:1 hoje. |
@@ -42,18 +42,20 @@ sistema→template (ex.: "impermeabilização e drenagem" → lajes-impermeabili
   cap. 8 Conclusões (quadros-resumo).
 - `proposta-*` — outro documento (proposta comercial), fora de escopo.
 
-## Avisos técnicos para a próxima fatia
+## Avisos técnicos (estado após a fatia dos capítulos)
 
-1. **Sumário/TOC**: capítulo virado imagem não gera entrada no TOC. Manter um
-   heading nativo âncora (ex.: fonte 1pt branca, ou heading normal antes da
-   página-imagem) para o TOC e a numeração continuarem corretos.
-2. **Âncora full-bleed**: usar `docx_util.inserir_imagem_pagina_inteira`
-   (wp:anchor relativo à página; id do `wp:docPr` precisa ser único por
-   imagem — hoje fixo em 1001 porque só a capa usa; parametrizar ao inserir
-   várias páginas-imagem).
-3. **Pipeline**: 1 launch de Chromium por página é lento; ao renderizar vários
-   capítulos, reutilizar o browser (refatorar `renderizar_pagina_png` para
-   aceitar batch/context manager).
-4. **Supabase**: `nome_imovel`, `foto_capa_url` e `capa_fundo` ainda não
-   existem no schema `laudos` (o loader usa `.get()` e tolera a ausência);
-   criar migração `0005` + campos nos dois apps quando a Paula validar a capa.
+1. ~~Sumário/TOC~~ — resolvido: heading âncora invisível (1 pt branco) por
+   capítulo-imagem (`GeradorLaudo._pagina_imagem`).
+2. ~~docPr único~~ — resolvido: ids alocados por `part.next_id` (o mesmo
+   alocador das figuras inline do python-docx).
+3. ~~Batch de render~~ — resolvido: `render_paginas.SessaoRender` (1 launch de
+   Chromium por laudo; mede os slots `data-dc-medir` para os overlays).
+4. **Supabase**: além de `nome_imovel`/`foto_capa_url`/`capa_fundo`, agora
+   também `mapa_localizacao_url`, `foto_fachada_url`, `legenda_mapa`,
+   `legenda_fachada`, `caracteristicas` (jsonb), `cidade_emissao` e
+   `assinatura_url` — o loader usa `.get()` e tolera a ausência; criar
+   migração `0005` + campos nos dois apps quando a Paula validar.
+5. **Nº de página vivo**: slot do design medido no render + caixa de texto
+   flutuante com campo `PAGE` (`docx_util.inserir_numero_pagina_flutuante`).
+   A fonte da caixa é "IBM Plex Mono" — instalar no computador que abre o
+   Word para o visual idêntico (senão cai na fonte padrão, só na caixinha).

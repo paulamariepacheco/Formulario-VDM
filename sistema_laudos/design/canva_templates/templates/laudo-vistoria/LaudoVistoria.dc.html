@@ -1,0 +1,92 @@
+<!--
+  Template REAL do Claude Design ("Paula Pacheco Design System"), anotado com
+  o contrato de dados de gerador/render_paginas.py. Gerado por
+  anotar_templates.py a partir do .original.dc.html ao lado (intocado) —
+  apos re-sync do design, rode o script de novo em vez de editar a mao.
+  Ver design/canva_templates/README.md para o contrato.
+-->
+<x-dc>
+<!-- @template name="Laudo — 3. Vistoria e Localização" description="Data da diligência, acompanhamento, mapa, foto da fachada e características gerais do imóvel" -->
+<helmet>
+<script src="./ds-base.js"></script>
+<script src="https://unpkg.com/lucide@0.544.0/dist/umd/lucide.min.js"></script>
+<style>image-slot{display:block;width:100%;height:100%}</style>
+</helmet>
+<div data-screen-label="Vistoria e localização" style="width:794px;height:1123px;position:relative;overflow:hidden;background:#ffffff;font-family:'Visia Pro',Montserrat,'Helvetica Neue',Arial,sans-serif;color:#292929;box-sizing:border-box;display:flex;flex-direction:column;padding:44px 56px 36px">
+
+  <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:12px;border-bottom:1px solid #d6d8d8">
+    <div style="display:flex;align-items:center;gap:10px">
+      <img src="../../assets/logos/icone-principal.png" alt="" style="height:20px;display:block" />
+      <span style="font-size:9.5px;letter-spacing:0.22em;text-transform:uppercase;color:#5e6161">Paula Pacheco · Engenharia e Perícias</span>
+    </div>
+    <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.08em;color:#5e6161">LAUDO Nº {{numero}}</span>
+  </div>
+
+  <div style="height:30px"></div>
+
+  <div style="display:flex;align-items:baseline;gap:16px">
+    <span style="font-weight:200;font-size:52px;line-height:1;color:#BE7C4D">{{cap_numero}}</span>
+    <div>
+      <h2 style="margin:0;font-weight:600;font-size:23px;letter-spacing:0.12em;text-transform:uppercase;color:#171f3d">Vistoria</h2>
+      <div style="margin-top:8px;width:44px;height:3px;background:#BE7C4D"></div>
+    </div>
+  </div>
+
+  <div style="height:24px"></div>
+
+  <div style="background:#eef4f6;border:1px solid #dde9ed;padding:16px 20px;display:grid;grid-template-columns:1fr 1fr;gap:24px">
+    <div style="display:flex;gap:12px;align-items:flex-start">
+      <i data-lucide="calendar-check" style="width:17px;height:17px;color:#4A7A8C;flex-shrink:0;margin-top:2px"></i>
+      <div>
+        <div style="font-size:9px;letter-spacing:0.22em;text-transform:uppercase;color:#3d6675">Data da diligência</div>
+        <div style="margin-top:5px;font-weight:400;font-size:13px;line-height:1.5;color:#292929">{{diligencias}}</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:12px;align-items:flex-start">
+      <i data-lucide="users" style="width:17px;height:17px;color:#4A7A8C;flex-shrink:0;margin-top:2px"></i>
+      <div>
+        <div style="font-size:9px;letter-spacing:0.22em;text-transform:uppercase;color:#3d6675">Acompanhamento</div>
+        <div style="margin-top:5px;font-weight:400;font-size:13px;line-height:1.5;color:#292929">{{acompanhamento}}</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="height:28px"></div>
+
+  <div style="display:flex;align-items:center;gap:10px">
+    <div style="width:28px;height:28px;background:#eef4f6;display:flex;align-items:center;justify-content:center"><i data-lucide="map-pin" style="width:15px;height:15px;color:#4A7A8C"></i></div>
+    <h3 style="margin:0;font-weight:600;font-size:12.5px;letter-spacing:0.14em;text-transform:uppercase;color:#171f3d">{{cap_numero}}.1 — Localização do imóvel</h3>
+  </div>
+  <div style="height:14px"></div>
+
+  <img src="{{mapa}}" alt="" style="width:100%;height:278px;object-fit:cover;display:block" />
+  <div style="margin-top:8px;display:flex;gap:8px;align-items:baseline">
+    <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:0.1em;color:#BE7C4D">FIG. {{fig_mapa}}</span>
+    <span style="font-weight:300;font-size:10px;color:#767a7a">{{legenda_mapa}}</span>
+  </div>
+
+  <div style="height:22px"></div>
+
+  <div style="display:grid;grid-template-columns:300px 1fr;gap:26px">
+    <div>
+      <img src="{{fachada}}" alt="" style="width:300px;height:232px;object-fit:cover;display:block" />
+      <div style="margin-top:8px;display:flex;gap:8px;align-items:baseline">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:0.1em;color:#BE7C4D">FIG. {{fig_fachada}}</span>
+        <span style="font-weight:300;font-size:10px;color:#767a7a">{{legenda_fachada}}</span>
+      </div>
+    </div>
+    <div>
+      <div style="font-size:9px;letter-spacing:0.22em;text-transform:uppercase;color:#5e6161;padding-bottom:10px;border-bottom:1px solid #e4e5e5">Características gerais</div>
+      {{{caracteristicas}}}
+    </div>
+  </div>
+
+  <div style="flex:1"></div>
+
+  <div style="border-top:1px solid #e4e5e5;padding-top:12px;display:flex;justify-content:space-between;align-items:baseline">
+    <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:0.06em;color:#969a9a">Paula Pacheco Engenharia e Perícias · CREA/MG 173.201 · IBAPE/MG 1221</span>
+    <span data-dc-medir="pagina" style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;color:#BE7C4D">{{pagina_rotulo}}</span>
+  </div>
+</div>
+
+</x-dc>

@@ -1,0 +1,109 @@
+<!--
+  Template REAL do Claude Design ("Paula Pacheco Design System"), anotado com
+  o contrato de dados de gerador/render_paginas.py. Gerado por
+  anotar_templates.py a partir do .original.dc.html ao lado (intocado) —
+  apos re-sync do design, rode o script de novo em vez de editar a mao.
+  Ver design/canva_templates/README.md para o contrato.
+-->
+<x-dc>
+<!-- @template name="Laudo — 4.6 Referencial: Trincas e Umidade" description="Referencial técnico ilustrado: guia visual de trincas e fissuras, corte com manifestações estruturais e mecanismos de umidade" -->
+<helmet>
+<script src="./ds-base.js"></script>
+<script src="https://unpkg.com/lucide@0.544.0/dist/umd/lucide.min.js"></script>
+</helmet>
+<div data-screen-label="Referencial — trincas e umidade" style="width:794px;height:1123px;position:relative;overflow:hidden;background:#ffffff;font-family:'Visia Pro',Montserrat,'Helvetica Neue',Arial,sans-serif;color:#292929;box-sizing:border-box;display:flex;flex-direction:column;padding:44px 56px 36px">
+
+  <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:12px;border-bottom:1px solid #d6d8d8">
+    <div style="display:flex;align-items:center;gap:10px">
+      <img src="../../assets/logos/icone-principal.png" alt="" style="height:20px;display:block" />
+      <span style="font-size:9.5px;letter-spacing:0.22em;text-transform:uppercase;color:#5e6161">Paula Pacheco · Engenharia e Perícias</span>
+    </div>
+    <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.08em;color:#5e6161">LAUDO Nº {{numero}}</span>
+  </div>
+
+  <div style="height:18px"></div>
+
+  <div style="display:flex;align-items:center;gap:10px">
+    <div style="width:28px;height:28px;background:#eef4f6;display:flex;align-items:center;justify-content:center"><i data-lucide="book-marked" style="width:15px;height:15px;color:#4A7A8C"></i></div>
+    <h3 style="margin:0;font-weight:600;font-size:12.5px;letter-spacing:0.14em;text-transform:uppercase;color:#171f3d">{{cap_numero}} — Referencial técnico</h3>
+  </div>
+  <div style="height:8px"></div>
+  <p style="margin:0;font-weight:300;font-size:10px;line-height:1.6;color:#45494a;text-wrap:pretty">Os fatores mais preponderantes nesta perícia são: perda de estanqueidade, vazamentos, trincas e fissuras. Considera-se <strong style="font-weight:600;color:#171f3d">fissura</strong> a ruptura de até <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#171f3d">0,5 mm</span>; acima disso, <strong style="font-weight:600;color:#171f3d">trinca</strong>. A direção e a origem orientam as tratativas de recuperação.</p>
+
+  <div style="height:12px"></div>
+
+  <div style="display:flex;justify-content:space-between;align-items:baseline;padding-bottom:6px;border-bottom:1px solid #e4e5e5">
+    <span style="font-size:9px;letter-spacing:0.22em;text-transform:uppercase;color:#5e6161">{{cap_numero}}.1 — Trincas e fissuras · classificação por direção e origem</span>
+    <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:0.1em;color:#BE7C4D">FIG. {{fig_a}} · {{fig_b}}</span>
+  </div>
+  <div style="height:10px"></div>
+
+  <div style="border:1px solid #e4e5e5;padding:8px;display:flex;justify-content:center">
+    <img src="../../assets/photos/ref-guia-trincas.jpg" alt="Guia visual de patologias: trincas e fissuras — direções horizontais, verticais e inclinadas com a regra dos 0,5 mm" style="max-height:352px;max-width:100%;height:auto;display:block" />
+  </div>
+  <div style="margin-top:5px;display:flex;gap:8px;align-items:baseline">
+    <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:0.1em;color:#BE7C4D">FIG. {{fig_a}}</span>
+    <span style="font-weight:300;font-size:9px;color:#767a7a">Guia visual — direções típicas de fissuração em fachada e a regra dos 0,5 mm (fissura × trinca).</span>
+  </div>
+
+  <div style="height:10px"></div>
+
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px">
+    <div style="border-left:2px solid #171f3d;padding:3px 0 3px 10px">
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:8.5px;font-weight:600;color:#171f3d">HORIZONTAIS</div>
+      <div style="margin-top:3px;font-weight:300;font-size:8.5px;line-height:1.45;color:#5e6161">Retração de lajes, amarração com vigas, umidade ascendente.</div>
+    </div>
+    <div style="border-left:2px solid #171f3d;padding:3px 0 3px 10px">
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:8.5px;font-weight:600;color:#171f3d">VERTICAIS</div>
+      <div style="margin-top:3px;font-weight:300;font-size:8.5px;line-height:1.45;color:#5e6161">Amarração da parede com pilares ou retração da alvenaria.</div>
+    </div>
+    <div style="border-left:2px solid #BE7C4D;padding:3px 0 3px 10px">
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:8.5px;font-weight:600;color:#a5683f">INCLINADAS</div>
+      <div style="margin-top:3px;font-weight:300;font-size:8.5px;line-height:1.45;color:#5e6161">Portas/janelas sem vergas, recalque de fundação, sobrecarga.</div>
+    </div>
+    <div style="border-left:2px solid #767a7a;padding:3px 0 3px 10px">
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:8.5px;font-weight:600;color:#45494a">ALEATÓRIAS</div>
+      <div style="margin-top:3px;font-weight:300;font-size:8.5px;line-height:1.45;color:#5e6161">Retração da argamassa ou aderência da pintura.</div>
+    </div>
+  </div>
+
+  <div style="height:14px"></div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start">
+    <div style="display:flex;flex-direction:column">
+      <div style="border:1px solid #e4e5e5;padding:6px">
+        <img src="../../assets/photos/ref-trincas-corte.jpg" alt="Corte da edificação com manifestações: trincas horizontais, verticais, inclinadas, no piso e no teto, abaulamento e fundações" style="width:100%;height:auto;display:block" />
+      </div>
+      <div style="margin-top:5px;display:flex;gap:8px;align-items:baseline">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:0.1em;color:#BE7C4D">FIG. {{fig_b}}</span>
+        <span style="font-weight:300;font-size:9px;line-height:1.45;color:#767a7a">Corte esquemático — manifestações associadas à estrutura e às fundações.</span>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;padding-bottom:5px;border-bottom:1px solid #e4e5e5;margin-bottom:8px">
+        <span style="font-size:9px;letter-spacing:0.22em;text-transform:uppercase;color:#5e6161">{{cap_numero}}.2 — Umidade nas edificações</span>
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:0.1em;color:#BE7C4D">FIG. {{fig_c}}</span>
+      </div>
+      <div style="border:1px solid #e4e5e5;padding:6px">
+        <img src="../../assets/photos/ref-umidade.jpg" alt="Mecanismos de umidade na edificação: chuva, condensação, infiltrações, capilaridade, vazamentos e lençol freático" style="width:100%;height:auto;display:block" />
+      </div>
+      <div style="margin-top:5px;display:flex;gap:8px;align-items:baseline">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:0.1em;color:#BE7C4D">FIG. {{fig_c}}</span><span style="font-weight:300;font-size:9px;line-height:1.45;color:#767a7a">Mecanismos de penetração de água: chuva, condensação, infiltrações, capilaridade e vazamentos.</span>
+      </div>
+    </div>
+  </div>
+
+  <div style="flex:1;min-height:8px"></div>
+
+  <p style="margin:0;font-weight:300;font-size:9.5px;line-height:1.6;color:#5e6161;text-wrap:pretty">A umidade decorre da penetração indesejada de água — infiltração direta, condensação ou ascensão capilar. O fluxo constante promove a <strong style="font-weight:600;color:#171f3d">lixiviação</strong>: o produto lixiviado reage com o CO₂ da atmosfera formando carbonato de cálcio, a camada branca visível na superfície do concreto <span style="font-family:'IBM Plex Mono',monospace;font-size:8.5px;color:#969a9a">(DNIT — patologias em estruturas de concreto)</span>.</p>
+
+  <div style="flex:1;min-height:8px"></div>
+
+  <div style="border-top:1px solid #e4e5e5;padding-top:12px;display:flex;justify-content:space-between;align-items:baseline">
+    <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:0.06em;color:#969a9a">Paula Pacheco Engenharia e Perícias · CREA/MG 173.201 · IBAPE/MG 1221</span>
+    <span data-dc-medir="pagina" style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;color:#BE7C4D">{{pagina_rotulo}}</span>
+  </div>
+</div>
+
+</x-dc>

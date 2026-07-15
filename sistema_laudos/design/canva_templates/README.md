@@ -46,4 +46,21 @@ gradientes) permanecem literais, fiéis ao markup sincronizado.
 | `assets/fonts/Montserrat-*.ttf` | ✅ Variável oficial (google/fonts, OFL — `OFL.txt`), fallback de corpo. |
 | `assets/logos/` | ✅ `logo-tagline-branca.png`, `icone-branco.png`, `icone-principal.png` — PNGs reais do projeto. |
 | `styles.css`, `tokens/*.css` | ✅ Espelhados como **referência** do design system. Atenção: os `@import` remotos (Google Fonts) do `styles.css` não funcionam offline — o render não consome esses arquivos diretamente; as fontes vêm dos `@font-face` locais. |
-| Demais templates (`laudo-vistoria`, `laudo-metodos`, …) | Pendentes — trazer um a um pelo fluxo acima (mapeamento em `../NOTES-templates.md`). |
+| `templates/laudo-{motivacao,vistoria,metodos,especificacoes,referencial,encerramento}` | ✅ **REAIS anotados** — originais intocados ao lado; anotações geradas por `anotar_templates.py` (substituições verificadas — rode-o após cada re-sync em vez de editar à mão). Capítulos 2, 3, 4, 7, 9 e 10 do laudo entram como página-imagem 300 dpi. |
+| `anotar_templates.py` | Ferramenta de re-sync: original → anotado. Falha alto se o design mudar e alguma substituição não casar. |
+| `assets/js/lucide.min.js` | ✅ lucide 0.544.0 (ISC, via npm) — ícones dos miolos renderizam offline (`createIcons()` disparado pela `SessaoRender`). |
+| `assets/photos/ref-*.jpg` | ✅ Imagens do referencial técnico (trincas/umidade) do projeto. |
+
+## Nº de página e sumário nas páginas-imagem
+
+- O slot "NN \| Pág." dos miolos é renderizado vazio e **medido** no Chromium
+  (`data-dc-medir="pagina"`); o motor sobrepõe uma caixa de texto flutuante do
+  Word com o campo `PAGE` na posição exata — numeração viva no visual do design.
+- Cada capítulo-imagem carrega um heading nível 1 **invisível** (1 pt, branco)
+  que ancora o Sumário e a numeração de capítulos.
+- Páginas-imagem vivem em seções sem cabeçalho/rodapé do Word (o template traz
+  os próprios); as seções de miolo nativo reaplicam o cabeçalho padrão.
+- Encerramento: a frase de contagem de folhas referencia a numeração do rodapé
+  (sem número fixo — o campo `NUMPAGES` não é resolvível dentro de uma imagem);
+  a assinatura digitalizada é opcional (variante `com-assinatura`, campo
+  `Laudo.assinatura`).
