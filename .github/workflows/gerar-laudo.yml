@@ -1,0 +1,85 @@
+# Worker da fila de geração de documentos (laudos.geracoes).
+#
+# O botão "Gerar documento" do app desktop insere um pedido no Supabase;
+# este workflow confere a fila a cada poucos minutos e, quando há pedido,
+# roda o motor Python (inalterado) para montar o .docx, converte o .pdf no
+# LibreOffice e sobe os arquivos ao bucket privado `laudos-saida`.
+#
+# Segredo necessário (Settings → Secrets and variables → Actions):
+#   SUPABASE_SERVICE_KEY — service role key do projeto noknoebspmrbigwhyucn.
+#
+# Enquanto o trabalho vive na branch de desenvolvimento, o checkout aponta
+# para ela; ao fazer o merge, trocar `ref` para `main`.
+
+name: Gerar documentos da fila
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"   # o GitHub pode atrasar alguns minutos; normal
+  workflow_dispatch:
+
+concurrency:
+  group: gerar-laudo
+  cancel-in-progress: false
+
+jobs:
+  gerar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: claude/design-document-generation-ac8xsu
+
+      - name: Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      # Passo barato primeiro: se a fila está vazia, o resto é pulado —
+      # o agendamento roda com frequência e não deve desperdiçar minutos.
+      - name: Verificar fila
+        id: fila
+        env:
+          SUPABASE_URL: https://noknoebspmrbigwhyucn.supabase.co
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: |
+          pip install --quiet "supabase>=2.4"
+          python - <<'EOF' >> "$GITHUB_OUTPUT"
+          import os
+          from supabase import create_client
+          db = create_client(os.environ["SUPABASE_URL"],
+                             os.environ["SUPABASE_SERVICE_KEY"]).schema("laudos")
+          pendentes = db.table("geracoes").select("id").eq(
+              "status", "pendente").limit(1).execute().data
+          print(f"tem_pendentes={'sim' if pendentes else 'nao'}")
+          EOF
+
+      - name: Dependências (LibreOffice, Chromium, Python)
+        if: steps.fila.outputs.tem_pendentes == 'sim'
+        run: |
+          sudo apt-get update -q
+          sudo apt-get install -y -q libreoffice-writer
+          pip install --quiet -r sistema_laudos/requirements.txt \
+            -r sistema_laudos/requirements-supabase.txt \
+            -r sistema_laudos/requirements-render.txt
+          python -m playwright install --with-deps chromium
+
+      - name: Fontes da marca (fidelidade do PDF)
+        if: steps.fila.outputs.tem_pendentes == 'sim'
+        run: |
+          mkdir -p ~/.fonts
+          cp sistema_laudos/design/canva_templates/assets/fonts/*.otf ~/.fonts/
+          cp sistema_laudos/design/canva_templates/assets/fonts/*.ttf ~/.fonts/
+          fc-cache -f > /dev/null
+
+      - name: Processar fila
+        if: steps.fila.outputs.tem_pendentes == 'sim'
+        working-directory: sistema_laudos
+        env:
+          SUPABASE_URL: https://noknoebspmrbigwhyucn.supabase.co
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          # vazio => render_paginas usa o Chromium do Playwright instalado acima
+          CHROMIUM_PATH: ""
+        run: python -m gerador.worker_fila
