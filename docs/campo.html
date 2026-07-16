@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="theme-color" content="#171f3d" />
+<title>Laudos · Campo — Paula Pacheco</title>
+<link rel="manifest" href="manifest.webmanifest" />
+<link rel="apple-touch-icon" href="icons/icon-192.png" />
+<style>
+  /* Tokens da marca (sincronizados de design/tokens.json via /design-sync).
+     Sem webfont externa de propósito: o app de campo precisa abrir sem rede. */
+  :root{
+    --azul:#171f3d; --chumbo:#292929; --cinza:#5e6161; --branco:#fff;
+    --terracota:#BE7C4D; --petroleo:#4A7A8C;
+    --gr1:#4C8C4A; --gr2:#D9A441; --gr3:#B23A32;
+    --gr1-s:#e9f2e9; --gr2-s:#f9f0dd; --gr3-s:#f5e5e3;
+    --linha:#d6d8d8; --linha-soft:#e4e5e5; --texto:#45494a; --suave:#767a7a;
+    --surface:#f7f8f8; --ok:#3f6b52;
+    --font:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Montserrat',Arial,sans-serif;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;height:100%}
+  body{font-family:var(--font);color:var(--texto);background:var(--surface);font-size:16px;line-height:1.45;
+       padding-bottom:calc(64px + env(safe-area-inset-bottom))}
+  h1,h2,h3{color:var(--azul);margin:0;font-weight:700}
+  button{font-family:var(--font);cursor:pointer;border:none;border-radius:10px;padding:.75rem 1rem;font-weight:600;font-size:.95rem}
+  .btn{background:var(--azul);color:#fff;width:100%}
+  .btn-terra{background:var(--terracota);color:#fff}
+  .btn-ghost{background:#fff;color:var(--azul);border:1px solid var(--linha)}
+  .btn-danger{background:transparent;color:var(--gr3);border:1px solid #e7c2be}
+  .btn-sm{padding:.45rem .7rem;font-size:.8rem;width:auto}
+  input,select,textarea{width:100%;font-family:var(--font);font-size:1rem;padding:.7rem .75rem;border:1px solid var(--linha);
+    border-radius:10px;background:#fff;color:var(--chumbo)}
+  textarea{min-height:64px;resize:vertical}
+  label{display:block;font-size:.68rem;text-transform:uppercase;letter-spacing:.12em;color:var(--suave);margin:0 0 .3rem;font-weight:700}
+  .field{margin-bottom:.85rem}
+  .g2{display:grid;grid-template-columns:1fr 1fr;gap:.7rem}
+  .g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.7rem}
+  .hidden{display:none!important}
+  .muted{color:var(--suave);font-size:.82rem}
+
+  /* Barra superior: marca + estado de conexão + pendências */
+  header{background:var(--azul);color:#fff;padding:.7rem 1rem calc(.7rem);position:sticky;top:0;z-index:20;
+    display:flex;align-items:center;gap:.7rem}
+  header .mark{width:30px;height:30px;border:2px solid var(--terracota);border-radius:8px;display:grid;place-items:center;
+    font-weight:800;color:var(--terracota);font-size:.78rem;flex:none}
+  header .tit{flex:1;min-width:0}
+  header .tit b{display:block;font-size:.82rem;letter-spacing:.06em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  header .tit span{font-size:.6rem;letter-spacing:.18em;color:#aeb7cf;text-transform:uppercase}
+  .conn{display:flex;align-items:center;gap:.45rem;flex:none}
+  .dot{width:9px;height:9px;border-radius:50%;background:#8f3b34;flex:none}
+  .dot.on{background:#7fbf8a}
+  .connlbl{font-size:.66rem;color:#dde1ec;text-transform:uppercase;letter-spacing:.1em}
+  .syncbtn{background:rgba(255,255,255,.12);color:#fff;font-size:.72rem;padding:.4rem .6rem;border-radius:8px;flex:none}
+  .syncbtn .badge{background:var(--terracota);border-radius:9px;padding:0 .38rem;margin-left:.3rem;font-size:.68rem}
+  .syncbtn.clean .badge{background:var(--ok)}
+
+  main{max-width:640px;margin:0 auto;padding:1rem}
+  .card{background:#fff;border:1px solid var(--linha-soft);border-radius:14px;padding:1rem;margin-bottom:.8rem;
+    box-shadow:0 1px 4px rgba(23,31,61,.05)}
+
+  /* Itens de lista com selo de sincronização */
+  .item{background:#fff;border:1px solid var(--linha-soft);border-radius:12px;padding:.8rem .9rem;margin-bottom:.6rem}
+  .item .top{display:flex;align-items:flex-start;justify-content:space-between;gap:.6rem}
+  .item h4{margin:0;color:var(--chumbo);font-size:.98rem}
+  .chip{display:inline-block;font-size:.64rem;font-weight:700;padding:.14rem .5rem;border-radius:12px;letter-spacing:.04em}
+  .chip.pend{background:#f2e4d8;color:#a5683f}
+  .chip.sync{background:var(--gr1-s);color:var(--ok)}
+  .chip.err{background:var(--gr3-s);color:var(--gr3)}
+  .gr-badge{font-size:.68rem;font-weight:700;padding:.15rem .45rem;border-radius:6px}
+  .gr1{background:var(--gr1-s);color:var(--gr1)} .gr2{background:var(--gr2-s);color:#9a7433} .gr3{background:var(--gr3-s);color:var(--gr3)}
+  .gutline{font-size:.76rem;color:var(--cinza);margin-top:.3rem;display:flex;gap:.45rem;align-items:center;flex-wrap:wrap}
+  .gutline b{color:var(--azul)}
+  .thumb{width:64px;height:48px;object-fit:cover;border-radius:8px;border:1px solid var(--linha);flex:none}
+
+  /* Seletor GR em chips grandes (campo = dedão) */
+  .grpick{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.5rem}
+  .grpick button{border:2px solid var(--linha);background:#fff;color:var(--cinza);padding:.6rem .2rem;font-size:.8rem}
+  .grpick button.sel1{border-color:var(--gr1);background:var(--gr1-s);color:var(--gr1)}
+  .grpick button.sel2{border-color:var(--gr2);background:var(--gr2-s);color:#9a7433}
+  .grpick button.sel3{border-color:var(--gr3);background:var(--gr3-s);color:var(--gr3)}
+  .info{background:#eef4f6;border-left:4px solid var(--petroleo);padding:.6rem .8rem;border-radius:8px;font-size:.8rem;margin:.6rem 0}
+  .warn{background:var(--gr3-s);border-left:4px solid var(--gr3);padding:.6rem .8rem;border-radius:8px;font-size:.8rem;margin:.6rem 0;color:#7a2a24}
+
+  /* Navegação inferior */
+  nav.bottom{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--linha-soft);
+    display:flex;z-index:20;padding-bottom:env(safe-area-inset-bottom)}
+  nav.bottom button{flex:1;background:none;border-radius:0;color:var(--suave);font-size:.68rem;font-weight:700;
+    padding:.55rem 0 .5rem;display:flex;flex-direction:column;align-items:center;gap:.15rem;letter-spacing:.04em;text-transform:uppercase}
+  nav.bottom button .ico{font-size:1.15rem;line-height:1}
+  nav.bottom button.active{color:var(--terracota)}
+
+  .toast{position:fixed;bottom:calc(74px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);
+    background:var(--chumbo);color:#fff;padding:.65rem 1rem;border-radius:10px;font-size:.85rem;z-index:60;opacity:0;
+    transition:.25s;max-width:90vw;text-align:center}
+  .toast.show{opacity:1}
+  .toast.err{background:var(--gr3)}
+  .backrow{display:flex;align-items:center;justify-content:space-between;gap:.6rem;margin-bottom:.8rem}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="mark">PP</div>
+  <div class="tit"><b id="hdr-title">Laudos · Campo</b><span>Paula Pacheco · Perícias</span></div>
+  <div class="conn"><span class="dot" id="conn-dot"></span><span class="connlbl" id="conn-lbl">offline</span></div>
+  <button class="syncbtn clean" id="sync-btn" onclick="app.syncNow()">Sync<span class="badge" id="sync-badge">0</span></button>
+</header>
+
+<main>
+  <!-- LOGIN -->
+  <section id="scr-login" class="hidden">
+    <div class="card" style="text-align:center">
+      <h2>Entrar</h2>
+      <p class="muted">É preciso estar online para o primeiro acesso neste aparelho. Depois, o app funciona sem sinal.</p>
+      <div class="field" style="text-align:left;margin-top:.9rem"><label>E-mail</label>
+        <input id="auth-email" type="email" autocomplete="email" placeholder="paula.mariesp@gmail.com"></div>
+      <button class="btn" onclick="app.sendMagicLink()">Enviar link de acesso</button>
+      <p class="muted" id="auth-msg" style="margin-top:.8rem"></p>
+    </div>
+  </section>
+
+  <!-- LISTA DE LAUDOS -->
+  <section id="scr-laudos" class="hidden">
+    <div class="backrow"><h2>Laudos</h2></div>
+    <div id="laudos-list"></div>
+    <div class="card">
+      <h3 style="font-size:1rem">Novo laudo</h3>
+      <div class="g2" style="margin-top:.6rem">
+        <div class="field"><label>Número</label><input id="nl-numero" placeholder="51/2026"></div>
+        <div class="field"><label>Cliente</label><input id="nl-cliente" placeholder="Condomínio ..."></div>
+      </div>
+      <button class="btn" onclick="app.newLaudo()">Criar (funciona offline)</button>
+    </div>
+  </section>
+
+  <!-- LAUDO ABERTO -->
+  <section id="scr-laudo" class="hidden">
+    <div class="backrow">
+      <button class="btn-ghost btn-sm" onclick="app.closeLaudo()">← Laudos</button>
+      <span class="chip" id="laudo-chip"></span>
+    </div>
+    <div id="pane-anomalias" class="pane"></div>
+    <div id="pane-ambientes" class="pane hidden"></div>
+    <div id="pane-fotos" class="pane hidden"></div>
+    <div id="pane-dados" class="pane hidden"></div>
+  </section>
+</main>
+
+<nav class="bottom hidden" id="bottom-nav">
+  <button data-pane="anomalias" class="active" onclick="app.pane('anomalias')"><span class="ico">⚠️</span>Anomalias</button>
+  <button data-pane="ambientes" onclick="app.pane('ambientes')"><span class="ico">🏢</span>Ambientes</button>
+  <button data-pane="fotos" onclick="app.pane('fotos')"><span class="ico">📷</span>Fotos</button>
+  <button data-pane="dados" onclick="app.pane('dados')"><span class="ico">📋</span>Dados</button>
+</nav>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+/* ============================================================
+   Laudos · Campo — captura offline-first (Fase 3)
+
+   Arquitetura:
+   * IndexedDB é a fonte de verdade local. TODA gravação acontece
+     primeiro no aparelho; a rede é opcional.
+   * Cada registro nasce com UUID gerado no cliente => FKs consistentes
+     offline e sync idempotente (upsert por PK, reenvio não duplica).
+   * `_dirty=1` marca o que ainda não subiu; `_deleted=1` é tombstone.
+   * Sync: push em ordem de dependência (laudos→ambientes→anomalias→fotos;
+     blob da foto sobe ao Storage ANTES da linha), depois pull (o servidor
+     substitui registros locais limpos; sujos prevalecem até subir = LWW).
+   * Fotos: comprimidas no aparelho (1600px/JPEG 80%) e guardadas como
+     blob no IndexedDB até o upload; miniatura offline sai do blob local.
+   ============================================================ */
+const SUPABASE_URL = "https://noknoebspmrbigwhyucn.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5va25vZWJzcG1yYmlnd2h5dWNuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4MzA2ODMsImV4cCI6MjA5MTQwNjY4M30.N4ClwgCEZaKPd4RpwsBdCb-qsDS5RS6iUsNjQalhKko";
+const BUCKET = "laudos-fotos";
+
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  db: { schema: "laudos" },
+  auth: { detectSessionInUrl: true, persistSession: true }
+});
+
+/* ---- Regras de risco (espelham gerador/risco.py) ---- */
+const calcGut=(g,u,t)=>(+g)*(+u)*(+t);
+const faixa=gut=>gut>=80?"Imediata":gut>=40?"Alta":gut>=20?"Média":gut>=8?"Programada":"Monitoramento";
+
+const TIPOS={condominial_nao_judicial:"Condominial",contratual_extrajudicial:"Contratual/Extraj.",unidade_correlacao:"Unidade/Correlação",individual:"Individual"};
+const SISTEMAS=["impermeabilização e drenagem","estrutura","vedações e alvenarias","instalações hidráulicas","instalações elétricas","climatização","revestimentos e pisos","esquadrias","cobertura"];
+const VICIO={vicio_construtivo:"Vício construtivo",falha_manutencao:"Falha de manutenção",indeterminado:"Indeterminado"};
+
+/* ---- Utils ---- */
+const $=s=>document.querySelector(s);
+const esc=s=>(s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const uuid=()=> (crypto.randomUUID ? crypto.randomUUID()
+  : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,c=>{const r=Math.random()*16|0;return (c=='x'?r:(r&0x3|0x8)).toString(16)}));
+function toast(msg,err){const t=$("#toast");t.textContent=msg;t.className="toast show"+(err?" err":"");setTimeout(()=>t.className="toast",2800)}
+/* Toda chamada remota passa por aqui: falha de rede vira {error} em vez de exceção. */
+async function remote(p){try{const r=await p;return r||{}}catch(e){return {error:{message:String(e&&e.message||e)}}}}
+
+/* ============================================================
+   IndexedDB — camada mínima com promessas
+   ============================================================ */
+const DB_NAME="laudos_campo", DB_VER=1;
+let _db=null;
+function openDB(){
+  if(_db) return Promise.resolve(_db);
+  return new Promise((res,rej)=>{
+    const rq=indexedDB.open(DB_NAME,DB_VER);
+    rq.onupgradeneeded=()=>{
+      const d=rq.result;
+      for(const s of ["laudos","ambientes","anomalias","fotos","blobs"])
+        if(!d.objectStoreNames.contains(s)) d.createObjectStore(s,{keyPath:"id"});
+      if(!d.objectStoreNames.contains("meta")) d.createObjectStore("meta",{keyPath:"k"});
+    };
+    rq.onsuccess=()=>{_db=rq.result;res(_db)};
+    rq.onerror=()=>rej(rq.error);
+  });
+}
+async function idb(store,mode,fn){
+  const d=await openDB();
+  return new Promise((res,rej)=>{
+    const tx=d.transaction(store,mode), st=tx.objectStore(store);
+    const out=fn(st);
+    tx.oncomplete=()=>res(out&&out.result!==undefined?out.result:out);
+    tx.onerror=()=>rej(tx.error);
+  });
+}
+const dbPut=(s,o)=>idb(s,"readwrite",st=>st.put(o));
+const dbDel=(s,id)=>idb(s,"readwrite",st=>st.delete(id));
+const dbGet=(s,id)=>idb(s,"readonly",st=>st.get(id));
+const dbAll=s=>idb(s,"readonly",st=>st.getAll());
+const metaSet=(k,v)=>dbPut("meta",{k,v});
+const metaGet=async k=>{const r=await dbGet("meta",k);return r?r.v:null};
+
+/* Campos locais/derivados que NUNCA vão para o servidor
+   (gut e faixa_prioridade são colunas geradas no banco). */
+const LOCAL_FIELDS=["_dirty","_deleted","_err","gut","faixa_prioridade","created_at","updated_at"];
+function stripLocal(o){const r={...o};for(const k of LOCAL_FIELDS)delete r[k];return r}
+
+/* ============================================================
+   App
+   ============================================================ */
+const app={
+  laudo:null,           // laudo aberto (objeto local)
+  curPane:"anomalias",
+  syncing:false,
+  editAnoId:null,       // anomalia em edição
+
+  async init(){
+    if("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(()=>{});
+    window.addEventListener("online",()=>{this.connUI();this.syncNow(true)});
+    window.addEventListener("offline",()=>this.connUI());
+    document.addEventListener("visibilitychange",()=>{if(!document.hidden&&navigator.onLine)this.syncNow(true)});
+    setInterval(()=>{if(navigator.onLine)this.syncNow(true)},45000);
+    this.connUI();
+
+    sb.auth.onAuthStateChange((_e,s)=>{if(s)this.afterLogin()});
+    const {data}=await remote(sb.auth.getSession());
+    if(data&&data.session) await this.afterLogin();
+    else this.show("login");
+    await this.refreshBadge();
+  },
+
+  show(scr){
+    for(const s of ["login","laudos","laudo"]) $("#scr-"+s).classList.toggle("hidden",s!==scr);
+    $("#bottom-nav").classList.toggle("hidden",scr!=="laudo");
+  },
+  connUI(){
+    const on=navigator.onLine;
+    $("#conn-dot").classList.toggle("on",on);
+    $("#conn-lbl").textContent=on?"online":"offline";
+  },
+  async refreshBadge(){
+    let n=0;
+    for(const s of ["laudos","ambientes","anomalias","fotos"])
+      n+=(await dbAll(s)).filter(r=>r._dirty).length;
+    $("#sync-badge").textContent=n;
+    $("#sync-btn").classList.toggle("clean",n===0);
+    return n;
+  },
+
+  /* ---------- Auth ---------- */
+  async sendMagicLink(){
+    const email=$("#auth-email").value.trim();
+    if(!email) return toast("Informe o e-mail",true);
+    if(!navigator.onLine) return toast("Sem conexão — o primeiro acesso precisa de internet",true);
+    const {error}=await remote(sb.auth.signInWithOtp({email,options:{emailRedirectTo:location.href.split("#")[0]}}));
+    $("#auth-msg").textContent=error?("Erro: "+error.message):("Link enviado para "+email+".");
+  },
+  async afterLogin(){
+    if(this._booted) return; this._booted=true;
+    await this.pullLaudos();          // silencioso se offline
+    const last=await metaGet("laudo_aberto");
+    if(last && await dbGet("laudos",last)) await this.openLaudo(last);
+    else await this.renderLaudos();
+  },
+
+  /* ============================================================
+     SYNC — push (ordem de dependência) + pull (LWW)
+     ============================================================ */
+  async syncNow(silent){
+    if(this.syncing) return;
+    if(!navigator.onLine){if(!silent)toast("Sem conexão — dados guardados no aparelho",true);return}
+    this.syncing=true;
+    try{
+      const errs=await this.pushAll();
+      await this.pullLaudos();
+      if(this.laudo && !this.laudo._deleted) await this.pullChildren(this.laudo.id);
+      const n=await this.refreshBadge();
+      await this.rerender();
+      if(!silent) toast(errs.length?("Sync com "+errs.length+" erro(s): "+errs[0]):(n===0?"Tudo sincronizado ✓":"Sincronizado; "+n+" pendente(s)"),errs.length>0);
+    } finally { this.syncing=false }
+  },
+
+  async pushAll(){
+    const errs=[];
+    const mark=async(store,rec,error)=>{
+      if(error){rec._err=error.message;errs.push(error.message)}
+      else {rec._dirty=0;delete rec._err}
+      await dbPut(store,rec);
+    };
+    /* 1) upserts na ordem pai→filho (FKs já consistentes: UUIDs de cliente) */
+    for(const store of ["laudos","ambientes","anomalias","fotos"]){
+      for(const rec of await dbAll(store)){
+        if(!rec._dirty||rec._deleted) continue;
+        if(store==="fotos"){          // blob primeiro; linha só depois do upload
+          const b=await dbGet("blobs",rec.id);
+          if(b && !b.uploaded){
+            const {error}=await remote(sb.storage.from(BUCKET).upload(rec.arquivo_url,b.blob,{upsert:true,contentType:"image/jpeg"}));
+            if(error){await mark(store,rec,error);continue}
+            b.uploaded=1;await dbPut("blobs",b);
+          }
+        }
+        const {error}=await remote(sb.from(store).upsert(stripLocal(rec)));
+        await mark(store,rec,error);
+      }
+    }
+    /* 2) tombstones na ordem filho→pai (delete idempotente: 0 linhas = ok) */
+    for(const store of ["fotos","anomalias","ambientes","laudos"]){
+      for(const rec of await dbAll(store)){
+        if(!rec._deleted) continue;
+        if(store==="fotos"&&rec.arquivo_url) await remote(sb.storage.from(BUCKET).remove([rec.arquivo_url]));
+        const {error}=await remote(sb.from(store).delete().eq("id",rec.id));
+        if(error){rec._err=error.message;errs.push(error.message);await dbPut(store,rec);continue}
+        await dbDel(store,rec.id);
+        if(store==="fotos") await dbDel("blobs",rec.id);
+      }
+    }
+    return errs;
+  },
+
+  /* Pull: servidor substitui registros locais LIMPOS; sujos prevalecem.
+     Registro limpo que sumiu do servidor é removido localmente. */
+  async mergeStore(store,serverRows){
+    const byId=new Map(serverRows.map(r=>[r.id,r]));
+    for(const loc of await dbAll(store)){
+      if(loc._dirty||loc._deleted) continue;
+      if(!byId.has(loc.id)){await dbDel(store,loc.id);if(store==="fotos")await dbDel("blobs",loc.id)}
+    }
+    for(const row of serverRows){
+      const loc=await dbGet(store,row.id);
+      if(loc&&(loc._dirty||loc._deleted)) continue;
+      await dbPut(store,{...row,_dirty:0});
+    }
+  },
+  async pullLaudos(){
+    if(!navigator.onLine) return;
+    const {data,error}=await remote(sb.from("laudos").select("*").order("created_at",{ascending:false}));
+    if(!error&&data) await this.mergeStore("laudos",data);
+  },
+  async pullChildren(laudoId){
+    if(!navigator.onLine) return;
+    for(const store of ["ambientes","anomalias","fotos"]){
+      const {data,error}=await remote(sb.from(store).select("*").eq("laudo_id",laudoId));
+      if(error||!data) continue;
+      const server=data, byId=new Map(server.map(r=>[r.id,r]));
+      for(const loc of await dbAll(store)){
+        if(loc.laudo_id!==laudoId||loc._dirty||loc._deleted) continue;
+        if(!byId.has(loc.id)){await dbDel(store,loc.id);if(store==="fotos")await dbDel("blobs",loc.id)}
+      }
+      for(const row of server){
+        const loc=await dbGet(store,row.id);
+        if(loc&&(loc._dirty||loc._deleted)) continue;
+        await dbPut(store,{...row,_dirty:0});
+      }
+    }
+  },
+
+  /* ============================================================
+     LAUDOS
+     ============================================================ */
+  async renderLaudos(){
+    this.show("laudos");
+    const list=(await dbAll("laudos")).filter(l=>!l._deleted)
+      .sort((a,b)=>(b.created_at||"").localeCompare(a.created_at||""));
+    const box=$("#laudos-list");
+    box.innerHTML=list.length?"":'<p class="muted">Nenhum laudo neste aparelho. Crie abaixo ou sincronize.</p>';
+    for(const l of list){
+      const d=document.createElement("div");
+      d.className="item";
+      d.innerHTML=`<div class="top"><div>
+          <h4>Nº ${esc(l.numero)}</h4><div class="muted">${esc(l.cliente_nome||"—")} · ${TIPOS[l.tipo]||l.tipo||""}</div></div>
+          ${this.syncChip(l)}</div>`;
+      d.onclick=()=>this.openLaudo(l.id);
+      box.appendChild(d);
+    }
+  },
+  syncChip(rec){
+    if(rec._err) return `<span class="chip err" title="${esc(rec._err)}">erro</span>`;
+    return rec._dirty?'<span class="chip pend">⟳ no aparelho</span>':'<span class="chip sync">✓ sincronizado</span>';
+  },
+  async newLaudo(){
+    const numero=$("#nl-numero").value.trim();
+    if(!numero) return toast("Informe o número",true);
+    const rec={id:uuid(),numero,tipo:"condominial_nao_judicial",cliente_nome:$("#nl-cliente").value.trim(),
+      cliente_cnpj_cpf:"",endereco:"",data_emissao:null,status:"em_vistoria",
+      datas_diligencia:[],acompanhamento:"",
+      nome_imovel:"",caracteristicas:[],created_at:new Date().toISOString(),_dirty:1};
+    await dbPut("laudos",rec);
+    $("#nl-numero").value="";$("#nl-cliente").value="";
+    await this.refreshBadge();this.syncNow(true);
+    this.openLaudo(rec.id);
+  },
+  async openLaudo(id){
+    this.laudo=await dbGet("laudos",id);
+    if(!this.laudo) return this.renderLaudos();
+    await metaSet("laudo_aberto",id);
+    $("#hdr-title").textContent="Laudo Nº "+this.laudo.numero;
+    $("#laudo-chip").outerHTML=`<span class="chip ${this.laudo._dirty?'pend':'sync'}" id="laudo-chip">${this.laudo._dirty?'⟳ no aparelho':'✓ sincronizado'}</span>`;
+    this.show("laudo");
+    if(navigator.onLine) await this.pullChildren(id);
+    this.pane(this.curPane||"anomalias");
+  },
+  async closeLaudo(){
+    this.laudo=null;await metaSet("laudo_aberto",null);
+    $("#hdr-title").textContent="Laudos · Campo";
+    await this.renderLaudos();
+  },
+  /* Atualização em segundo plano (pós-sync): SÓ listas e selos.
+     Nunca re-renderiza formulários — digitação em andamento não pode
+     ser apagada por um sync que termina sozinho. */
+  async rerender(){
+    if(this.laudo){
+      this.laudo=await dbGet("laudos",this.laudo.id);
+      if(!this.laudo||this.laudo._deleted){this.laudo=null;await metaSet("laudo_aberto",null);return this.renderLaudos()}
+      const chip=$("#laudo-chip");
+      if(chip){chip.className="chip "+(this.laudo._dirty?"pend":"sync");
+               chip.textContent=this.laudo._dirty?"⟳ no aparelho":"✓ sincronizado"}
+      if(this.curPane==="anomalias") await this.fillAnoList();
+      else if(this.curPane==="ambientes") await this.fillAmbList();
+      else if(this.curPane==="fotos") await this.fillFotoList();
+    } else if(!$("#scr-laudos").classList.contains("hidden")) await this.renderLaudos();
+  },
+
+  pane(name){
+    this.curPane=name;
+    document.querySelectorAll("nav.bottom button").forEach(b=>b.classList.toggle("active",b.dataset.pane===name));
+    document.querySelectorAll(".pane").forEach(p=>p.classList.add("hidden"));
+    $("#pane-"+name).classList.remove("hidden");
+    ({anomalias:this.renderAnomalias,ambientes:this.renderAmbientes,fotos:this.renderFotos,dados:this.renderDados})[name].call(this);
+  },
+
+  /* ---------- helpers de dados locais ---------- */
+  async children(store){return (await dbAll(store)).filter(r=>r.laudo_id===this.laudo.id&&!r._deleted)},
+
+  /* ============================================================
+     ANOMALIAS (tela principal de campo)
+     ============================================================ */
+  async renderAnomalias(){
+    const ambs=await this.children("ambientes");
+    this.editAnoId=null;
+    $("#pane-anomalias").innerHTML=`<div id="ano-list"></div>${this.anomaliaForm(null,ambs)}`;
+    this.grSel=1;this.updateGrUI();this.previewGut();
+    await this.fillAnoList();
+  },
+  /* Lista re-renderizável a qualquer momento (não toca no formulário). */
+  async fillAnoList(){
+    const box=$("#ano-list");
+    if(!box) return;                       // pane em modo edição/ausente
+    const [anos,ambs]=[await this.children("anomalias"),await this.children("ambientes")];
+    anos.sort((a,b)=>a.ordem-b.ordem);
+    const ambName=id=>{const a=ambs.find(x=>x.id===id);return a?a.nome:""};
+    box.innerHTML=anos.map(an=>{
+      const gut=calcGut(an.g,an.u,an.t);
+      return `<div class="item" onclick="app.editAnomalia('${an.id}')"><div class="top">
+        <div><h4>${esc(an.titulo)}</h4>
+          <div class="muted">${esc(an.sistema_construtivo)}${an.ambiente_id?" · "+esc(ambName(an.ambiente_id)):""}</div>
+          <div class="gutline"><span class="gr-badge gr${an.gr}">GR${an.gr}</span>
+            <span>G${an.g}·U${an.u}·T${an.t} → <b>${gut}</b> · ${faixa(gut)}</span></div></div>
+        ${this.syncChip(an)}</div></div>`;
+    }).join("")||'<p class="muted">Nenhuma anomalia registrada.</p>';
+    // opções de ambiente podem ter mudado; atualiza preservando a seleção
+    const sel=$("#an-amb");
+    if(sel){const cur=sel.value;
+      sel.innerHTML='<option value="">—</option>'+ambs.map(a=>`<option value="${a.id}">${esc(a.nome)}</option>`).join("");
+      sel.value=cur}
+  },
+
+  anomaliaForm(an,ambs){
+    const e=an||{};
+    const ambOpts=ambs.map(a=>`<option value="${a.id}" ${e.ambiente_id===a.id?"selected":""}>${esc(a.nome)}</option>`).join("");
+    const sel=(n,v)=>[1,2,3,4,5].map(i=>`<option ${i===(v||1)?"selected":""}>${i}</option>`).join("");
+    return `<div class="card" id="ano-form">
+      <h3 style="font-size:1rem">${an?"Editar anomalia":"Nova anomalia"}</h3>
+      <div class="field" style="margin-top:.6rem"><label>Título *</label><input id="an-tit" value="${esc(e.titulo)}" placeholder="Trinca em viga do subsolo"></div>
+      <div class="g2">
+        <div class="field"><label>Sistema *</label><input id="an-sis" list="dl-sis" value="${esc(e.sistema_construtivo)}" placeholder="estrutura">
+          <datalist id="dl-sis">${SISTEMAS.map(s=>`<option value="${s}">`).join("")}</datalist></div>
+        <div class="field"><label>Ambiente</label><select id="an-amb"><option value="">—</option>${ambOpts}</select></div>
+      </div>
+      <div class="field"><label>Descrição rápida (campo)</label><textarea id="an-desc" placeholder="O texto pericial completo é feito depois, no desktop">${esc(e.descricao_fenomenologica)}</textarea></div>
+      <div class="field"><label>Grau IBAPE</label>
+        <div class="grpick">
+          <button type="button" id="gr-1" onclick="app.setGr(1)">GR1 · Baixo</button>
+          <button type="button" id="gr-2" onclick="app.setGr(2)">GR2 · Médio</button>
+          <button type="button" id="gr-3" onclick="app.setGr(3)">GR3 · Alto</button>
+        </div></div>
+      <div class="g3">
+        <div class="field"><label>G</label><select id="an-g" onchange="app.previewGut()">${sel("g",e.g)}</select></div>
+        <div class="field"><label>U</label><select id="an-u" onchange="app.previewGut()">${sel("u",e.u)}</select></div>
+        <div class="field"><label>T</label><select id="an-t" onchange="app.previewGut()">${sel("t",e.t)}</select></div>
+      </div>
+      <div class="info" id="gut-preview"></div>
+      <div class="field"><label>Vício × manutenção</label><select id="an-vic">
+        ${Object.entries(VICIO).map(([k,v])=>`<option value="${k}" ${(e.vicio_ou_falha_manutencao||"indeterminado")===k?"selected":""}>${v}</option>`).join("")}</select></div>
+      ${an?"":`<div class="field"><label>Foto (opcional, direto da câmera)</label>
+        <input id="an-foto" type="file" accept="image/*" capture="environment"></div>`}
+      <button class="btn" onclick="app.saveAnomalia()">${an?"Salvar alterações":"Registrar anomalia"}</button>
+      ${an?`<button class="btn-danger" style="width:100%;margin-top:.5rem" onclick="app.delAnomalia('${an.id}')">Excluir</button>
+            <button class="btn-ghost" style="width:100%;margin-top:.5rem" onclick="app.renderAnomalias()">Cancelar</button>`:""}
+    </div>`;
+  },
+  setGr(n){this.grSel=n;this.updateGrUI();this.previewGut()},
+  updateGrUI(){for(const i of [1,2,3]){const b=$("#gr-"+i);if(b)b.className=(i===this.grSel?("sel"+i):"")}},
+  previewGut(){
+    const g=$("#an-g"),u=$("#an-u"),t=$("#an-t"),p=$("#gut-preview");
+    if(!g||!p) return;
+    const gut=calcGut(g.value,u.value,t.value);
+    p.innerHTML=`G×U×T = <b>${gut}</b> · Faixa: <b>${faixa(gut)}</b>`+
+      (this.grSel===3?' — <span style="color:var(--gr3)">GR3 aciona o alerta jurídico automático</span>':"");
+  },
+  async editAnomalia(id){
+    const an=(await dbGet("anomalias",id));
+    if(!an) return;
+    const ambs=await this.children("ambientes");
+    this.grSel=an.gr;
+    $("#pane-anomalias").innerHTML=this.anomaliaForm(an,ambs);
+    this.editAnoId=id;this.updateGrUI();this.previewGut();
+  },
+  async saveAnomalia(){
+    const tit=$("#an-tit").value.trim(),sis=$("#an-sis").value.trim();
+    if(!tit||!sis) return toast("Título e sistema são obrigatórios",true);
+    const editing=this.editAnoId?await dbGet("anomalias",this.editAnoId):null;
+    const anos=await this.children("anomalias");
+    const rec={
+      ...(editing||{id:uuid(),laudo_id:this.laudo.id,ordem:anos.length+1,created_at:new Date().toISOString(),
+                    mecanismo:"",causa_provavel:"",consequencias:"",origem_taxonomia:"",prazo_sugerido:null,status:"rascunho"}),
+      titulo:tit,sistema_construtivo:sis,ambiente_id:$("#an-amb").value||null,
+      descricao_fenomenologica:$("#an-desc").value,gr:this.grSel,
+      g:+$("#an-g").value,u:+$("#an-u").value,t:+$("#an-t").value,
+      vicio_ou_falha_manutencao:$("#an-vic").value,
+      alerta_juridico:this.grSel===3,
+      _dirty:1
+    };
+    await dbPut("anomalias",rec);
+    const fi=$("#an-foto");
+    if(fi&&fi.files[0]) await this.addFotoLocal(fi.files[0],rec.id,rec.ambiente_id,tit);
+    this.editAnoId=null;
+    await this.refreshBadge();this.syncNow(true);
+    await this.renderAnomalias();
+    toast(navigator.onLine?"Anomalia registrada":"Anomalia salva no aparelho — sobe quando houver sinal");
+  },
+  async delAnomalia(id){
+    if(!confirm("Excluir anomalia?")) return;
+    const an=await dbGet("anomalias",id);
+    an._deleted=1;an._dirty=1;await dbPut("anomalias",an);
+    this.editAnoId=null;
+    await this.refreshBadge();this.syncNow(true);
+    await this.renderAnomalias();
+  },
+
+  /* ============================================================
+     AMBIENTES
+     ============================================================ */
+  async renderAmbientes(){
+    $("#pane-ambientes").innerHTML=`<div id="amb-list"></div>
+      <div class="card"><h3 style="font-size:1rem">Novo ambiente</h3>
+      <div class="g2" style="margin-top:.6rem">
+        <div class="field"><label>Nome *</label><input id="am-nome" placeholder="2º Subsolo"></div>
+        <div class="field"><label>Pavimento</label><input id="am-pav"></div></div>
+      <button class="btn" onclick="app.addAmbiente()">Adicionar</button></div>`;
+    await this.fillAmbList();
+  },
+  async fillAmbList(){
+    const box=$("#amb-list");
+    if(!box) return;
+    const ambs=(await this.children("ambientes")).sort((a,b)=>a.ordem-b.ordem);
+    box.innerHTML=ambs.map(a=>`<div class="item"><div class="top">
+        <div><h4>${esc(a.nome)}</h4><div class="muted">${esc(a.pavimento||"")}</div></div>
+        <div style="display:flex;gap:.4rem;align-items:center">${this.syncChip(a)}
+          <button class="btn-danger btn-sm" onclick="app.delAmbiente('${a.id}')">✕</button></div></div></div>`).join("")
+      ||'<p class="muted">Nenhum ambiente.</p>';
+  },
+  async addAmbiente(){
+    const nome=$("#am-nome").value.trim();
+    if(!nome) return toast("Nome obrigatório",true);
+    const ambs=await this.children("ambientes");
+    await dbPut("ambientes",{id:uuid(),laudo_id:this.laudo.id,nome,pavimento:$("#am-pav").value.trim(),
+      ordem:ambs.length+1,created_at:new Date().toISOString(),_dirty:1});
+    $("#am-nome").value="";$("#am-pav").value="";
+    await this.refreshBadge();this.syncNow(true);
+    await this.fillAmbList();
+  },
+  async delAmbiente(id){
+    if(!confirm("Excluir ambiente?")) return;
+    const a=await dbGet("ambientes",id);
+    a._deleted=1;a._dirty=1;await dbPut("ambientes",a);
+    await this.refreshBadge();this.syncNow(true);
+    await this.fillAmbList();
+  },
+
+  /* ============================================================
+     FOTOS
+     ============================================================ */
+  async downscale(file,max=1600){
+    const url=URL.createObjectURL(file);
+    try{
+      const img=await new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=rej;i.src=url});
+      const k=Math.min(1,max/Math.max(img.naturalWidth,img.naturalHeight));
+      const c=document.createElement("canvas");
+      c.width=Math.max(1,Math.round(img.naturalWidth*k));c.height=Math.max(1,Math.round(img.naturalHeight*k));
+      c.getContext("2d").drawImage(img,0,0,c.width,c.height);
+      return await new Promise((res,rej)=>c.toBlob(b=>b?res(b):rej(new Error("toBlob falhou")),"image/jpeg",0.8));
+    } finally { URL.revokeObjectURL(url) }
+  },
+  async addFotoLocal(file,anomaliaId,ambienteId,legenda){
+    const id=uuid();
+    const blob=await this.downscale(file);
+    const path=`${this.laudo.numero.replace(/\//g,"-")}/${id}.jpg`;
+    await dbPut("blobs",{id,blob,uploaded:0});
+    const fotos=await this.children("fotos");
+    await dbPut("fotos",{id,laudo_id:this.laudo.id,anomalia_id:anomaliaId||null,ambiente_id:ambienteId||null,
+      arquivo_url:path,legenda:legenda||"",ordem:fotos.length+1,
+      data_captura:new Date().toISOString(),_dirty:1});
+  },
+  async renderFotos(){
+    const anos=await this.children("anomalias");
+    const anoOpts=anos.map(a=>`<option value="${a.id}">${esc(a.titulo)}</option>`).join("");
+    $("#pane-fotos").innerHTML=`<div id="fotos-list"></div>
+      <div class="card"><h3 style="font-size:1rem">Nova foto</h3>
+        <div class="field" style="margin-top:.6rem"><label>Câmera / arquivo</label>
+          <input id="ft-file" type="file" accept="image/*" capture="environment"></div>
+        <div class="field"><label>Anomalia vinculada</label><select id="ft-ano"><option value="">—</option>${anoOpts}</select></div>
+        <div class="field"><label>Legenda</label><input id="ft-leg" placeholder="descrição objetiva"></div>
+        <button class="btn" onclick="app.addFoto()">Salvar foto (funciona offline)</button>
+        <p class="muted" style="margin-top:.4rem">Comprimida no aparelho (máx. 1600px); sobe ao Supabase quando houver sinal.</p></div>`;
+    await this.fillFotoList();
+  },
+  async fillFotoList(){
+    const box=$("#fotos-list");
+    if(!box) return;
+    const [fotos,anos]=[await this.children("fotos"),await this.children("anomalias")];
+    fotos.sort((a,b)=>a.ordem-b.ordem);
+    // opções de anomalia podem ter mudado; atualiza preservando a seleção
+    const sel=$("#ft-ano");
+    if(sel){const cur=sel.value;
+      sel.innerHTML='<option value="">—</option>'+anos.map(a=>`<option value="${a.id}">${esc(a.titulo)}</option>`).join("");
+      sel.value=cur}
+    box.innerHTML=fotos.length?"":'<p class="muted">Nenhuma foto.</p>';
+    for(const f of fotos){
+      const d=document.createElement("div");d.className="item";
+      let src="";
+      const b=await dbGet("blobs",f.id);
+      if(b) src=URL.createObjectURL(b.blob);
+      else if(navigator.onLine&&f.arquivo_url){
+        const {data}=await remote(sb.storage.from(BUCKET).createSignedUrl(f.arquivo_url,3600));
+        if(data&&data.signedUrl) src=data.signedUrl;
+      }
+      d.innerHTML=`<div class="top"><div style="display:flex;gap:.7rem;align-items:center;min-width:0">
+          ${src?`<img class="thumb" src="${src}">`:'<div class="thumb" style="display:grid;place-items:center;background:#eef0ef">📷</div>'}
+          <div style="min-width:0"><h4>Ordem ${f.ordem}</h4><div class="muted" style="overflow:hidden;text-overflow:ellipsis">${esc(f.legenda||"")}</div></div></div>
+        <div style="display:flex;gap:.4rem;align-items:center;flex:none">${this.syncChip(f)}
+          <button class="btn-danger btn-sm" onclick="app.delFoto('${f.id}')">✕</button></div></div>`;
+      box.appendChild(d);
+    }
+  },
+  async addFoto(){
+    const fi=$("#ft-file");
+    if(!fi.files[0]) return toast("Escolha ou tire uma foto",true);
+    await this.addFotoLocal(fi.files[0],$("#ft-ano").value||null,null,$("#ft-leg").value.trim());
+    fi.value="";$("#ft-leg").value="";
+    await this.refreshBadge();this.syncNow(true);
+    await this.fillFotoList();
+    toast(navigator.onLine?"Foto salva":"Foto salva no aparelho — sobe quando houver sinal");
+  },
+  async delFoto(id){
+    if(!confirm("Excluir foto?")) return;
+    const f=await dbGet("fotos",id);
+    f._deleted=1;f._dirty=1;await dbPut("fotos",f);
+    await this.refreshBadge();this.syncNow(true);
+    await this.fillFotoList();
+  },
+
+  /* ============================================================
+     DADOS DO LAUDO (mínimo de campo; completo fica no desktop)
+     ============================================================ */
+  renderDados(){
+    const l=this.laudo;
+    $("#pane-dados").innerHTML=`<div class="card">
+      <div class="g2">
+        <div class="field"><label>Número</label><input id="ld-numero" value="${esc(l.numero)}"></div>
+        <div class="field"><label>Tipo</label><select id="ld-tipo">${Object.entries(TIPOS).map(([k,v])=>`<option value="${k}" ${l.tipo===k?"selected":""}>${v}</option>`).join("")}</select></div>
+      </div>
+      <div class="field"><label>Cliente</label><input id="ld-cliente" value="${esc(l.cliente_nome)}"></div>
+      <div class="field"><label>Endereço</label><input id="ld-end" value="${esc(l.endereco)}"></div>
+      <div class="g2">
+        <div class="field"><label>Diligências (vírgula)</label><input id="ld-dilig" value="${esc((l.datas_diligencia||[]).join(', '))}"></div>
+        <div class="field"><label>Acompanhamento</label><input id="ld-acomp" value="${esc(l.acompanhamento)}"></div>
+      </div>
+      <div class="field"><label>Nome do imóvel (capa)</label><input id="ld-imovel" placeholder="Edifício ..." value="${esc(l.nome_imovel||"")}"></div>
+      <div class="field"><label>Características gerais — uma por linha, "Rótulo: valor"</label>
+        <textarea id="ld-caract" rows="4" placeholder="Torres / blocos: 01 torre&#10;Pavimentos: 12 + pilotis">${esc((l.caracteristicas||[]).map(c=>`${c.rotulo}: ${c.valor}`).join("\n"))}</textarea></div>
+      <button class="btn" onclick="app.saveDados()">Salvar</button>
+      <button class="btn-danger" style="width:100%;margin-top:.5rem" onclick="app.delLaudo()">Excluir laudo</button>
+      <div class="info" style="margin-top:.8rem">Redação pericial completa, revisão e geração do .docx: usar a tela desktop (<code>index.html</code>).</div>
+    </div>`;
+  },
+  async saveDados(){
+    const l=this.laudo;
+    const caract=$("#ld-caract").value.split("\n").map(s=>s.trim()).filter(Boolean).map(s=>{
+      const i=s.indexOf(":"); return i<0?{rotulo:s,valor:""}:{rotulo:s.slice(0,i).trim(),valor:s.slice(i+1).trim()};});
+    Object.assign(l,{numero:$("#ld-numero").value.trim(),tipo:$("#ld-tipo").value,
+      cliente_nome:$("#ld-cliente").value,endereco:$("#ld-end").value,
+      datas_diligencia:$("#ld-dilig").value.split(",").map(s=>s.trim()).filter(Boolean),
+      acompanhamento:$("#ld-acomp").value,
+      nome_imovel:$("#ld-imovel").value,caracteristicas:caract,_dirty:1});
+    await dbPut("laudos",l);
+    $("#hdr-title").textContent="Laudo Nº "+l.numero;
+    await this.refreshBadge();this.syncNow(true);
+    toast("Dados salvos");
+  },
+  async delLaudo(){
+    if(!confirm("Excluir o laudo inteiro (ambientes, anomalias e fotos)?")) return;
+    const l=this.laudo;
+    /* tombstone nos filhos também, para limpar Storage e locais */
+    for(const store of ["fotos","anomalias","ambientes"])
+      for(const r of await this.children(store)){r._deleted=1;r._dirty=1;await dbPut(store,r)}
+    l._deleted=1;l._dirty=1;await dbPut("laudos",l);
+    await this.refreshBadge();this.syncNow(true);
+    await this.closeLaudo();
+  }
+};
+
+app.init();
+</script>
+</body>
+</html>
