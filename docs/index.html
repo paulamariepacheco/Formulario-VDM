@@ -138,7 +138,7 @@
       <button class="tab" data-tab="ambientes" onclick="app.tab('ambientes')">Ambientes</button>
       <button class="tab" data-tab="anomalias" onclick="app.tab('anomalias')">Anomalias</button>
       <button class="tab" data-tab="fotos" onclick="app.tab('fotos')">Fotos</button>
-      <button class="tab" data-tab="gerar" onclick="app.tab('gerar')">Gerar .docx</button>
+      <button class="tab" data-tab="gerar" onclick="app.tab('gerar')">Gerar documento</button>
     </div>
 
     <div id="tab-dados" class="tabpanel"></div>
@@ -252,7 +252,7 @@ const app = {
     $("#editor-status").textContent=STATUS[l.status]||l.status;
     view("editor"); this.tab("dados");
   },
-  backToList(){this.state.laudo=null;this.loadLaudos()},
+  backToList(){clearTimeout(this._gerTimer);this.state.laudo=null;this.loadLaudos()},
 
   tab(name){
     document.querySelectorAll(".tab").forEach(t=>t.classList.toggle("active",t.dataset.tab===name));
@@ -470,17 +470,70 @@ const app = {
 
   /* ---------- GERAR ---------- */
   renderGerar(){
-    const n=this.state.laudo.numero, out="saida/Laudo-"+n.replace(/\//g,'-')+".docx";
     $("#tab-gerar").innerHTML=`<div class="card">
-      <h3>Gerar o documento (.docx)</h3>
-      <div class="info">A montagem do <code>.docx</code> roda pelo motor Python (Fase 1), lendo estes dados direto do Supabase. No computador com o projeto:</div>
-      <pre style="background:#0d1226;color:#dde1ec;padding:1rem;border-radius:8px;overflow:auto;font-size:.8rem"><code>cd sistema_laudos
-pip install -r requirements.txt supabase
-export SUPABASE_URL="${SUPABASE_URL}"
-export SUPABASE_SERVICE_KEY="&lt;service role key&gt;"
-python -m gerador.gerar_do_supabase "${n}" "${out}"</code></pre>
-      <p class="muted">Resumo atual: ${this.state.ambientes.length} ambientes · ${this.state.anomalias.length} anomalias · ${this.state.fotos.length} fotos.</p>
+      <h3>Gerar documento</h3>
+      <p class="muted" style="margin:.4rem 0 .9rem">O documento é montado com a capa e os capítulos no visual do design (dados atuais deste laudo). A geração leva <b>alguns minutos</b> — pode sair desta tela e voltar depois.</p>
+      <div style="display:flex;gap:1.4rem;align-items:center;margin-bottom:1rem">
+        <label style="display:flex;gap:.45rem;align-items:center;text-transform:none;letter-spacing:0;font-weight:500;color:var(--texto)"><input type="checkbox" id="g-docx" checked style="width:auto"> Word (.docx)</label>
+        <label style="display:flex;gap:.45rem;align-items:center;text-transform:none;letter-spacing:0;font-weight:500;color:var(--texto)"><input type="checkbox" id="g-pdf" checked style="width:auto"> PDF (.pdf)</label>
+      </div>
+      <button class="btn" id="g-botao" onclick="app.gerarDocumento()">Gerar documento</button>
+      <p class="muted" style="margin-top:.6rem">Resumo atual: ${this.state.ambientes.length} ambientes · ${this.state.anomalias.length} anomalias · ${this.state.fotos.length} fotos.</p>
+    </div>
+    <div class="card" style="margin-top:1rem">
+      <div class="row"><h3>Documentos gerados</h3>
+        <button class="btn-ghost btn-sm" onclick="app.loadGeracoes()">Atualizar</button></div>
+      <div id="geracoes-list" style="margin-top:.8rem"><p class="muted">Carregando…</p></div>
     </div>`;
+    this.loadGeracoes();
+  },
+  async gerarDocumento(){
+    const formatos=[["docx","#g-docx"],["pdf","#g-pdf"]]
+      .filter(([,sel])=>$(sel).checked).map(([f])=>f);
+    if(!formatos.length) return toast("Escolha ao menos um formato",true);
+    $("#g-botao").disabled=true;
+    const {error}=await sb.from("geracoes")
+      .insert({laudo_id:this.state.laudo.id,formatos});
+    $("#g-botao").disabled=false;
+    if(error) return toast(error.message,true);
+    toast("Pedido na fila — o documento aparece abaixo em alguns minutos");
+    this.loadGeracoes();
+  },
+  async loadGeracoes(){
+    clearTimeout(this._gerTimer);
+    const box=$("#geracoes-list"); if(!box) return;
+    const {data,error}=await sb.from("geracoes").select("*")
+      .eq("laudo_id",this.state.laudo.id)
+      .order("created_at",{ascending:false}).limit(10);
+    if(error){box.innerHTML=`<p class="muted">${esc(error.message)}</p>`;return}
+    if(!data.length){box.innerHTML='<p class="muted">Nenhum documento gerado ainda.</p>';return}
+    const ROTULO={pendente:"na fila",processando:"gerando…",pronto:"pronto",erro:"erro"};
+    const partes=[];
+    for(const g of data){
+      const quando=new Date(g.created_at).toLocaleString("pt-BR",
+        {day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"});
+      let acoes="";
+      if(g.status==="pronto"){
+        for(const [rot,path] of [[".docx",g.docx_path],[".pdf",g.pdf_path]]){
+          if(!path) continue;
+          const {data:s}=await sb.storage.from("laudos-saida").createSignedUrl(path,3600);
+          if(s) acoes+=`<a class="btn btn-sm" style="text-decoration:none;margin-right:.5rem"
+            href="${s.signedUrl}" download>Baixar ${rot}</a>`;
+        }
+      }
+      const chip=g.status==="pronto"?"gr1":g.status==="erro"?"gr3":"gr2";
+      partes.push(`<div class="item"><div class="row">
+        <div><h4>${quando} · ${(g.formatos||[]).join(" + ")}</h4>
+          ${g.status==="erro"?`<div class="callout">${esc(g.erro||"falha na geração")}</div>`:""}
+        </div>
+        <div style="display:flex;align-items:center;gap:.6rem">${acoes}
+          <span class="gr-badge ${chip}">${ROTULO[g.status]||g.status}</span></div>
+      </div></div>`);
+    }
+    box.innerHTML=partes.join("");
+    // enquanto houver pedido em andamento e a aba estiver visível, revisita
+    if(data.some(g=>g.status==="pendente"||g.status==="processando"))
+      this._gerTimer=setTimeout(()=>this.loadGeracoes(),15000);
   },
 
   async reloadChildren(){
