@@ -50,11 +50,16 @@ sistema→template (ex.: "impermeabilização e drenagem" → lajes-impermeabili
    alocador das figuras inline do python-docx).
 3. ~~Batch de render~~ — resolvido: `render_paginas.SessaoRender` (1 launch de
    Chromium por laudo; mede os slots `data-dc-medir` para os overlays).
-4. **Supabase**: além de `nome_imovel`/`foto_capa_url`/`capa_fundo`, agora
-   também `mapa_localizacao_url`, `foto_fachada_url`, `legenda_mapa`,
-   `legenda_fachada`, `caracteristicas` (jsonb), `cidade_emissao` e
-   `assinatura_url` — o loader usa `.get()` e tolera a ausência; criar
-   migração `0005` + campos nos dois apps quando a Paula validar.
+4. ~~Supabase~~ — resolvido: migração `0005_campos_paginas_template.sql`
+   **aplicada** ao projeto (colunas `nome_imovel`, `foto_capa_url`,
+   `capa_fundo`, `mapa_localizacao_url`, `legenda_mapa`, `foto_fachada_url`,
+   `legenda_fachada`, `caracteristicas` jsonb, `cidade_emissao`,
+   `assinatura_url`). Desktop (`index.html`): campos no formulário Dados +
+   bloco "Imagens das páginas do laudo" (upload de capa/mapa/fachada/
+   assinatura ao bucket privado). Campo (`campo.html`): nome do imóvel e
+   características no formulário (sincronizam pelo upsert normal); fotos dos
+   slots especiais ficam no desktop. `gerar_do_supabase` baixa as 4 imagens
+   junto com as fotos.
 5. **Nº de página vivo**: slot do design medido no render + caixa de texto
    flutuante com campo `PAGE` (`docx_util.inserir_numero_pagina_flutuante`).
    A fonte da caixa é "IBM Plex Mono" — instalar no computador que abre o

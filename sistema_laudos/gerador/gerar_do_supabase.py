@@ -45,19 +45,28 @@ def _baixar_fotos(client, laudo, destino_dir: Path, bucket: str = "laudos-fotos"
     Fotos sem objeto no Storage caem no placeholder do motor (arquivo vazio)."""
     destino_dir.mkdir(parents=True, exist_ok=True)
     storage = client.storage.from_(bucket)
-    for foto in laudo.fotos:
-        caminho_obj = foto.arquivo  # em `arquivo_url` guardamos o path no bucket
+
+    def baixar(caminho_obj: str, prefixo: str) -> str:
         if not caminho_obj:
-            continue
+            return ""
         try:
             conteudo = storage.download(caminho_obj)
-        except Exception as e:  # objeto ausente -> placeholder
+        except Exception as e:  # objeto ausente -> placeholder do motor
             print(f"  aviso: não baixou {caminho_obj}: {e}")
-            foto.arquivo = ""
-            continue
-        local = destino_dir / f"{foto.id}_{Path(caminho_obj).name}"
+            return ""
+        local = destino_dir / f"{prefixo}_{Path(caminho_obj).name}"
         local.write_bytes(conteudo)
-        foto.arquivo = str(local)
+        return str(local)
+
+    for foto in laudo.fotos:
+        # em `arquivo_url` guardamos o path no bucket
+        foto.arquivo = baixar(foto.arquivo, foto.id)
+
+    # imagens das páginas-template (migração 0005): capa, vistoria, assinatura
+    laudo.foto_capa = baixar(laudo.foto_capa, "capa")
+    laudo.mapa_localizacao = baixar(laudo.mapa_localizacao, "mapa")
+    laudo.foto_fachada = baixar(laudo.foto_fachada, "fachada")
+    laudo.assinatura = baixar(laudo.assinatura, "assinatura")
 
 
 def gerar_do_supabase(numero: str, saida: str | Path) -> Path:

@@ -274,19 +274,69 @@ const app = {
       <div class="field"><label>Status</label><select id="f-status">${opt(STATUS,l.status)}</select></div>
       <div class="field"><label>Datas de diligência (separadas por vírgula)</label><input id="f-dilig" value="${esc((l.datas_diligencia||[]).join(', '))}"></div>
       <div class="field"><label>Acompanhamento</label><input id="f-acomp" value="${esc(l.acompanhamento)}"></div>
-      </div><button class="btn" onclick="app.saveDados()">Salvar dados</button></div>`;
+      <div class="field"><label>Nome do imóvel (capa)</label><input id="f-imovel" placeholder="Edifício Comercial Otoni" value="${esc(l.nome_imovel||"")}"></div>
+      <div class="field"><label>Cidade de emissão (encerramento)</label><input id="f-cidade" placeholder="Belo Horizonte" value="${esc(l.cidade_emissao||"")}"></div>
+      <div class="field"><label>Fundo da capa</label><select id="f-capafundo">
+        <option value="" ${!l.capa_fundo?"selected":""}>Automático (foto ⇒ overlay)</option>
+        <option value="azul-marinho" ${l.capa_fundo==="azul-marinho"?"selected":""}>Azul-marinho</option>
+        <option value="foto-com-overlay" ${l.capa_fundo==="foto-com-overlay"?"selected":""}>Foto com overlay</option></select></div>
+      <div class="field"><label>Legenda do mapa (vistoria)</label><input id="f-legmapa" placeholder="Localização do ... (Fonte: Google Maps)" value="${esc(l.legenda_mapa||"")}"></div>
+      <div class="field"><label>Legenda da fachada (vistoria)</label><input id="f-legfach" placeholder="Fachada principal do edifício" value="${esc(l.legenda_fachada||"")}"></div>
+      <div class="field" style="grid-column:1/-1"><label>Características gerais (vistoria) — uma por linha, "Rótulo: valor"</label>
+        <textarea id="f-caract" rows="4" placeholder="Torres / blocos: 01 torre&#10;Unidades: 30 apartamentos&#10;Pavimentos: 12 pavimentos + pilotis">${esc((l.caracteristicas||[]).map(c=>`${c.rotulo}: ${c.valor}`).join("\n"))}</textarea></div>
+      </div><button class="btn" onclick="app.saveDados()">Salvar dados</button></div>
+      <div class="card" style="margin-top:1rem"><h3>Imagens das páginas do laudo</h3>
+      <p class="muted" style="margin:.4rem 0 .8rem">Reduzidas a 1600px antes do upload (bucket privado). Sem imagem, o laudo usa placeholder (mapa/fachada) ou o fundo azul-marinho (capa).</p>
+      <div class="grid g2">${[["foto_capa_url","Foto de capa"],["mapa_localizacao_url","Mapa de localização (vistoria)"],
+        ["foto_fachada_url","Foto da fachada (vistoria)"],["assinatura_url","Assinatura digitalizada (encerramento — opcional)"]]
+        .map(([col,rot])=>`<div class="field"><label>${rot} ${l[col]?"· <b>enviada ✓</b>":""}</label>
+          <div style="display:flex;gap:.5rem;align-items:center">
+          <input type="file" accept="image/*" id="img-${col}" style="flex:1">
+          ${l[col]?`<button class="btn-danger btn-sm" onclick="app.delImagemLaudo('${col}')">Remover</button>`:""}
+          </div></div>`).join("")}</div>
+      <button class="btn" onclick="app.enviarImagensLaudo()">Enviar imagens selecionadas</button></div>`;
   },
   async saveDados(){
     const dil=$("#f-dilig").value.split(",").map(s=>s.trim()).filter(Boolean);
+    const caract=$("#f-caract").value.split("\n").map(s=>s.trim()).filter(Boolean).map(s=>{
+      const i=s.indexOf(":"); return i<0?{rotulo:s,valor:""}:{rotulo:s.slice(0,i).trim(),valor:s.slice(i+1).trim()};});
     const patch={numero:$("#f-numero").value.trim(),tipo:$("#f-tipo").value,cliente_nome:$("#f-cliente").value,
       cliente_cnpj_cpf:$("#f-doc").value,endereco:$("#f-end").value,data_emissao:$("#f-data").value||null,
-      status:$("#f-status").value,datas_diligencia:dil,acompanhamento:$("#f-acomp").value};
+      status:$("#f-status").value,datas_diligencia:dil,acompanhamento:$("#f-acomp").value,
+      nome_imovel:$("#f-imovel").value,cidade_emissao:$("#f-cidade").value,capa_fundo:$("#f-capafundo").value,
+      legenda_mapa:$("#f-legmapa").value,legenda_fachada:$("#f-legfach").value,caracteristicas:caract};
     const {error}=await sb.from("laudos").update(patch).eq("id",this.state.laudo.id);
     if(error) return toast(error.message,true);
     Object.assign(this.state.laudo,patch);
     $("#editor-title").textContent="Laudo Nº "+patch.numero;
     $("#editor-status").textContent=STATUS[patch.status];
     toast("Dados salvos");
+  },
+  async enviarImagensLaudo(){
+    const cols=["foto_capa_url","mapa_localizacao_url","foto_fachada_url","assinatura_url"];
+    const patch={};
+    for(const col of cols){
+      const file=$("#img-"+col)?.files[0]; if(!file) continue;
+      toast("Enviando "+col.replace(/_url$/,"").replace(/_/g," ")+"…");
+      const blob=await this.downscale(file);
+      const path=`${this.state.laudo.numero.replace(/\//g,'-')}/${col.replace(/_url$/,"")}-${crypto.randomUUID()}.jpg`;
+      const up=await sb.storage.from(BUCKET).upload(path,blob,{contentType:"image/jpeg"});
+      if(up.error) return toast(up.error.message,true);
+      if(this.state.laudo[col]) await sb.storage.from(BUCKET).remove([this.state.laudo[col]]);
+      patch[col]=path;
+    }
+    if(!Object.keys(patch).length) return toast("Nenhum arquivo selecionado",true);
+    const {error}=await sb.from("laudos").update(patch).eq("id",this.state.laudo.id);
+    if(error) return toast(error.message,true);
+    Object.assign(this.state.laudo,patch); this.renderDados(); toast("Imagens enviadas");
+  },
+  async delImagemLaudo(col){
+    if(!confirm("Remover a imagem?"))return;
+    const path=this.state.laudo[col];
+    if(path) await sb.storage.from(BUCKET).remove([path]);
+    const {error}=await sb.from("laudos").update({[col]:null}).eq("id",this.state.laudo.id);
+    if(error) return toast(error.message,true);
+    this.state.laudo[col]=null; this.renderDados(); toast("Imagem removida");
   },
 
   /* ---------- AMBIENTES ---------- */
