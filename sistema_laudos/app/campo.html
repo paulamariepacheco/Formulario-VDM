@@ -116,7 +116,15 @@
       <p class="muted">É preciso estar online para o primeiro acesso neste aparelho. Depois, o app funciona sem sinal.</p>
       <div class="field" style="text-align:left;margin-top:.9rem"><label>E-mail</label>
         <input id="auth-email" type="email" autocomplete="email" placeholder="paula.mariesp@gmail.com"></div>
-      <button class="btn" onclick="app.sendMagicLink()">Enviar link de acesso</button>
+      <button class="btn" onclick="app.sendMagicLink()">Enviar código de acesso</button>
+      <div id="auth-codigo-box" class="hidden" style="margin-top:1rem;text-align:left">
+        <div class="field"><label>Código do e-mail (6 dígitos)</label>
+          <input id="auth-codigo" inputmode="numeric" autocomplete="one-time-code"
+                 maxlength="6" placeholder="000000"
+                 style="letter-spacing:.4em;text-align:center;font-size:1.2rem"></div>
+        <button class="btn" style="width:100%" onclick="app.entrarComCodigo()">Entrar com o código</button>
+        <p class="muted" style="margin-top:.6rem">No app instalado, digite o código aqui (não abra o link do e-mail — ele entra só no navegador).</p>
+      </div>
       <p class="muted" id="auth-msg" style="margin-top:.8rem"></p>
     </div>
   </section>
@@ -288,7 +296,18 @@ const app={
     if(!email) return toast("Informe o e-mail",true);
     if(!navigator.onLine) return toast("Sem conexão — o primeiro acesso precisa de internet",true);
     const {error}=await remote(sb.auth.signInWithOtp({email,options:{emailRedirectTo:location.href.split("#")[0]}}));
-    $("#auth-msg").textContent=error?("Erro: "+error.message):("Link enviado para "+email+".");
+    if(error){$("#auth-msg").textContent="Erro: "+error.message;return}
+    $("#auth-codigo-box").classList.remove("hidden");
+    $("#auth-codigo").focus();
+    $("#auth-msg").textContent="E-mail enviado para "+email+" — digite o código acima.";
+  },
+  async entrarComCodigo(){
+    const email=$("#auth-email").value.trim();
+    const token=$("#auth-codigo").value.trim();
+    if(token.length<6) return toast("Digite o código de 6 dígitos",true);
+    const {error}=await remote(sb.auth.verifyOtp({email,token,type:"email"}));
+    if(error) return toast("Código inválido ou vencido — peça um novo",true);
+    toast("Pronto — você está dentro");
   },
   async afterLogin(){
     if(this._booted) return; this._booted=true;
@@ -417,7 +436,8 @@ const app={
     if(!numero) return toast("Informe o número",true);
     const rec={id:uuid(),numero,tipo:"condominial_nao_judicial",cliente_nome:$("#nl-cliente").value.trim(),
       cliente_cnpj_cpf:"",endereco:"",data_emissao:null,status:"em_vistoria",
-      datas_diligencia:[],acompanhamento:"",created_at:new Date().toISOString(),_dirty:1};
+      datas_diligencia:[],acompanhamento:"",
+      nome_imovel:"",caracteristicas:[],created_at:new Date().toISOString(),_dirty:1};
     await dbPut("laudos",rec);
     $("#nl-numero").value="";$("#nl-cliente").value="";
     await this.refreshBadge();this.syncNow(true);
@@ -719,6 +739,9 @@ const app={
         <div class="field"><label>Diligências (vírgula)</label><input id="ld-dilig" value="${esc((l.datas_diligencia||[]).join(', '))}"></div>
         <div class="field"><label>Acompanhamento</label><input id="ld-acomp" value="${esc(l.acompanhamento)}"></div>
       </div>
+      <div class="field"><label>Nome do imóvel (capa)</label><input id="ld-imovel" placeholder="Edifício ..." value="${esc(l.nome_imovel||"")}"></div>
+      <div class="field"><label>Características gerais — uma por linha, "Rótulo: valor"</label>
+        <textarea id="ld-caract" rows="4" placeholder="Torres / blocos: 01 torre&#10;Pavimentos: 12 + pilotis">${esc((l.caracteristicas||[]).map(c=>`${c.rotulo}: ${c.valor}`).join("\n"))}</textarea></div>
       <button class="btn" onclick="app.saveDados()">Salvar</button>
       <button class="btn-danger" style="width:100%;margin-top:.5rem" onclick="app.delLaudo()">Excluir laudo</button>
       <div class="info" style="margin-top:.8rem">Redação pericial completa, revisão e geração do .docx: usar a tela desktop (<code>index.html</code>).</div>
@@ -726,10 +749,13 @@ const app={
   },
   async saveDados(){
     const l=this.laudo;
+    const caract=$("#ld-caract").value.split("\n").map(s=>s.trim()).filter(Boolean).map(s=>{
+      const i=s.indexOf(":"); return i<0?{rotulo:s,valor:""}:{rotulo:s.slice(0,i).trim(),valor:s.slice(i+1).trim()};});
     Object.assign(l,{numero:$("#ld-numero").value.trim(),tipo:$("#ld-tipo").value,
       cliente_nome:$("#ld-cliente").value,endereco:$("#ld-end").value,
       datas_diligencia:$("#ld-dilig").value.split(",").map(s=>s.trim()).filter(Boolean),
-      acompanhamento:$("#ld-acomp").value,_dirty:1});
+      acompanhamento:$("#ld-acomp").value,
+      nome_imovel:$("#ld-imovel").value,caracteristicas:caract,_dirty:1});
     await dbPut("laudos",l);
     $("#hdr-title").textContent="Laudo Nº "+l.numero;
     await this.refreshBadge();this.syncNow(true);
