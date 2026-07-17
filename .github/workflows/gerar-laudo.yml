@@ -45,6 +45,11 @@ jobs:
           SUPABASE_URL: https://noknoebspmrbigwhyucn.supabase.co
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
         run: |
+          if [ -z "$SUPABASE_SERVICE_KEY" ]; then
+            echo "::warning::Secret SUPABASE_SERVICE_KEY ausente — fila não verificada (configure em Settings → Secrets and variables → Actions)."
+            echo "tem_pendentes=nao" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
           pip install --quiet "supabase>=2.4"
           python - <<'EOF' >> "$GITHUB_OUTPUT"
           import os
