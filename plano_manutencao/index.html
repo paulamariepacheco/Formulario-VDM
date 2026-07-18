@@ -509,9 +509,15 @@ async function criarCondominio(){
   const nome = v("novo-cond-nome");
   if(!nome) return msg("seletor-msg","Informe o nome do condomínio.","err");
   const btn=document.getElementById("novo-cond-btn"); btn.disabled=true; btn.textContent="Criando...";
-  const {data, error} = await sb.from("condominios").insert({nome}).select("id,nome").single();
+  // garante que a sessão autenticada está anexada às requisições (auth.uid() não nulo)
+  const { data:{ session } } = await sb.auth.getSession();
+  if(!session){ btn.disabled=false; btn.textContent="+ Criar condomínio";
+    msg("seletor-msg","Sua sessão expirou. Faça login novamente.","err"); return mostrarLogin(); }
+  // criação via RPC SECURITY DEFINER (define criado_por = auth.uid() no servidor;
+  // não depende do WITH CHECK do INSERT direto)
+  const {data, error} = await sb.rpc("criar_condominio", { p_nome: nome });
   btn.disabled=false; btn.textContent="+ Criar condomínio";
-  if(error) return erroSb(error);
+  if(error){ msg("seletor-msg","Não foi possível criar: "+error.message,"err"); return; }
   document.getElementById("novo-cond-nome").value="";
   await carregarCondominios();
   await abrirCondominio(data.id);
@@ -1401,14 +1407,28 @@ function renderTudo(){
   renderPainel(); renderInventario(); renderPrograma(); renderAgenda();
   renderOS(); renderGarantias(); renderInspecoes(); renderChecklist(); renderRelatorio();
 }
+// remove os parâmetros do magic link (?code=... ou #access_token=...) da URL
+function limparUrlAuth(){
+  if(location.hash.includes("access_token") || /[?&]code=/.test(location.search)){
+    history.replaceState({}, document.title, location.origin + location.pathname);
+  }
+}
 async function init(){
+  let entrando = false;
+  const entrar = async (session) => {
+    if(entrando || usuario) return;      // evita dupla inicialização (getSession + onAuthStateChange)
+    entrando = true;
+    usuario = session.user;
+    limparUrlAuth();
+    try{ await aposLogin(); } finally { entrando = false; }
+  };
   sb.auth.onAuthStateChange(async (event, session) => {
-    if(session && !usuario){ usuario = session.user; await aposLogin(); }
-    else if(!session && usuario){ usuario = null; mostrarLogin(); }
+    if(session) await entrar(session);
+    else if(usuario){ usuario = null; condId = null; dados = vazio(); mostrarLogin(); }
   });
   const {data:{session}} = await sb.auth.getSession();
-  if(session){ usuario = session.user; await aposLogin(); }
-  else { mostrarLogin(); }
+  if(session) await entrar(session);
+  else mostrarLogin();
 }
 init();
 </script>
