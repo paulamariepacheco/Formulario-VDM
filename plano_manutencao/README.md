@@ -69,7 +69,10 @@ Pro/Montserrat.
 - Schema **`manutencao`** no projeto Supabase `noknoebspmrbigwhyucn` (convive com `laudos`).
 - Migrações versionadas (**já aplicadas**):
   - `supabase/migrations/0001_schema_manutencao.sql` — tabelas, RLS e funções;
-  - `supabase/migrations/0002_storage_fotos.sql` — bucket privado + políticas de fotos.
+  - `supabase/migrations/0002_storage_fotos.sql` — bucket privado + políticas de fotos;
+  - `supabase/migrations/0003_criar_condominio_rpc.sql` — RPC `criar_condominio`
+    (`security definer`) para criar o condomínio + vínculo de dono sem depender do
+    `WITH CHECK` do INSERT direto (evita falha de RLS ao criar o 1º condomínio).
 - Tabelas: `condominios`, `membros` (vínculo usuário↔condomínio + convites) e `registros`
   (polimórfico: sistema | atividade | os | garantia | inspecao | checklist, em `jsonb`;
   fotos ficam como `[{path,legenda}]` dentro do `dados` da OS/inspeção).
