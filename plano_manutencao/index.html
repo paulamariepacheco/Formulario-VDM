@@ -4,12 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Plano de Manutenção Predial — Pacheco Engenharia e Perícias</title>
-<meta name="description" content="Sistema de gestão de manutenção para condomínios residenciais e comerciais, conforme ABNT NBR 5674:2024, NBR 14037:2024 e NBR 16747:2020.">
+<meta name="description" content="Sistema de gestão de manutenção para condomínios residenciais e comerciais, conforme ABNT NBR 5674:2024, NBR 14037:2024 e NBR 16747:2020. Login exclusivo por condomínio.">
+<link rel="icon" href="assets/logo-icone.png">
 <style>
 /* ============================================================
    Paleta e tipografia: Paula Pacheco Design System
-   (sincronizado de sistema_laudos/design/tokens.json — rodar
-   /design-sync e replicar aqui se o design mudar)
+   (sincronizado de sistema_laudos/design/tokens.json)
    ============================================================ */
 :root{
   --azul:#171f3d; --chumbo:#292929; --cinza:#5e6161; --branco:#ffffff;
@@ -30,12 +30,18 @@ body{font-family:var(--fonte-corpo);color:var(--txt-corpo);background:#f4f5f7;fo
 h1,h2,h3,h4{font-family:var(--fonte-titulo);color:var(--txt-forte);line-height:1.25}
 
 /* ---------- Cabeçalho ---------- */
-header{background:var(--azul);color:var(--branco);padding:14px 20px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
-.logo-pp{width:44px;height:44px;border:2px solid var(--terracota);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:var(--fonte-titulo);font-size:20px;font-weight:700;color:var(--terracota);letter-spacing:-1px;flex:0 0 auto}
-header h1{color:var(--branco);font-size:18px}
-header .sub{font-size:11.5px;color:#c9cdd8;letter-spacing:.4px}
-header .cond-atual{margin-left:auto;text-align:right;font-size:12px;color:#c9cdd8}
-header .cond-atual b{color:var(--branco);font-size:13.5px;display:block}
+header{background:var(--azul);color:var(--branco);padding:12px 20px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.logo-badge{width:46px;height:46px;background:var(--branco);border-radius:9px;padding:5px;object-fit:contain;flex:0 0 auto;box-shadow:0 1px 4px rgba(0,0,0,.2)}
+header .titulo h1{color:var(--branco);font-size:17px}
+header .titulo .sub{font-size:11px;color:#c9cdd8;letter-spacing:.4px}
+.cab-dir{margin-left:auto;display:flex;align-items:center;gap:14px;font-size:12px}
+.cab-cond{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);color:#fff;border-radius:8px;padding:7px 12px;cursor:pointer;font-family:var(--fonte-corpo);font-size:13px;font-weight:600;display:flex;flex-direction:column;align-items:flex-start;line-height:1.2;max-width:230px}
+.cab-cond:hover{background:rgba(255,255,255,.16)}
+.cab-cond small{font-size:9.5px;color:#c9cdd8;font-weight:400;text-transform:uppercase;letter-spacing:.5px}
+.cab-cond b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:205px}
+.cab-user{text-align:right;color:#c9cdd8}
+.cab-user a{color:var(--terracota);cursor:pointer;font-weight:600;text-decoration:none}
+.cab-user a:hover{text-decoration:underline}
 
 /* ---------- Navegação ---------- */
 nav{background:var(--branco);border-bottom:1px solid var(--linha);display:flex;overflow-x:auto;position:sticky;top:0;z-index:40}
@@ -86,6 +92,7 @@ td .mini{display:block;font-size:11.5px;color:var(--txt-suave)}
 
 .botao{background:var(--azul);color:var(--branco);border:none;border-radius:7px;padding:9px 16px;font-family:var(--fonte-corpo);font-size:13px;font-weight:600;cursor:pointer}
 .botao:hover{background:#232d55}
+.botao:disabled{opacity:.55;cursor:default}
 .botao.secundario{background:var(--branco);color:var(--azul);border:1px solid var(--azul)}
 .botao.secundario:hover{background:#eef0f4}
 .botao.terra{background:var(--terracota)}
@@ -97,7 +104,6 @@ a.link-acao{color:var(--petroleo);font-weight:600;cursor:pointer;text-decoration
 a.link-acao:hover{text-decoration:underline}
 a.link-acao.rm{color:var(--gr3)}
 
-/* ---------- Formulários ---------- */
 label{display:block;font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--cinza);margin-bottom:3px}
 input,select,textarea{width:100%;padding:8px 10px;border:1px solid var(--linha);border-radius:6px;font-family:var(--fonte-corpo);font-size:13.5px;color:var(--txt-forte);background:var(--branco)}
 input:focus,select:focus,textarea:focus{outline:2px solid var(--petroleo);outline-offset:-1px}
@@ -132,10 +138,29 @@ dialog .dlg-pe{padding:12px 20px;border-top:1px solid var(--linha-suave);display
 footer{background:var(--azul);color:#c9cdd8;text-align:center;padding:20px;font-size:12px;margin-top:40px}
 footer b{color:var(--branco)}
 
-/* ---------- Impressão (relatório) ---------- */
+/* ---------- Overlays (login e seletor de condomínio) ---------- */
+.overlay{position:fixed;inset:0;z-index:100;background:linear-gradient(135deg,#171f3d 0%,#232d55 100%);display:none;align-items:center;justify-content:center;padding:20px;overflow-y:auto}
+.overlay.on{display:flex}
+.card-auth{background:var(--branco);border-radius:16px;max-width:440px;width:100%;padding:34px 30px;box-shadow:0 18px 60px rgba(0,0,0,.35);margin:auto}
+.card-auth.larga{max-width:560px}
+.card-auth .logo-topo{display:block;max-width:240px;margin:0 auto 8px}
+.card-auth h2{text-align:center;font-size:20px;margin-bottom:4px}
+.card-auth p.leg{text-align:center;color:var(--txt-suave);font-size:13px;margin-bottom:22px}
+.card-auth .msg{font-size:12.5px;border-radius:8px;padding:10px 12px;margin-top:14px;display:none}
+.card-auth .msg.on{display:block}
+.card-auth .msg.ok{background:var(--ok-bg);color:var(--ok)}
+.card-auth .msg.err{background:var(--erro-bg);color:var(--erro)}
+.card-auth .rodape{text-align:center;font-size:11px;color:var(--txt-suave);margin-top:20px;line-height:1.6}
+.lista-cond{margin-bottom:16px}
+.item-cond{display:flex;justify-content:space-between;align-items:center;gap:10px;border:1px solid var(--linha);border-radius:9px;padding:12px 14px;margin-bottom:8px;cursor:pointer}
+.item-cond:hover{border-color:var(--petroleo);background:#f6fafb}
+.item-cond b{font-size:14px;color:var(--txt-forte)}
+.item-cond small{color:var(--txt-suave);font-size:11.5px}
+.sep{border:none;border-top:1px solid var(--linha-suave);margin:18px 0}
+
 @media print{
+  header,nav,footer,.acoes-topo,.nao-imprimir,.overlay{display:none !important}
   body{background:var(--branco);font-size:12px}
-  header,nav,footer,.acoes-topo,.nao-imprimir{display:none !important}
   main{max-width:none;padding:0}
   section.tela{display:none !important}
   #tela-relatorio{display:block !important}
@@ -145,38 +170,69 @@ footer b{color:var(--branco)}
   .pill{border:1px solid #999}
 }
 @media(max-width:640px){
-  header h1{font-size:15px}
-  header .cond-atual{display:none}
+  header .titulo h1{font-size:14px}
+  .cab-user{display:none}
   main{padding:14px 10px 60px}
 }
 </style>
 </head>
 <body>
 
-<header>
-  <div class="logo-pp">PP</div>
-  <div>
-    <h1>Plano de Manutenção Predial</h1>
-    <div class="sub">PACHECO ENGENHARIA E PERÍCIAS · NBR 5674:2024 · NBR 14037:2024 · NBR 16747:2020</div>
+<!-- ================= OVERLAY LOGIN ================= -->
+<div class="overlay" id="overlay-login">
+  <div class="card-auth">
+    <img class="logo-topo" src="assets/logo-tagline.png" alt="Pacheco Engenharia e Perícias">
+    <h2>Plano de Manutenção Predial</h2>
+    <p class="leg">Acesso exclusivo do seu condomínio. Informe seu e-mail e enviaremos um link de acesso seguro (sem senha).</p>
+    <div class="campo"><label>E-mail</label><input type="email" id="login-email" placeholder="voce@email.com" autocomplete="email"></div>
+    <button class="botao" style="width:100%" id="login-btn" onclick="enviarLink()">Enviar link de acesso</button>
+    <div class="msg" id="login-msg"></div>
+    <div class="rodape">
+      NBR 5674:2024 · NBR 14037:2024 · NBR 16747:2020<br>
+      <b>Pacheco Engenharia e Perícias</b> — CREA/MG 173201 · IBAPE/MG 1221
+    </div>
   </div>
-  <div class="cond-atual" id="cab-condominio"></div>
+</div>
+
+<!-- ================= OVERLAY SELETOR DE CONDOMÍNIO ================= -->
+<div class="overlay" id="overlay-seletor">
+  <div class="card-auth larga">
+    <img class="logo-topo" src="assets/logo-tagline.png" alt="Pacheco Engenharia e Perícias" style="max-width:200px">
+    <h2>Selecionar condomínio</h2>
+    <p class="leg" id="seletor-leg">Escolha um condomínio para gerenciar ou cadastre um novo.</p>
+    <div class="lista-cond" id="seletor-lista"></div>
+    <hr class="sep">
+    <div class="campo"><label>Cadastrar novo condomínio</label>
+      <input id="novo-cond-nome" placeholder="Nome do condomínio (ex.: Ed. Comercial Otoni)"></div>
+    <button class="botao terra" style="width:100%" id="novo-cond-btn" onclick="criarCondominio()">+ Criar condomínio</button>
+    <div class="msg" id="seletor-msg"></div>
+    <div class="rodape"><a class="link-acao" onclick="sair()" style="color:var(--petroleo)">Sair da conta</a></div>
+  </div>
+</div>
+
+<header>
+  <img class="logo-badge" src="assets/logo-icone.png" alt="Pacheco Engenharia e Perícias">
+  <div class="titulo">
+    <h1>Plano de Manutenção Predial</h1>
+    <div class="sub">PACHECO ENGENHARIA E PERÍCIAS · NBR 5674:2024 · 14037:2024 · 16747:2020</div>
+  </div>
+  <div class="cab-dir" id="cab-dir"></div>
 </header>
 
 <nav id="nav-principal"></nav>
 
 <main>
 
-<!-- ================= PAINEL ================= -->
 <section class="tela" id="tela-painel">
   <h2>Painel do Síndico</h2>
   <p class="desc">Visão geral da gestão da manutenção: pendências, prazos, garantias e indicadores exigidos pelo sistema de gestão da NBR 5674:2024.</p>
   <div id="painel-conteudo"></div>
 </section>
 
-<!-- ================= EDIFICAÇÃO ================= -->
 <section class="tela" id="tela-edificacao">
   <h2>Cadastro da Edificação</h2>
   <p class="desc">Identificação do condomínio e responsáveis — a "capa técnica" do Plano de Manutenção (documentação organizada conforme NBR 5674:2024).</p>
+  <div class="acoes-topo"><button class="botao secundario" onclick="abrirMembros()">👥 Gerenciar acesso ao condomínio</button></div>
   <div class="cartao">
     <form id="form-edificacao" class="grade g3" onsubmit="return false">
       <div class="campo"><label>Nome do condomínio</label><input id="ed-nome" placeholder="Condomínio Edifício..."></div>
@@ -199,12 +255,11 @@ footer b{color:var(--branco)}
   <div class="cartao">
     <h3>Documentação de base (NBR 14037)</h3>
     <p style="font-size:13px;margin-bottom:8px">Mantenha reunidos, preferencialmente em formato digital com cópia em nuvem: Manual de Uso, Operação e Manutenção da edificação; projetos executivos; manuais de fabricantes; AVCB/CLCB; contratos de manutenção; ARTs/RRTs; laudos e relatórios de inspeção; notas fiscais dos serviços.</p>
-    <div class="campo"><label>Onde está arquivada a documentação deste condomínio?</label><textarea id="ed-docs" placeholder="Ex.: pasta 'Manutenção' no Google Drive da administradora; arquivo físico na sala do síndico..."></textarea></div>
+    <div class="campo"><label>Onde está arquivada a documentação deste condomínio?</label><textarea id="ed-docs" placeholder="Ex.: pasta 'Manutenção' no Google Drive da administradora..."></textarea></div>
     <button class="botao secundario" onclick="salvarEdificacao()">Salvar</button>
   </div>
 </section>
 
-<!-- ================= INVENTÁRIO ================= -->
 <section class="tela" id="tela-inventario">
   <h2>Inventário de Sistemas e Componentes</h2>
   <p class="desc">Relação dos sistemas da edificação com classificação de criticidade — exigência da NBR 5674:2024 e base do programa de manutenção.</p>
@@ -215,7 +270,6 @@ footer b{color:var(--branco)}
   <div id="lista-sistemas"></div>
 </section>
 
-<!-- ================= PROGRAMA ================= -->
 <section class="tela" id="tela-programa">
   <h2>Programa de Manutenção</h2>
   <p class="desc">Atividades de manutenção preventiva, preditiva e corretiva por sistema: o que fazer, com que frequência, por quem e com qual critério de aceitação (NBR 5674:2024).</p>
@@ -226,7 +280,6 @@ footer b{color:var(--branco)}
   <div id="lista-atividades"></div>
 </section>
 
-<!-- ================= AGENDA ================= -->
 <section class="tela" id="tela-agenda">
   <h2>Agenda / Cronograma</h2>
   <p class="desc">Planejamento das atividades com data da última execução e próxima prevista. Itens vencidos ficam em vermelho; itens que vencem em até 30 dias, em amarelo. Registrar a execução gera automaticamente o histórico (OS).</p>
@@ -240,7 +293,6 @@ footer b{color:var(--branco)}
   <div id="lista-agenda"></div>
 </section>
 
-<!-- ================= ORDENS DE SERVIÇO ================= -->
 <section class="tela" id="tela-os">
   <h2>Ordens de Serviço e Histórico</h2>
   <p class="desc">Registro de todas as intervenções — preventivas, corretivas e emergenciais — com executante, ART, custos e vínculo com garantias. É o histórico técnico que a NBR 5674:2024 exige conservar (rastreabilidade para perícias e responsabilização).</p>
@@ -254,7 +306,6 @@ footer b{color:var(--branco)}
   <div id="lista-os"></div>
 </section>
 
-<!-- ================= GARANTIAS ================= -->
 <section class="tela" id="tela-garantias">
   <h2>Controle de Garantias</h2>
   <p class="desc">Prazos de garantia da construtora, fornecedores e prestadores. Atenção: a validade das garantias está condicionada ao cumprimento das manutenções previstas no manual (NBR 14037) — a omissão do plano pode suspender a garantia.</p>
@@ -262,7 +313,6 @@ footer b{color:var(--branco)}
   <div id="lista-garantias"></div>
 </section>
 
-<!-- ================= INSPEÇÕES ================= -->
 <section class="tela" id="tela-inspecoes">
   <h2>Inspeções e Laudos</h2>
   <p class="desc">Registro das inspeções prediais (NBR 16747:2020), vistorias e laudos técnicos que embasam e atualizam o plano. A inspeção predial deve ser realizada por engenheiro(a) ou arquiteto(a) habilitado(a), com ART/RRT.</p>
@@ -282,47 +332,33 @@ footer b{color:var(--branco)}
   </div>
 </section>
 
-<!-- ================= CHECKLIST ================= -->
 <section class="tela" id="tela-checklist">
   <h2>Checklist de Inspeção Periódica</h2>
   <p class="desc">Roteiro de verificação visual para o síndico realizar com o zelador ou equipe de manutenção. Itens reprovados podem gerar Ordem de Serviço automaticamente.</p>
-  <div class="acoes-topo">
-    <button class="botao" onclick="novoChecklist()">Iniciar novo checklist</button>
-  </div>
+  <div class="acoes-topo"><button class="botao" onclick="novoChecklist()">Iniciar novo checklist</button></div>
   <div id="area-checklist"></div>
-  <div class="cartao">
-    <h3>Histórico de checklists</h3>
-    <div id="hist-checklists"></div>
-  </div>
+  <div class="cartao"><h3>Histórico de checklists</h3><div id="hist-checklists"></div></div>
 </section>
 
-<!-- ================= RELATÓRIO ================= -->
 <section class="tela" id="tela-relatorio">
   <h2 class="nao-imprimir">Relatório de Prestação de Contas</h2>
   <p class="desc nao-imprimir">Relatório consolidado para assembleia ou arquivo do condomínio. Use "Imprimir / salvar PDF" — o navegador imprime somente o relatório.</p>
-  <div class="acoes-topo">
-    <button class="botao terra" onclick="window.print()">🖨 Imprimir / salvar PDF</button>
-  </div>
+  <div class="acoes-topo"><button class="botao terra" onclick="window.print()">🖨 Imprimir / salvar PDF</button></div>
   <div id="relatorio-conteudo"></div>
 </section>
 
-<!-- ================= AJUSTES ================= -->
 <section class="tela" id="tela-ajustes">
-  <h2>Dados e Segurança</h2>
-  <p class="desc">Os dados ficam gravados neste dispositivo (navegador). Faça backups periódicos do arquivo de dados e guarde-o junto à documentação do condomínio.</p>
+  <h2>Dados e Backup</h2>
+  <p class="desc">Os dados deste condomínio ficam na nuvem (Supabase), isolados por login. Você pode exportar uma cópia de segurança a qualquer momento para arquivar junto à documentação do condomínio.</p>
   <div class="cartao">
-    <h3>Backup e restauração</h3>
-    <div class="acoes-topo">
-      <button class="botao" onclick="exportarDados()">⬇ Exportar dados (JSON)</button>
-      <button class="botao secundario" onclick="document.getElementById('imp-arquivo').click()">⬆ Importar backup</button>
-      <input type="file" id="imp-arquivo" accept="application/json" style="display:none" onchange="importarDados(this)">
-    </div>
-    <p style="font-size:12.5px;color:var(--txt-suave)">O arquivo exportado contém todo o plano: cadastro, inventário, atividades, OS, garantias, inspeções e checklists.</p>
+    <h3>Backup</h3>
+    <div class="acoes-topo"><button class="botao" onclick="exportarDados()">⬇ Exportar dados deste condomínio (JSON)</button></div>
+    <p style="font-size:12.5px;color:var(--txt-suave)">O arquivo contém todo o plano deste condomínio: cadastro, inventário, atividades, OS, garantias, inspeções e checklists.</p>
   </div>
   <div class="cartao">
-    <h3>Zerar aplicativo</h3>
-    <p style="font-size:13px;margin-bottom:10px">Apaga todos os dados deste dispositivo. Exporte um backup antes.</p>
-    <button class="botao perigo" onclick="zerarDados()">Apagar todos os dados</button>
+    <h3>Acesso</h3>
+    <p style="font-size:13px;margin-bottom:10px">Convide outros responsáveis (co-síndico, administradora, conselho) para acessar este mesmo condomínio.</p>
+    <button class="botao secundario" onclick="abrirMembros()">👥 Gerenciar acesso</button>
   </div>
 </section>
 
@@ -330,66 +366,245 @@ footer b{color:var(--branco)}
 
 <footer>
   <b>Pacheco Engenharia e Perícias</b> · Eng. MSc. Paula Marie S. Pacheco — CREA/MG 173201 · IBAPE/MG 1221<br>
-  pericias@pacheco.eng.br · www.pachecoeng.com.br · +55 (31) 99752-6257<br>
+  pericias@pachecoeng.com.br · www.pachecoeng.com.br · +55 (31) 99752-6257<br>
   Referências: ABNT NBR 5674:2024 · NBR 14037:2024 · NBR 16747:2020 · NBR 15575
 </footer>
 
-<!-- ================= DIÁLOGOS ================= -->
 <dialog id="dlg"><div class="dlg-cab"><h3 id="dlg-titulo"></h3><button onclick="fecharDlg()">×</button></div>
 <div class="dlg-corpo" id="dlg-corpo"></div>
 <div class="dlg-pe"><button class="botao secundario" onclick="fecharDlg()">Cancelar</button><button class="botao" id="dlg-salvar">Salvar</button></div>
 </dialog>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 "use strict";
 /* ==================================================================
-   MODELO DE DADOS (localStorage) — sistema de gestão NBR 5674:2024
+   CONFIGURAÇÃO SUPABASE (mesmo projeto dos laudos; schema `manutencao`)
+   Aplicar a migração 0001 e, no painel: Exposed schemas += manutencao,
+   e incluir a URL deste app em Authentication → Redirect URLs.
    ================================================================== */
-const CHAVE = "pp_plano_manutencao_v1";
-const hoje = () => new Date().toISOString().slice(0,10);
+const SUPABASE_URL = "https://noknoebspmrbigwhyucn.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5va25vZWJzcG1yYmlnd2h5dWNuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4MzA2ODMsImV4cCI6MjA5MTQwNjY4M30.N4ClwgCEZaKPd4RpwsBdCb-qsDS5RS6iUsNjQalhKko";
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  db:{schema:"manutencao"}, auth:{persistSession:true, autoRefreshToken:true, detectSessionInUrl:true}
+});
 
-let dados = carregar();
-function carregar(){
-  try{ const d = JSON.parse(localStorage.getItem(CHAVE)); if(d && d.versao===1) return d; }catch(e){}
-  return { versao:1, edificacao:{}, sistemas:[], atividades:[], os:[], garantias:[], inspecoes:[], checklists:[], seqOS:0 };
-}
-function salvar(){ localStorage.setItem(CHAVE, JSON.stringify(dados)); }
+/* ---------- estado ---------- */
+let usuario = null;
+let condominios = [];            // [{id, nome, papel}]
+let condId = null;
+let dados = vazio();
+let telaAtual = "painel";
+let checklistAtual = null;
+const CHAVE_ULT = "pp_manut_ultimo_cond";
+const TIPOS = {sistema:"sistemas", atividade:"atividades", os:"os", garantia:"garantias", inspecao:"inspecoes", checklist:"checklists"};
+
+function vazio(){ return {edificacao:{}, sistemas:[], atividades:[], os:[], garantias:[], inspecoes:[], checklists:[], seqOS:0}; }
+
+/* ---------- utilitários ---------- */
+const hoje = () => new Date().toISOString().slice(0,10);
 const uid = () => Date.now().toString(36)+Math.random().toString(36).slice(2,7);
 const esc = s => String(s??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
 const fmtData = d => { if(!d) return "—"; const [a,m,dd]=d.split("-"); return `${dd}/${m}/${a}`; };
-const fmtR$ = v => (v||v===0)? Number(v).toLocaleString("pt-BR",{style:"currency",currency:"BRL"}) : "—";
+const fmtR$ = x => (x||x===0)? Number(x).toLocaleString("pt-BR",{style:"currency",currency:"BRL"}) : "—";
+const v = id => document.getElementById(id).value.trim();
+function addMeses(iso, meses){ const d=new Date(iso+"T12:00:00"); d.setMonth(d.getMonth()+Number(meses)); return d.toISOString().slice(0,10); }
+function diasAte(iso){ return Math.round((new Date(iso+"T12:00:00")-new Date(hoje()+"T12:00:00"))/86400000); }
+function erroSb(e){ console.error(e); alert("Falha ao comunicar com a nuvem: "+((e&&e.message)||e)+"\n\nVerifique a conexão e tente novamente."); }
 
-function addMeses(iso, meses){
-  const d = new Date(iso+"T12:00:00"); d.setMonth(d.getMonth()+Number(meses)); return d.toISOString().slice(0,10);
-}
-function diasAte(iso){
-  return Math.round((new Date(iso+"T12:00:00") - new Date(hoje()+"T12:00:00"))/86400000);
-}
-
-/* Situação de uma atividade programada */
 function statusAtividade(a){
   if(!a.ultimaExec) return {chave:"nunca", rotulo:"Nunca executada", classe:"p-erro", proxima:null, dias:null};
-  const prox = addMeses(a.ultimaExec, a.periodicidade);
-  const d = diasAte(prox);
-  if(d < 0)   return {chave:"vencida",  rotulo:`Vencida há ${-d} d`, classe:"p-erro",   proxima:prox, dias:d};
-  if(d <= 30) return {chave:"proxima",  rotulo:`Vence em ${d} d`,    classe:"p-alerta", proxima:prox, dias:d};
-  return          {chave:"emdia",    rotulo:"Em dia",              classe:"p-ok",     proxima:prox, dias:d};
+  const prox = addMeses(a.ultimaExec, a.periodicidade); const d = diasAte(prox);
+  if(d<0)  return {chave:"vencida", rotulo:`Vencida há ${-d} d`, classe:"p-erro",   proxima:prox, dias:d};
+  if(d<=30)return {chave:"proxima", rotulo:`Vence em ${d} d`,   classe:"p-alerta", proxima:prox, dias:d};
+  return       {chave:"emdia",   rotulo:"Em dia",             classe:"p-ok",     proxima:prox, dias:d};
 }
 function statusGarantia(g){
-  const fim = addMeses(g.dataInicio, g.prazoMeses);
-  const d = diasAte(fim);
-  if(g.situacao === "Suspensa") return {rotulo:"Suspensa", classe:"p-neutro", fim, dias:d};
-  if(d < 0)   return {rotulo:"Vencida",           classe:"p-erro",   fim, dias:d};
-  if(d <= 90) return {rotulo:`Vence em ${d} d`,   classe:"p-alerta", fim, dias:d};
-  return         {rotulo:"Válida",             classe:"p-ok",     fim, dias:d};
+  const fim = addMeses(g.dataInicio, g.prazoMeses); const d = diasAte(fim);
+  if(g.situacao==="Suspensa") return {rotulo:"Suspensa", classe:"p-neutro", fim, dias:d};
+  if(d<0)  return {rotulo:"Vencida",          classe:"p-erro",   fim, dias:d};
+  if(d<=90)return {rotulo:`Vence em ${d} d`,  classe:"p-alerta", fim, dias:d};
+  return       {rotulo:"Válida",            classe:"p-ok",     fim, dias:d};
 }
 const nomeSistema = id => { const s = dados.sistemas.find(x=>x.id===id); return s ? s.nome+(s.componente?" — "+s.componente:"") : "(sistema removido)"; };
 
 /* ==================================================================
-   PLANO-MODELO — biblioteca de sistemas e atividades com as
-   periodicidades usuais (NBR 5674 / NBR 14037 / guia Pacheco Eng.)
-   Cada item: [sistema, componente, criticidade(1 alta-3 baixa), norma,
-               atividades:[ [descrição, tipo, meses, responsável, ART?, método/critério] ]]
+   AUTENTICAÇÃO
+   ================================================================== */
+function mostrarLogin(){
+  document.getElementById("overlay-seletor").classList.remove("on");
+  document.getElementById("overlay-login").classList.add("on");
+}
+function esconderOverlays(){
+  document.getElementById("overlay-login").classList.remove("on");
+  document.getElementById("overlay-seletor").classList.remove("on");
+}
+function msg(el, texto, tipo){ const m=document.getElementById(el); m.className="msg on "+tipo; m.textContent=texto; }
+
+async function enviarLink(){
+  const email = v("login-email");
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return msg("login-msg","Informe um e-mail válido.","err");
+  const btn = document.getElementById("login-btn"); btn.disabled=true; btn.textContent="Enviando...";
+  const {error} = await sb.auth.signInWithOtp({ email, options:{ emailRedirectTo: location.origin+location.pathname } });
+  btn.disabled=false; btn.textContent="Enviar link de acesso";
+  if(error) return msg("login-msg","Não foi possível enviar: "+error.message,"err");
+  msg("login-msg","✓ Link enviado! Abra seu e-mail e clique no link de acesso. Pode fechar esta aba depois de clicar.","ok");
+}
+async function sair(){ await sb.auth.signOut(); usuario=null; condId=null; dados=vazio(); mostrarLogin(); }
+
+async function aposLogin(){
+  document.getElementById("cab-dir").innerHTML =
+    `<div class="cab-user">${esc(usuario.email)}<br><a onclick="sair()">Sair</a></div>`;
+  try{ await sb.rpc("reivindicar_convites"); }catch(e){ /* silencioso */ }
+  await carregarCondominios();
+  let alvo = null;
+  const ult = localStorage.getItem(CHAVE_ULT);
+  if(ult && condominios.some(c=>c.id===ult)) alvo = ult;
+  else if(condominios.length===1) alvo = condominios[0].id;
+  if(alvo){ await abrirCondominio(alvo); }
+  else { esconderOverlays(); abrirSeletor(condominios.length===0); }
+}
+
+/* ==================================================================
+   CONDOMÍNIOS (seleção / criação / troca)
+   ================================================================== */
+async function carregarCondominios(){
+  const {data, error} = await sb.from("membros")
+    .select("papel, condominio:condominios(id,nome)").eq("user_id", usuario.id);
+  if(error){ erroSb(error); condominios=[]; return; }
+  condominios = (data||[]).filter(m=>m.condominio).map(m=>({id:m.condominio.id, nome:m.condominio.nome, papel:m.papel}))
+    .sort((a,b)=>a.nome.localeCompare(b.nome));
+}
+function abrirSeletor(obrigatorio){
+  document.getElementById("seletor-leg").textContent = obrigatorio
+    ? "Você ainda não gerencia nenhum condomínio. Cadastre o primeiro para começar."
+    : "Escolha um condomínio para gerenciar ou cadastre um novo.";
+  document.getElementById("seletor-lista").innerHTML = condominios.length
+    ? condominios.map(c=>`<div class="item-cond" onclick="abrirCondominio('${c.id}')">
+        <div><b>${esc(c.nome)}</b><br><small>Seu papel: ${c.papel==="dono"?"proprietário do cadastro":"síndico / gestor"}</small></div>
+        <span class="botao mini">Abrir →</span></div>`).join("")
+    : `<p style="color:var(--txt-suave);font-size:13px;text-align:center;padding:8px 0">Nenhum condomínio ainda.</p>`;
+  document.getElementById("seletor-msg").className="msg";
+  document.getElementById("overlay-seletor").classList.add("on");
+}
+async function criarCondominio(){
+  const nome = v("novo-cond-nome");
+  if(!nome) return msg("seletor-msg","Informe o nome do condomínio.","err");
+  const btn=document.getElementById("novo-cond-btn"); btn.disabled=true; btn.textContent="Criando...";
+  const {data, error} = await sb.from("condominios").insert({nome}).select("id,nome").single();
+  btn.disabled=false; btn.textContent="+ Criar condomínio";
+  if(error) return erroSb(error);
+  document.getElementById("novo-cond-nome").value="";
+  await carregarCondominios();
+  await abrirCondominio(data.id);
+}
+async function abrirCondominio(id){
+  condId = id; localStorage.setItem(CHAVE_ULT, id);
+  await carregarDados(id);
+  esconderOverlays();
+  renderCabDir(); preencherEdificacao(); renderCabecalho();
+  irPara("painel");
+}
+async function carregarDados(id){
+  const [{data:cond, error:e1}, {data:regs, error:e2}] = await Promise.all([
+    sb.from("condominios").select("id,nome,dados,seq_os").eq("id",id).single(),
+    sb.from("registros").select("id,tipo,dados").eq("condominio_id",id)
+  ]);
+  if(e1||e2){ erroSb(e1||e2); return; }
+  dados = vazio();
+  dados.edificacao = cond.dados || {};
+  dados.edificacao.nome = dados.edificacao.nome || cond.nome;
+  dados.seqOS = cond.seq_os || 0;
+  (regs||[]).forEach(r=>{ const bucket=TIPOS[r.tipo]; if(bucket) dados[bucket].push(Object.assign({}, r.dados, {id:r.id})); });
+}
+function renderCabDir(){
+  const c = condominios.find(x=>x.id===condId);
+  document.getElementById("cab-dir").innerHTML = `
+    <button class="cab-cond" onclick="abrirSeletor(false)" title="Trocar de condomínio">
+      <small>Condomínio</small><b>${esc(c?c.nome:"—")}</b></button>
+    <div class="cab-user">${esc(usuario.email)}<br><a onclick="sair()">Sair</a></div>`;
+}
+
+/* ==================================================================
+   GESTÃO DE ACESSO (membros / convites)
+   ================================================================== */
+async function abrirMembros(){
+  if(!condId) return;
+  abrirDlgHtml("Acesso ao condomínio", `<div id="membros-area" class="vazio">Carregando...</div>
+    <hr class="sep">
+    <div class="campo"><label>Convidar por e-mail</label>
+      <input id="conv-email" type="email" placeholder="pessoa@email.com"></div>
+    <p style="font-size:12px;color:var(--txt-suave)">A pessoa acessa com o mesmo e-mail (link mágico) e passa a ver este condomínio. O convite fica pendente até o primeiro acesso dela.</p>`,
+    null);
+  document.getElementById("dlg-salvar").style.display="none";
+  await listarMembros();
+}
+async function listarMembros(){
+  const {data, error} = await sb.from("membros").select("id,email,papel,user_id").eq("condominio_id",condId);
+  const area = document.getElementById("membros-area");
+  if(error){ area.textContent="Erro ao carregar."; return; }
+  area.className="";
+  area.innerHTML = `<div class="tab-wrap"><table><tr><th>E-mail</th><th>Papel</th><th>Status</th><th></th></tr>
+    ${data.map(m=>`<tr>
+      <td>${esc(m.email)}</td>
+      <td>${m.papel==="dono"?'<span class="pill p-terra">proprietário</span>':"síndico / gestor"}</td>
+      <td>${m.user_id?'<span class="pill p-ok">ativo</span>':'<span class="pill p-alerta">convite pendente</span>'}</td>
+      <td>${m.papel==="dono"?"":`<a class="link-acao rm" onclick="removerMembro('${m.id}')">remover</a>`}</td>
+    </tr>`).join("")}
+  </table></div>`;
+}
+async function convidarMembro(){ /* chamado pelo botão do rodapé do diálogo (ver abrirMembros2) */ }
+async function removerMembro(id){
+  if(!confirm("Remover o acesso deste e-mail ao condomínio?")) return;
+  const {error} = await sb.from("membros").delete().eq("id",id);
+  if(error) return erroSb(error);
+  listarMembros();
+}
+/* botão de convite: adiciono um handler ao rodapé reaproveitando dlg-salvar */
+function ativarConvite(){
+  const btn=document.getElementById("dlg-salvar");
+  btn.style.display=""; btn.textContent="Enviar convite";
+  btn.onclick=async ()=>{
+    const email=v("conv-email");
+    if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return alert("Informe um e-mail válido.");
+    const {error}=await sb.from("membros").insert({condominio_id:condId, email, papel:"sindico"});
+    if(error) return erroSb(error);
+    document.getElementById("conv-email").value="";
+    listarMembros();
+  };
+}
+
+/* ==================================================================
+   CAMADA DE DADOS (registros polimórficos na nuvem)
+   ================================================================== */
+async function dbUpsert(tipo, obj){
+  const bucket = TIPOS[tipo];
+  const payload = Object.assign({}, obj); delete payload.id;
+  if(obj.id){
+    const {error} = await sb.from("registros").update({dados:payload, atualizado_em:new Date().toISOString()}).eq("id",obj.id);
+    if(error){ erroSb(error); return false; }
+    const i = dados[bucket].findIndex(x=>x.id===obj.id); if(i>=0) dados[bucket][i]=obj;
+  }else{
+    const {data, error} = await sb.from("registros").insert({condominio_id:condId, tipo, dados:payload}).select("id").single();
+    if(error){ erroSb(error); return false; }
+    obj.id = data.id; dados[bucket].push(obj);
+  }
+  return true;
+}
+async function dbDelete(tipo, id){
+  const {error} = await sb.from("registros").delete().eq("id",id);
+  if(error){ erroSb(error); return false; }
+  dados[TIPOS[tipo]] = dados[TIPOS[tipo]].filter(x=>x.id!==id);
+  return true;
+}
+async function proximoNumeroOS(){
+  dados.seqOS = (dados.seqOS||0)+1;
+  await sb.from("condominios").update({seq_os:dados.seqOS}).eq("id",condId);
+  return `OS-${new Date().getFullYear()}-${String(dados.seqOS).padStart(3,"0")}`;
+}
+
+/* ==================================================================
+   PLANO-MODELO (NBR 5674 / 14037 + guia Pacheco Eng.)
    ================================================================== */
 const MODELO = [
  ["Estrutura","Estrutura de concreto (pilares, vigas, lajes)",1,"NBR 6118 · NBR 15575 · NBR 16747",[
@@ -441,53 +656,48 @@ const MODELO = [
    ["Inspeção de playground e academia (fixações, desgaste)","Preventiva",3,"Zelador / empresa",false,"Sem arestas, folgas ou peças soltas"],
    ["Inspeção de guarda-corpos e corrimãos","Preventiva",6,"Manutenção predial",false,"NBR 14718; fixação firme, altura conforme norma"]]]
 ];
-
 function abrirGerarPlano(){
   abrirDlgHtml("Gerar plano-modelo (NBR 5674)", `
     <p style="font-size:13px;margin-bottom:12px">Carrega um inventário e um programa de manutenção completos, com as periodicidades usuais de condomínios
     residenciais e comerciais (base: NBR 5674:2024, NBR 14037:2024 e o guia "Plano de Manutenção em Edificações" da Pacheco Engenharia).
     Depois é só remover o que não existe no seu condomínio e ajustar as frequências ao manual da edificação.</p>
     <div class="nota">Itens já existentes não são duplicados: sistemas de mesmo nome são reaproveitados.</div>
-    <div class="campo"><label>Data-base da última execução (opcional)</label>
-      <input type="date" id="gp-database">
-      <span style="font-size:12px;color:var(--txt-suave)">Se preenchida, todas as atividades entram como executadas nessa data; se vazia, entram como "nunca executadas".</span></div>`,
-    () => {
+    <div class="campo"><label>Data-base da última execução (opcional)</label><input type="date" id="gp-database">
+      <span style="font-size:12px;color:var(--txt-suave)">Se preenchida, as atividades entram como executadas nessa data; se vazia, entram como "nunca executadas".</span></div>`,
+    async () => {
       const base = document.getElementById("gp-database").value || null;
-      let novosS=0, novasA=0;
-      MODELO.forEach(([nome, comp, crit, norma, ativs]) => {
-        let sis = dados.sistemas.find(s => s.nome===nome);
-        if(!sis){ sis = {id:uid(), nome, componente:comp, local:"", criticidade:crit, norma, situacao:"Ativo"}; dados.sistemas.push(sis); novosS++; }
-        ativs.forEach(([desc, tipo, meses, resp, art, criterio]) => {
-          if(dados.atividades.some(a => a.sistemaId===sis.id && a.desc===desc)) return;
-          dados.atividades.push({id:uid(), sistemaId:sis.id, desc, tipo, periodicidade:meses, responsavel:resp, art:!!art, criterio, ultimaExec:base, ativa:true});
-          novasA++;
-        });
-      });
-      salvar(); fecharDlg(); irPara("programa");
-      alert(`Plano-modelo carregado: ${novosS} sistema(s) e ${novasA} atividade(s) adicionados.`);
+      const btn = document.getElementById("dlg-salvar"); btn.disabled=true; btn.textContent="Carregando...";
+      let ns=0, na=0;
+      for(const [nome,comp,crit,norma,ativs] of MODELO){
+        let sis = dados.sistemas.find(s=>s.nome===nome);
+        if(!sis){ sis={nome, componente:comp, local:"", criticidade:crit, norma, situacao:"Ativo"}; if(await dbUpsert("sistema",sis)) ns++; else break; }
+        for(const [desc,tipo,meses,resp,art,criterio] of ativs){
+          if(dados.atividades.some(a=>a.sistemaId===sis.id && a.desc===desc)) continue;
+          if(await dbUpsert("atividade",{sistemaId:sis.id, desc, tipo, periodicidade:meses, responsavel:resp, art:!!art, criterio, ultimaExec:base, ativa:true})) na++;
+        }
+      }
+      btn.disabled=false; btn.textContent="Salvar";
+      fecharDlg(); irPara("programa");
+      alert(`Plano-modelo carregado: ${ns} sistema(s) e ${na} atividade(s) adicionados.`);
     });
 }
 
 /* ==================================================================
    NAVEGAÇÃO
    ================================================================== */
-const TELAS = [
-  ["painel","Painel"],["edificacao","Edificação"],["inventario","Inventário"],
+const TELAS = [["painel","Painel"],["edificacao","Edificação"],["inventario","Inventário"],
   ["programa","Plano de Manutenção"],["agenda","Agenda"],["os","Ordens de Serviço"],
   ["garantias","Garantias"],["inspecoes","Inspeções e Laudos"],["checklist","Checklist"],
-  ["relatorio","Relatório"],["ajustes","Dados"]
-];
-let telaAtual = "painel";
+  ["relatorio","Relatório"],["ajustes","Dados"]];
 function montarNav(){
-  const pend = dados.atividades.filter(a => a.ativa && ["vencida","nunca"].includes(statusAtividade(a).chave)).length;
+  const pend = dados.atividades.filter(a => a.ativa!==false && ["vencida","nunca"].includes(statusAtividade(a).chave)).length;
   document.getElementById("nav-principal").innerHTML = TELAS.map(([id,rot]) =>
     `<button class="${telaAtual===id?"ativa":""}" onclick="irPara('${id}')">${rot}${id==="agenda"&&pend?`<span class="badge">${pend}</span>`:""}</button>`).join("");
 }
 function irPara(id){
   telaAtual = id;
   document.querySelectorAll("section.tela").forEach(s => s.classList.toggle("ativa", s.id==="tela-"+id));
-  montarNav(); renderTudo();
-  window.scrollTo({top:0});
+  montarNav(); renderTudo(); window.scrollTo({top:0});
 }
 
 /* ==================================================================
@@ -497,30 +707,28 @@ const dlg = document.getElementById("dlg");
 function abrirDlgHtml(titulo, html, aoSalvar){
   document.getElementById("dlg-titulo").textContent = titulo;
   document.getElementById("dlg-corpo").innerHTML = html;
-  document.getElementById("dlg-salvar").onclick = aoSalvar;
+  const btn = document.getElementById("dlg-salvar");
+  btn.style.display = aoSalvar? "" : "none"; btn.textContent="Salvar"; btn.disabled=false;
+  btn.onclick = aoSalvar;
   dlg.showModal();
+  if(titulo==="Acesso ao condomínio") ativarConvite();
 }
 function fecharDlg(){ dlg.close(); }
-const v = id => document.getElementById(id).value.trim();
 
 /* ==================================================================
    EDIFICAÇÃO
    ================================================================== */
 const CAMPOS_ED = ["nome","uso","torres","endereco","unidades","pavimentos","ano","construtora","sindico","administradora","rt","versao","normas","docs"];
-function preencherEdificacao(){
-  CAMPOS_ED.forEach(c => { const el = document.getElementById("ed-"+c); if(el) el.value = dados.edificacao[c] ?? el.value; });
+function preencherEdificacao(){ CAMPOS_ED.forEach(c => { const el=document.getElementById("ed-"+c); if(el) el.value = dados.edificacao[c] ?? (c==="normas"?el.value:""); }); }
+async function salvarEdificacao(){
+  CAMPOS_ED.forEach(c => { const el=document.getElementById("ed-"+c); if(el) dados.edificacao[c]=el.value.trim(); });
+  const nome = dados.edificacao.nome || "(condomínio sem nome)";
+  const {error} = await sb.from("condominios").update({nome, dados:dados.edificacao}).eq("id",condId);
+  if(error) return erroSb(error);
+  const c = condominios.find(x=>x.id===condId); if(c) c.nome=nome;
+  renderCabecalho(); renderCabDir(); alert("Cadastro da edificação salvo.");
 }
-function salvarEdificacao(){
-  CAMPOS_ED.forEach(c => { const el = document.getElementById("ed-"+c); if(el) dados.edificacao[c] = el.value.trim(); });
-  salvar(); renderCabecalho();
-  alert("Cadastro da edificação salvo.");
-}
-function renderCabecalho(){
-  const e = dados.edificacao;
-  document.getElementById("cab-condominio").innerHTML = e.nome
-    ? `<b>${esc(e.nome)}</b>${esc(e.uso||"")}${e.versao?" · Plano "+esc(e.versao):""}`
-    : `<b>Condomínio não cadastrado</b>Preencha em "Edificação"`;
-}
+function renderCabecalho(){ /* mantém compat; o cabeçalho agora é o cab-dir */ }
 
 /* ==================================================================
    INVENTÁRIO
@@ -540,27 +748,23 @@ function abrirSistema(id){
       <div class="campo"><label>Situação</label><select id="f-sit">
         ${["Ativo","Em reforma","Desativado"].map(o=>`<option ${s.situacao===o?"selected":""}>${o}</option>`).join("")}</select></div>
     </div>`,
-    () => {
+    async () => {
       if(!v("f-nome")) return alert("Informe o nome do sistema.");
-      const novo = {id: s.id||uid(), nome:v("f-nome"), componente:v("f-comp"), local:v("f-local"),
-        criticidade:+v("f-crit"), norma:v("f-norma"), situacao:v("f-sit")};
-      const i = dados.sistemas.findIndex(x=>x.id===novo.id);
-      i>=0 ? dados.sistemas[i]=novo : dados.sistemas.push(novo);
-      salvar(); fecharDlg(); renderTudo();
+      const novo = {nome:v("f-nome"), componente:v("f-comp"), local:v("f-local"), criticidade:+v("f-crit"), norma:v("f-norma"), situacao:v("f-sit")};
+      if(s.id) novo.id=s.id;
+      if(await dbUpsert("sistema",novo)){ fecharDlg(); renderTudo(); }
     });
 }
-function removerSistema(id){
-  const n = dados.atividades.filter(a=>a.sistemaId===id).length;
-  if(!confirm(`Remover este sistema${n?` e suas ${n} atividade(s) do programa`:""}?`)) return;
-  dados.sistemas = dados.sistemas.filter(s=>s.id!==id);
-  dados.atividades = dados.atividades.filter(a=>a.sistemaId!==id);
-  salvar(); renderTudo();
+async function removerSistema(id){
+  const ativs = dados.atividades.filter(a=>a.sistemaId===id);
+  if(!confirm(`Remover este sistema${ativs.length?` e suas ${ativs.length} atividade(s) do programa`:""}?`)) return;
+  for(const a of ativs){ if(!await dbDelete("atividade",a.id)) return; }
+  if(await dbDelete("sistema",id)) renderTudo();
 }
 function renderInventario(){
   const alvo = document.getElementById("lista-sistemas");
   if(!dados.sistemas.length){
-    alvo.innerHTML = `<div class="cartao vazio">Nenhum sistema cadastrado ainda.<br><br>
-      Use <b>"Gerar plano-modelo (NBR 5674)"</b> para carregar o inventário típico de um condomínio — depois é só ajustar.</div>`;
+    alvo.innerHTML = `<div class="cartao vazio">Nenhum sistema cadastrado ainda.<br><br>Use <b>"Gerar plano-modelo (NBR 5674)"</b> para carregar o inventário típico de um condomínio — depois é só ajustar.</div>`;
     return;
   }
   const ordem = [...dados.sistemas].sort((a,b)=>a.criticidade-b.criticidade || a.nome.localeCompare(b.nome));
@@ -569,8 +773,7 @@ function renderInventario(){
     ${ordem.map(s=>`<tr>
       <td><span class="pill crit-${s.criticidade}">${["","Alta","Média","Baixa"][s.criticidade]}</span></td>
       <td><b>${esc(s.nome)}</b></td><td>${esc(s.componente)||"—"}</td><td>${esc(s.local)||"—"}</td>
-      <td style="font-size:12px">${esc(s.norma)||"—"}</td>
-      <td>${esc(s.situacao)}</td>
+      <td style="font-size:12px">${esc(s.norma)||"—"}</td><td>${esc(s.situacao)}</td>
       <td style="text-align:center">${dados.atividades.filter(a=>a.sistemaId===s.id).length}</td>
       <td><a class="link-acao" onclick="abrirSistema('${s.id}')">editar</a> · <a class="link-acao rm" onclick="removerSistema('${s.id}')">remover</a></td>
     </tr>`).join("")}
@@ -578,11 +781,10 @@ function renderInventario(){
 }
 
 /* ==================================================================
-   PROGRAMA DE MANUTENÇÃO
+   PROGRAMA
    ================================================================== */
 const PERIODOS = [[1,"Mensal"],[2,"Bimestral"],[3,"Trimestral"],[6,"Semestral"],[12,"Anual"],[24,"Bienal"],[36,"Trienal"],[60,"Quinquenal"]];
 const nomePeriodo = m => (PERIODOS.find(p=>p[0]==m)||[])[1] || `${m} meses`;
-
 function abrirAtividade(id){
   if(!dados.sistemas.length) return alert("Cadastre ao menos um sistema no Inventário (ou gere o plano-modelo).");
   const a = dados.atividades.find(x=>x.id===id) || {sistemaId:dados.sistemas[0].id,desc:"",tipo:"Preventiva",periodicidade:12,responsavel:"",art:false,criterio:"",ultimaExec:null,ativa:true};
@@ -591,10 +793,8 @@ function abrirAtividade(id){
       ${dados.sistemas.map(s=>`<option value="${s.id}" ${s.id===a.sistemaId?"selected":""}>${esc(s.nome)}${s.componente?" — "+esc(s.componente):""}</option>`).join("")}</select></div>
     <div class="campo"><label>Descrição da atividade</label><input id="f-desc" value="${esc(a.desc)}" placeholder="Ex.: Limpeza e desinfecção dos reservatórios"></div>
     <div class="grade g3">
-      <div class="campo"><label>Tipo</label><select id="f-tipo">
-        ${["Preventiva","Preditiva","Corretiva","Inspeção"].map(t=>`<option ${a.tipo===t?"selected":""}>${t}</option>`).join("")}</select></div>
-      <div class="campo"><label>Periodicidade</label><select id="f-per">
-        ${PERIODOS.map(([m,n])=>`<option value="${m}" ${a.periodicidade==m?"selected":""}>${n}</option>`).join("")}</select></div>
+      <div class="campo"><label>Tipo</label><select id="f-tipo">${["Preventiva","Preditiva","Corretiva","Inspeção"].map(t=>`<option ${a.tipo===t?"selected":""}>${t}</option>`).join("")}</select></div>
+      <div class="campo"><label>Periodicidade</label><select id="f-per">${PERIODOS.map(([m,n])=>`<option value="${m}" ${a.periodicidade==m?"selected":""}>${n}</option>`).join("")}</select></div>
       <div class="campo"><label>Exige ART/RRT?</label><select id="f-art"><option value="1" ${a.art?"selected":""}>Sim</option><option value="0" ${!a.art?"selected":""}>Não</option></select></div>
     </div>
     <div class="grade g2">
@@ -602,34 +802,23 @@ function abrirAtividade(id){
       <div class="campo"><label>Última execução</label><input type="date" id="f-ult" value="${a.ultimaExec||""}"></div>
     </div>
     <div class="campo"><label>Método e critério de aceitação</label><textarea id="f-crit-ac" placeholder="Ex.: Inspeção visual; sem aquecimento anormal nem conexões frouxas">${esc(a.criterio)}</textarea></div>`,
-    () => {
+    async () => {
       if(!v("f-desc")) return alert("Descreva a atividade.");
-      const novo = {id:a.id||uid(), sistemaId:v("f-sis"), desc:v("f-desc"), tipo:v("f-tipo"),
-        periodicidade:+v("f-per"), art:v("f-art")==="1", responsavel:v("f-resp"),
-        ultimaExec:v("f-ult")||null, criterio:v("f-crit-ac"), ativa:a.ativa!==false};
-      const i = dados.atividades.findIndex(x=>x.id===novo.id);
-      i>=0 ? dados.atividades[i]=novo : dados.atividades.push(novo);
-      salvar(); fecharDlg(); renderTudo();
+      const novo = {sistemaId:v("f-sis"), desc:v("f-desc"), tipo:v("f-tipo"), periodicidade:+v("f-per"), art:v("f-art")==="1", responsavel:v("f-resp"), ultimaExec:v("f-ult")||null, criterio:v("f-crit-ac"), ativa:a.ativa!==false};
+      if(a.id) novo.id=a.id;
+      if(await dbUpsert("atividade",novo)){ fecharDlg(); renderTudo(); }
     });
 }
-function removerAtividade(id){
-  if(!confirm("Remover esta atividade do programa?")) return;
-  dados.atividades = dados.atividades.filter(a=>a.id!==id); salvar(); renderTudo();
-}
+async function removerAtividade(id){ if(confirm("Remover esta atividade do programa?") && await dbDelete("atividade",id)) renderTudo(); }
 function renderPrograma(){
   const sel = document.getElementById("filtro-prog-sistema");
   const atualSel = sel.value;
-  sel.innerHTML = `<option value="">Todos os sistemas</option>` +
-    dados.sistemas.map(s=>`<option value="${s.id}">${esc(s.nome)}</option>`).join("");
+  sel.innerHTML = `<option value="">Todos os sistemas</option>` + dados.sistemas.map(s=>`<option value="${s.id}">${esc(s.nome)}</option>`).join("");
   sel.value = atualSel;
   const alvo = document.getElementById("lista-atividades");
   let lista = dados.atividades.filter(a => !sel.value || a.sistemaId===sel.value);
-  if(!lista.length){
-    alvo.innerHTML = `<div class="cartao vazio">Nenhuma atividade cadastrada.<br><br>Use <b>"Gerar plano-modelo"</b> no Inventário para carregar o programa típico completo.</div>`;
-    return;
-  }
-  const porSistema = {};
-  lista.forEach(a => { (porSistema[a.sistemaId] ||= []).push(a); });
+  if(!lista.length){ alvo.innerHTML = `<div class="cartao vazio">Nenhuma atividade cadastrada.<br><br>Use <b>"Gerar plano-modelo"</b> no Inventário para carregar o programa típico completo.</div>`; return; }
+  const porSistema = {}; lista.forEach(a => { (porSistema[a.sistemaId] ||= []).push(a); });
   alvo.innerHTML = Object.entries(porSistema).map(([sid, ativs]) => {
     const s = dados.sistemas.find(x=>x.id===sid);
     return `<div class="cartao"><h3>${esc(s?s.nome:"(sistema removido)")} ${s&&s.componente?`<span style="color:var(--txt-suave);font-weight:400;font-size:13px">— ${esc(s.componente)}</span>`:""}</h3>
@@ -637,8 +826,7 @@ function renderPrograma(){
       <tr><th>Atividade</th><th>Tipo</th><th>Periodicidade</th><th>Responsável</th><th>ART</th><th>Situação</th><th></th></tr>
       ${ativs.map(a => { const st = statusAtividade(a); return `<tr>
         <td><b>${esc(a.desc)}</b>${a.criterio?`<span class="mini">${esc(a.criterio)}</span>`:""}</td>
-        <td>${esc(a.tipo)}</td><td>${nomePeriodo(a.periodicidade)}</td>
-        <td>${esc(a.responsavel)||"—"}</td>
+        <td>${esc(a.tipo)}</td><td>${nomePeriodo(a.periodicidade)}</td><td>${esc(a.responsavel)||"—"}</td>
         <td>${a.art?'<span class="pill p-terra">ART</span>':"—"}</td>
         <td><span class="pill ${st.classe}">${st.rotulo}</span></td>
         <td><a class="link-acao" onclick="abrirAtividade('${a.id}')">editar</a> · <a class="link-acao rm" onclick="removerAtividade('${a.id}')">remover</a></td>
@@ -661,17 +849,20 @@ function registrarExecucao(idAtividade){
     <div class="campo"><label>Executante (empresa / profissional / ART)</label><input id="f-exec" value="${esc(a.responsavel)}"></div>
     <div class="campo"><label>Serviços realizados / observações</label><textarea id="f-obs" placeholder="Descrição objetiva do que foi feito, materiais, nº de laudo ou certificado..."></textarea></div>
     <div class="nota">A execução gera automaticamente uma OS concluída no histórico, mantendo a rastreabilidade exigida pela NBR 5674.</div>`,
-    () => {
+    async () => {
       const data = v("f-data"); if(!data) return alert("Informe a data.");
+      const btn=document.getElementById("dlg-salvar"); btn.disabled=true; btn.textContent="Salvando...";
       a.ultimaExec = data;
-      dados.seqOS++;
-      dados.os.push({id:uid(), numero:`OS-${new Date().getFullYear()}-${String(dados.seqOS).padStart(3,"0")}`,
-        dataAbertura:data, origem:"Programa de manutenção", sistemaId:a.sistemaId, atividadeId:a.id,
-        desc:a.desc, tipo:a.tipo==="Corretiva"?"Corretiva":"Preventiva", prioridade:"Média",
-        dataProgramada:data, dataInicio:data, dataConclusao:data,
-        executante:v("f-exec"), servicos:v("f-obs"), materiais:"", custo:+v("f-custo")||0,
-        situacao:"Concluída", garantiaId:"", obs:""});
-      salvar(); fecharDlg(); renderTudo();
+      const ok1 = await dbUpsert("atividade", a);
+      if(ok1){
+        const numero = await proximoNumeroOS();
+        await dbUpsert("os", {numero, dataAbertura:data, origem:"Programa de manutenção", sistemaId:a.sistemaId, atividadeId:a.id,
+          desc:a.desc, tipo:a.tipo==="Corretiva"?"Corretiva":"Preventiva", prioridade:"Média",
+          dataProgramada:data, dataInicio:data, dataConclusao:data, executante:v("f-exec"), servicos:v("f-obs"),
+          materiais:"", custo:+v("f-custo")||0, situacao:"Concluída", garantiaId:"", obs:""});
+      }
+      btn.disabled=false; btn.textContent="Salvar";
+      fecharDlg(); renderTudo();
     });
 }
 function renderAgenda(){
@@ -688,8 +879,7 @@ function renderAgenda(){
       <td><span class="pill ${st.classe}">${st.rotulo}</span></td>
       <td><b>${esc(a.desc)}</b>${a.art?' <span class="pill p-terra">ART</span>':""}</td>
       <td style="font-size:12.5px">${esc(nomeSistema(a.sistemaId))}</td>
-      <td>${nomePeriodo(a.periodicidade)}</td>
-      <td>${fmtData(a.ultimaExec)}</td><td>${st.proxima?fmtData(st.proxima):"—"}</td>
+      <td>${nomePeriodo(a.periodicidade)}</td><td>${fmtData(a.ultimaExec)}</td><td>${st.proxima?fmtData(st.proxima):"—"}</td>
       <td><button class="botao mini" onclick="registrarExecucao('${a.id}')">Registrar execução</button></td>
     </tr>`).join("")}
   </table></div>`;
@@ -698,19 +888,14 @@ function renderAgenda(){
 /* ==================================================================
    ORDENS DE SERVIÇO
    ================================================================== */
-function abrirOS(id, preenchido){
-  const o = dados.os.find(x=>x.id===id) || Object.assign({
-    numero:"", dataAbertura:hoje(), origem:"Solicitação do síndico", sistemaId:dados.sistemas[0]?.id||"",
-    desc:"", tipo:"Corretiva", prioridade:"Média", dataProgramada:"", dataInicio:"", dataConclusao:"",
-    executante:"", servicos:"", materiais:"", custo:"", situacao:"Aberta", garantiaId:"", obs:""}, preenchido||{});
+function abrirOS(id){
+  const o = dados.os.find(x=>x.id===id) || {numero:"", dataAbertura:hoje(), origem:"Solicitação do síndico", sistemaId:dados.sistemas[0]?.id||"",
+    desc:"", tipo:"Corretiva", prioridade:"Média", dataProgramada:"", dataInicio:"", dataConclusao:"", executante:"", servicos:"", materiais:"", custo:"", situacao:"Aberta", garantiaId:"", obs:""};
   abrirDlgHtml(id?`Editar ${o.numero}`:"Abrir Ordem de Serviço", `
     <div class="grade g3">
       <div class="campo"><label>Data de abertura</label><input type="date" id="f-ab" value="${o.dataAbertura}"></div>
-      <div class="campo"><label>Origem</label><select id="f-orig">
-        ${["Solicitação do síndico","Relato de condômino","Inspeção programada","Inspeção predial / laudo","Checklist periódico","Emergência","Programa de manutenção"].map(x=>`<option ${o.origem===x?"selected":""}>${x}</option>`).join("")}</select></div>
-      <div class="campo"><label>Sistema afetado</label><select id="f-sis">
-        <option value="">(não vinculado)</option>
-        ${dados.sistemas.map(s=>`<option value="${s.id}" ${s.id===o.sistemaId?"selected":""}>${esc(s.nome)}${s.componente?" — "+esc(s.componente):""}</option>`).join("")}</select></div>
+      <div class="campo"><label>Origem</label><select id="f-orig">${["Solicitação do síndico","Relato de condômino","Inspeção programada","Inspeção predial / laudo","Checklist periódico","Emergência","Programa de manutenção"].map(x=>`<option ${o.origem===x?"selected":""}>${x}</option>`).join("")}</select></div>
+      <div class="campo"><label>Sistema afetado</label><select id="f-sis"><option value="">(não vinculado)</option>${dados.sistemas.map(s=>`<option value="${s.id}" ${s.id===o.sistemaId?"selected":""}>${esc(s.nome)}${s.componente?" — "+esc(s.componente):""}</option>`).join("")}</select></div>
     </div>
     <div class="campo"><label>Descrição da ocorrência / serviço</label><textarea id="f-desc">${esc(o.desc)}</textarea></div>
     <div class="grade g3">
@@ -728,33 +913,24 @@ function abrirOS(id, preenchido){
     <div class="campo"><label>Serviços realizados</label><textarea id="f-serv">${esc(o.servicos)}</textarea></div>
     <div class="grade g2">
       <div class="campo"><label>Materiais empregados</label><input id="f-mat" value="${esc(o.materiais)}"></div>
-      <div class="campo"><label>Garantia vinculada</label><select id="f-gar">
-        <option value="">(nenhuma)</option>
-        ${dados.garantias.map(g=>`<option value="${g.id}" ${g.id===o.garantiaId?"selected":""}>${esc(g.item)} — ${esc(g.desc)}</option>`).join("")}</select></div>
+      <div class="campo"><label>Garantia vinculada</label><select id="f-gar"><option value="">(nenhuma)</option>${dados.garantias.map(g=>`<option value="${g.id}" ${g.id===o.garantiaId?"selected":""}>${esc(g.item)} — ${esc(g.desc)}</option>`).join("")}</select></div>
     </div>
     <div class="campo"><label>Observações / nº de laudo / fotos arquivadas em</label><input id="f-obs" value="${esc(o.obs)}"></div>`,
-    () => {
+    async () => {
       if(!v("f-desc")) return alert("Descreva a ocorrência.");
-      if(!o.id){ dados.seqOS++; o.numero = `OS-${new Date().getFullYear()}-${String(dados.seqOS).padStart(3,"0")}`; }
-      const novo = {id:o.id||uid(), numero:o.numero, atividadeId:o.atividadeId||"",
-        dataAbertura:v("f-ab"), origem:v("f-orig"), sistemaId:v("f-sis"), desc:v("f-desc"),
-        tipo:v("f-tipo"), prioridade:v("f-pri"), situacao:v("f-sit"),
-        dataProgramada:v("f-prog"), dataInicio:v("f-ini"), dataConclusao:v("f-fim"),
-        executante:v("f-exec"), custo:+v("f-custo")||0, servicos:v("f-serv"),
-        materiais:v("f-mat"), garantiaId:v("f-gar"), obs:v("f-obs")};
-      const i = dados.os.findIndex(x=>x.id===novo.id);
-      i>=0 ? dados.os[i]=novo : dados.os.push(novo);
-      salvar(); fecharDlg(); renderTudo();
+      const novo = {atividadeId:o.atividadeId||"", dataAbertura:v("f-ab"), origem:v("f-orig"), sistemaId:v("f-sis"), desc:v("f-desc"),
+        tipo:v("f-tipo"), prioridade:v("f-pri"), situacao:v("f-sit"), dataProgramada:v("f-prog"), dataInicio:v("f-ini"), dataConclusao:v("f-fim"),
+        executante:v("f-exec"), custo:+v("f-custo")||0, servicos:v("f-serv"), materiais:v("f-mat"), garantiaId:v("f-gar"), obs:v("f-obs")};
+      if(o.id){ novo.id=o.id; novo.numero=o.numero; }
+      else { novo.numero = await proximoNumeroOS(); }
+      if(await dbUpsert("os",novo)){ fecharDlg(); renderTudo(); }
     });
 }
-function removerOS(id){
-  if(!confirm("Excluir esta OS do histórico? (a NBR 5674 recomenda conservar todos os registros)")) return;
-  dados.os = dados.os.filter(o=>o.id!==id); salvar(); renderTudo();
-}
+async function removerOS(id){ if(confirm("Excluir esta OS do histórico? (a NBR 5674 recomenda conservar todos os registros)") && await dbDelete("os",id)) renderTudo(); }
 function renderOS(){
   const filtro = document.getElementById("filtro-os").value;
   const alvo = document.getElementById("lista-os");
-  let lista = [...dados.os].sort((a,b)=>b.dataAbertura.localeCompare(a.dataAbertura));
+  let lista = [...dados.os].sort((a,b)=>(b.dataAbertura||"").localeCompare(a.dataAbertura||""));
   if(filtro!=="todas") lista = lista.filter(o=>o.situacao===filtro);
   if(!lista.length){ alvo.innerHTML = `<div class="cartao vazio">Nenhuma OS ${filtro!=="todas"?"nesta situação":"registrada ainda"}.</div>`; return; }
   const pillSit = s => s==="Concluída"?"p-ok":s==="Cancelada"?"p-neutro":s==="Em andamento"?"p-alerta":"p-erro";
@@ -766,8 +942,7 @@ function renderOS(){
       <td>${esc(o.desc)}${o.servicos?`<span class="mini">${esc(o.servicos)}</span>`:""}</td>
       <td>${esc(o.tipo)}</td>
       <td><span class="pill ${o.prioridade==="Alta"?"p-erro":o.prioridade==="Média"?"p-alerta":"p-neutro"}">${o.prioridade}</span></td>
-      <td style="font-size:12.5px">${esc(o.executante)||"—"}</td>
-      <td>${fmtR$(o.custo)}</td>
+      <td style="font-size:12.5px">${esc(o.executante)||"—"}</td><td>${fmtR$(o.custo)}</td>
       <td><span class="pill ${pillSit(o.situacao)}">${o.situacao}</span></td>
       <td><a class="link-acao" onclick="abrirOS('${o.id}')">editar</a> · <a class="link-acao rm" onclick="removerOS('${o.id}')">excluir</a></td>
     </tr>`).join("")}
@@ -790,30 +965,21 @@ function abrirGarantia(id){
     </div>
     <div class="campo"><label>Condições para validade</label><textarea id="f-cond">${esc(g.condicoes)}</textarea></div>
     <div class="campo"><label>Observações (notificações, laudos, pleitos)</label><textarea id="f-obs">${esc(g.obs)}</textarea></div>`,
-    () => {
+    async () => {
       if(!v("f-item")||!v("f-ini")) return alert("Informe o item e a data de início.");
-      const novo = {id:g.id||uid(), item:v("f-item"), desc:v("f-desc"), responsavel:v("f-resp"),
-        prazoMeses:+v("f-prazo")||1, dataInicio:v("f-ini"), condicoes:v("f-cond"), situacao:v("f-sit"), obs:v("f-obs")};
-      const i = dados.garantias.findIndex(x=>x.id===novo.id);
-      i>=0 ? dados.garantias[i]=novo : dados.garantias.push(novo);
-      salvar(); fecharDlg(); renderTudo();
+      const novo = {item:v("f-item"), desc:v("f-desc"), responsavel:v("f-resp"), prazoMeses:+v("f-prazo")||1, dataInicio:v("f-ini"), condicoes:v("f-cond"), situacao:v("f-sit"), obs:v("f-obs")};
+      if(g.id) novo.id=g.id;
+      if(await dbUpsert("garantia",novo)){ fecharDlg(); renderTudo(); }
     });
 }
-function removerGarantia(id){
-  if(!confirm("Remover esta garantia?")) return;
-  dados.garantias = dados.garantias.filter(g=>g.id!==id); salvar(); renderTudo();
-}
+async function removerGarantia(id){ if(confirm("Remover esta garantia?") && await dbDelete("garantia",id)) renderTudo(); }
 function renderGarantias(){
   const alvo = document.getElementById("lista-garantias");
-  if(!dados.garantias.length){
-    alvo.innerHTML = `<div class="cartao vazio">Nenhuma garantia cadastrada.<br><br>Cadastre as garantias do manual da construtora (estrutura, impermeabilização, instalações, equipamentos) para receber alertas antes do vencimento.</div>`;
-    return;
-  }
+  if(!dados.garantias.length){ alvo.innerHTML = `<div class="cartao vazio">Nenhuma garantia cadastrada.<br><br>Cadastre as garantias do manual da construtora (estrutura, impermeabilização, instalações, equipamentos) para receber alertas antes do vencimento.</div>`; return; }
   const lista = [...dados.garantias].map(g=>({g, st:statusGarantia(g)})).sort((a,b)=>a.st.dias-b.st.dias);
   alvo.innerHTML = `<div class="tab-wrap"><table>
     <tr><th>Situação</th><th>Item</th><th>Elemento</th><th>Responsável</th><th>Início</th><th>Fim</th><th>Condições</th><th>OS no período</th><th></th></tr>
-    ${lista.map(({g,st})=>{
-      const osVinc = dados.os.filter(o=>o.garantiaId===g.id).map(o=>o.numero).join(", ");
+    ${lista.map(({g,st})=>{ const osVinc = dados.os.filter(o=>o.garantiaId===g.id).map(o=>o.numero).join(", ");
       return `<tr>
       <td><span class="pill ${st.classe}">${st.rotulo}</span></td>
       <td><b>${esc(g.item)}</b></td><td>${esc(g.desc)||"—"}</td><td>${esc(g.responsavel)||"—"}</td>
@@ -826,15 +992,14 @@ function renderGarantias(){
 }
 
 /* ==================================================================
-   INSPEÇÕES E LAUDOS
+   INSPEÇÕES
    ================================================================== */
 function abrirInspecao(id){
   const p = dados.inspecoes.find(x=>x.id===id) || {data:hoje(),tipo:"Inspeção predial (NBR 16747)",abrangencia:"Total",responsavel:"",art:"",achados:"",recomendacoes:"",obs:""};
   abrirDlgHtml(id?"Editar registro":"Registrar inspeção / laudo", `
     <div class="grade g3">
       <div class="campo"><label>Data</label><input type="date" id="f-data" value="${p.data}"></div>
-      <div class="campo"><label>Tipo</label><select id="f-tipo">
-        ${["Inspeção predial (NBR 16747)","Inspeção rotineira","Vistoria cautelar","Laudo pericial","Vistoria de entrega","Outro"].map(x=>`<option ${p.tipo===x?"selected":""}>${x}</option>`).join("")}</select></div>
+      <div class="campo"><label>Tipo</label><select id="f-tipo">${["Inspeção predial (NBR 16747)","Inspeção rotineira","Vistoria cautelar","Laudo pericial","Vistoria de entrega","Outro"].map(x=>`<option ${p.tipo===x?"selected":""}>${x}</option>`).join("")}</select></div>
       <div class="campo"><label>Abrangência</label><input id="f-abr" value="${esc(p.abrangencia)}" placeholder="Total / somente fachadas..."></div>
     </div>
     <div class="grade g2">
@@ -844,39 +1009,30 @@ function abrirInspecao(id){
     <div class="campo"><label>Principais achados (patologias, anomalias, não conformidades)</label><textarea id="f-achados">${esc(p.achados)}</textarea></div>
     <div class="campo"><label>Recomendações (intervenções, ajustes do plano)</label><textarea id="f-rec">${esc(p.recomendacoes)}</textarea></div>
     <div class="campo"><label>Arquivo do laudo / fotos (onde está guardado)</label><input id="f-obs" value="${esc(p.obs)}"></div>`,
-    () => {
-      const novo = {id:p.id||uid(), data:v("f-data"), tipo:v("f-tipo"), abrangencia:v("f-abr"),
-        responsavel:v("f-resp"), art:v("f-art"), achados:v("f-achados"), recomendacoes:v("f-rec"), obs:v("f-obs")};
-      const i = dados.inspecoes.findIndex(x=>x.id===novo.id);
-      i>=0 ? dados.inspecoes[i]=novo : dados.inspecoes.push(novo);
-      salvar(); fecharDlg(); renderTudo();
+    async () => {
+      const novo = {data:v("f-data"), tipo:v("f-tipo"), abrangencia:v("f-abr"), responsavel:v("f-resp"), art:v("f-art"), achados:v("f-achados"), recomendacoes:v("f-rec"), obs:v("f-obs")};
+      if(p.id) novo.id=p.id;
+      if(await dbUpsert("inspecao",novo)){ fecharDlg(); renderTudo(); }
     });
 }
-function removerInspecao(id){
-  if(!confirm("Remover este registro de inspeção?")) return;
-  dados.inspecoes = dados.inspecoes.filter(p=>p.id!==id); salvar(); renderTudo();
-}
+async function removerInspecao(id){ if(confirm("Remover este registro de inspeção?") && await dbDelete("inspecao",id)) renderTudo(); }
 function renderInspecoes(){
   const alvo = document.getElementById("lista-inspecoes");
-  if(!dados.inspecoes.length){
-    alvo.innerHTML = `<div class="cartao vazio">Nenhuma inspeção registrada. O diagnóstico inicial por inspeção predial (NBR 16747:2020) é o 1º passo do plano de manutenção.</div>`;
-    return;
-  }
+  if(!dados.inspecoes.length){ alvo.innerHTML = `<div class="cartao vazio">Nenhuma inspeção registrada. O diagnóstico inicial por inspeção predial (NBR 16747:2020) é o 1º passo do plano de manutenção.</div>`; return; }
   const lista = [...dados.inspecoes].sort((a,b)=>b.data.localeCompare(a.data));
   alvo.innerHTML = `<div class="tab-wrap"><table>
     <tr><th>Data</th><th>Tipo</th><th>Abrangência</th><th>Responsável</th><th>ART/RRT</th><th>Achados</th><th>Recomendações</th><th></th></tr>
     ${lista.map(p=>`<tr>
       <td>${fmtData(p.data)}</td><td>${esc(p.tipo)}</td><td>${esc(p.abrangencia)||"—"}</td>
       <td>${esc(p.responsavel)||"—"}</td><td>${esc(p.art)||"—"}</td>
-      <td style="max-width:260px">${esc(p.achados)||"—"}</td>
-      <td style="max-width:260px">${esc(p.recomendacoes)||"—"}</td>
+      <td style="max-width:260px">${esc(p.achados)||"—"}</td><td style="max-width:260px">${esc(p.recomendacoes)||"—"}</td>
       <td><a class="link-acao" onclick="abrirInspecao('${p.id}')">editar</a> · <a class="link-acao rm" onclick="removerInspecao('${p.id}')">remover</a></td>
     </tr>`).join("")}
   </table></div>`;
 }
 
 /* ==================================================================
-   CHECKLIST DE INSPEÇÃO PERIÓDICA
+   CHECKLIST
    ================================================================== */
 const ITENS_CHECKLIST = [
  ["Áreas comuns","Pisos, paredes e tetos sem fissuras, infiltrações ou destacamentos"],
@@ -896,20 +1052,12 @@ const ITENS_CHECKLIST = [
  ["Lazer","Playground/academia sem peças soltas, arestas ou desgaste perigoso"],
  ["Piscina","Água limpa, casa de máquinas trancada, tratamento em dia"]
 ];
-let checklistAtual = null;
-function novoChecklist(){
-  checklistAtual = {id:uid(), data:hoje(), responsavel:"", itens:ITENS_CHECKLIST.map(([g,t])=>({grupo:g,texto:t,status:null,obs:""}))};
-  renderChecklist();
-}
-function marcarItem(i, st){
-  checklistAtual.itens[i].status = checklistAtual.itens[i].status===st ? null : st;
-  renderChecklist();
-}
+function novoChecklist(){ checklistAtual = {data:hoje(), responsavel:"", itens:ITENS_CHECKLIST.map(([g,t])=>({grupo:g,texto:t,status:null,obs:""}))}; renderChecklist(); }
+function marcarItem(i, st){ checklistAtual.itens[i].status = checklistAtual.itens[i].status===st ? null : st; renderChecklist(); }
 function renderChecklist(){
   const alvo = document.getElementById("area-checklist");
   if(!checklistAtual){ alvo.innerHTML = ""; renderHistChecklists(); return; }
-  const c = checklistAtual;
-  const feitos = c.itens.filter(i=>i.status).length;
+  const c = checklistAtual; const feitos = c.itens.filter(i=>i.status).length;
   alvo.innerHTML = `<div class="cartao">
     <h3>Checklist de ${fmtData(c.data)}</h3>
     <div class="grade g2" style="margin-bottom:10px">
@@ -933,56 +1081,47 @@ function renderChecklist(){
   </div>`;
   renderHistChecklists();
 }
-function concluirChecklist(){
-  const c = checklistAtual;
-  const problemas = c.itens.filter(i=>i.status==="nok");
-  dados.checklists.push(c);
-  let msg = "Checklist salvo no histórico.";
+async function concluirChecklist(){
+  const c = checklistAtual; const problemas = c.itens.filter(i=>i.status==="nok");
+  if(!await dbUpsert("checklist", {data:c.data, responsavel:c.responsavel, itens:c.itens})) return;
+  let msg = "Checklist salvo.";
   if(problemas.length && confirm(`${problemas.length} item(ns) com problema. Gerar uma OS corretiva para cada um?`)){
-    problemas.forEach(p=>{
-      dados.seqOS++;
-      dados.os.push({id:uid(), numero:`OS-${new Date().getFullYear()}-${String(dados.seqOS).padStart(3,"0")}`,
-        dataAbertura:c.data, origem:"Checklist periódico", sistemaId:"", atividadeId:"",
+    for(const p of problemas){
+      const numero = await proximoNumeroOS();
+      await dbUpsert("os", {numero, dataAbertura:c.data, origem:"Checklist periódico", sistemaId:"", atividadeId:"",
         desc:`${p.grupo}: ${p.texto}${p.obs?` — ${p.obs}`:""}`, tipo:"Corretiva", prioridade:"Média",
-        dataProgramada:"", dataInicio:"", dataConclusao:"", executante:"", servicos:"", materiais:"",
-        custo:0, situacao:"Aberta", garantiaId:"", obs:"Gerada automaticamente pelo checklist"});
-    });
+        dataProgramada:"", dataInicio:"", dataConclusao:"", executante:"", servicos:"", materiais:"", custo:0, situacao:"Aberta", garantiaId:"", obs:"Gerada automaticamente pelo checklist"});
+    }
     msg += ` ${problemas.length} OS aberta(s).`;
   }
-  checklistAtual = null; salvar(); renderTudo(); alert(msg);
+  checklistAtual = null; renderTudo(); alert(msg);
 }
 function renderHistChecklists(){
   const alvo = document.getElementById("hist-checklists");
   if(!dados.checklists.length){ alvo.innerHTML = `<div class="vazio">Nenhum checklist concluído ainda.</div>`; return; }
   alvo.innerHTML = `<div class="tab-wrap"><table>
     <tr><th>Data</th><th>Responsável</th><th>OK</th><th>Problemas</th><th>N/A</th><th></th></tr>
-    ${[...dados.checklists].sort((a,b)=>b.data.localeCompare(a.data)).map(c=>{
-      const n = s => c.itens.filter(i=>i.status===s).length;
+    ${[...dados.checklists].sort((a,b)=>b.data.localeCompare(a.data)).map(c=>{ const n=s=>c.itens.filter(i=>i.status===s).length;
       return `<tr><td>${fmtData(c.data)}</td><td>${esc(c.responsavel)||"—"}</td>
         <td><span class="pill p-ok">${n("ok")}</span></td>
         <td><span class="pill ${n("nok")?"p-erro":"p-neutro"}">${n("nok")}</span></td>
         <td>${n("na")}</td>
-        <td><a class="link-acao rm" onclick="removerChecklist('${c.id}')">excluir</a></td></tr>`;
-    }).join("")}
+        <td><a class="link-acao rm" onclick="removerChecklist('${c.id}')">excluir</a></td></tr>`;}).join("")}
   </table></div>`;
 }
-function removerChecklist(id){
-  if(!confirm("Excluir este checklist do histórico?")) return;
-  dados.checklists = dados.checklists.filter(c=>c.id!==id); salvar(); renderTudo();
-}
+async function removerChecklist(id){ if(confirm("Excluir este checklist do histórico?") && await dbDelete("checklist",id)) renderTudo(); }
 
 /* ==================================================================
-   PAINEL (dashboard do síndico)
+   PAINEL
    ================================================================== */
 function renderPainel(){
   const ativas = dados.atividades.filter(a=>a.ativa!==false);
   const sts = ativas.map(a=>({a, st:statusAtividade(a)}));
-  const vencidas  = sts.filter(x=>["vencida","nunca"].includes(x.st.chave));
-  const proximas  = sts.filter(x=>x.st.chave==="proxima");
-  const emdia     = sts.filter(x=>x.st.chave==="emdia");
+  const vencidas = sts.filter(x=>["vencida","nunca"].includes(x.st.chave));
+  const proximas = sts.filter(x=>x.st.chave==="proxima");
+  const emdia = sts.filter(x=>x.st.chave==="emdia");
   const osAbertas = dados.os.filter(o=>["Aberta","Em andamento"].includes(o.situacao));
-  const gAlerta   = dados.garantias.map(g=>({g,st:statusGarantia(g)})).filter(x=>x.st.dias>=0 && x.st.dias<=90 && x.g.situacao!=="Suspensa");
-
+  const gAlerta = dados.garantias.map(g=>({g,st:statusGarantia(g)})).filter(x=>x.st.dias>=0 && x.st.dias<=90 && x.g.situacao!=="Suspensa");
   const ano = new Date().getFullYear();
   const osAno = dados.os.filter(o=>o.dataAbertura?.startsWith(String(ano)));
   const custoPrev = osAno.filter(o=>o.tipo==="Preventiva").reduce((s,o)=>s+(+o.custo||0),0);
@@ -994,23 +1133,20 @@ function renderPainel(){
   if(!dados.sistemas.length){
     html += `<div class="cartao" style="border-left:5px solid var(--terracota)">
       <h3>Comece por aqui</h3>
-      <p style="font-size:13.5px;margin-bottom:12px">Este aplicativo implementa o sistema de gestão de manutenção da <b>NBR 5674:2024</b> para o seu condomínio, em 5 passos
-      (conforme o guia da Pacheco Engenharia): <b>1)</b> Diagnóstico inicial por inspeção predial · <b>2)</b> Levantamento de uso e operação ·
+      <p style="font-size:13.5px;margin-bottom:12px">Este aplicativo implementa o sistema de gestão de manutenção da <b>NBR 5674:2024</b> em 5 passos
+      (guia da Pacheco Engenharia): <b>1)</b> Diagnóstico inicial por inspeção predial · <b>2)</b> Levantamento de uso e operação ·
       <b>3)</b> Planejamento das atividades · <b>4)</b> Execução e monitoramento · <b>5)</b> Registro e comunicação.</p>
       <div style="display:flex;gap:10px;flex-wrap:wrap">
         <button class="botao" onclick="irPara('edificacao')">1. Cadastrar a edificação</button>
         <button class="botao terra" onclick="abrirGerarPlano()">2. Gerar plano-modelo (NBR 5674)</button>
-      </div>
-    </div>`;
+      </div></div>`;
   }
   if(vencidas.length){
-    html += `<div class="aviso-jur">
-      <h4>⚠ Alerta de responsabilidade — ${vencidas.length} atividade(s) vencida(s) ou nunca executada(s)</h4>
+    html += `<div class="aviso-jur"><h4>⚠ Alerta de responsabilidade — ${vencidas.length} atividade(s) vencida(s) ou nunca executada(s)</h4>
       A NBR 5674:2024 define o síndico como responsável legal pela manutenção da edificação. A omissão (negligência) nos deveres de
       cuidado e prevenção pode caracterizar responsabilidade <b>civil</b> (arts. 186, 927 e 1.348, V do Código Civil) e, em casos de dano ou
       perigo a pessoas, responsabilidade <b>penal</b> (arts. 132 — exposição a perigo; 129, §6º — lesão culposa; 256 — desabamento, do Código Penal).
-      Regularize as manutenções pendentes e registre as execuções.
-    </div>`;
+      Regularize as manutenções pendentes e registre as execuções.</div>`;
   }
   html += `<div class="grade g4" style="margin-bottom:16px">
     <div class="kpi vermelho"><div class="valor">${vencidas.length}</div><div class="rotulo">Vencidas / nunca feitas</div></div>
@@ -1022,7 +1158,6 @@ function renderPainel(){
     <div class="kpi"><div class="valor" style="font-size:19px">${fmtR$(custoPrev)}</div><div class="rotulo">Custo preventivo ${ano}</div></div>
     <div class="kpi"><div class="valor" style="font-size:19px">${fmtR$(custoCorr)}</div><div class="rotulo">Custo corretivo ${ano}</div></div>
   </div>`;
-
   if(vencidas.length || proximas.length){
     const urgentes = [...vencidas, ...proximas].sort((x,y)=>(x.st.dias??-9999)-(y.st.dias??-9999)).slice(0,8);
     html += `<div class="cartao"><h3>Prioridades de ação</h3><div class="tab-wrap"><table>
@@ -1032,25 +1167,21 @@ function renderPainel(){
         <td><b>${esc(a.desc)}</b></td><td style="font-size:12.5px">${esc(nomeSistema(a.sistemaId))}</td>
         <td>${st.proxima?fmtData(st.proxima):"—"}</td>
         <td><button class="botao mini" onclick="registrarExecucao('${a.id}')">Registrar execução</button></td>
-      </tr>`).join("")}
-    </table></div></div>`;
+      </tr>`).join("")}</table></div></div>`;
   }
   if(gAlerta.length){
     html += `<div class="cartao"><h3>Garantias a vencer — agir junto à construtora/fornecedor</h3><div class="tab-wrap"><table>
       <tr><th>Item</th><th>Responsável</th><th>Vence em</th></tr>
-      ${gAlerta.sort((a,b)=>a.st.dias-b.st.dias).map(({g,st})=>`<tr>
-        <td><b>${esc(g.item)}</b> — ${esc(g.desc)}</td><td>${esc(g.responsavel)||"—"}</td>
-        <td><span class="pill p-alerta">${fmtData(st.fim)} (${st.dias} d)</span></td></tr>`).join("")}
-    </table></div>
-    <p style="font-size:12.5px;color:var(--txt-suave);margin-top:8px">Antes do vencimento, vistorie os itens e notifique formalmente o responsável sobre eventuais vícios — com laudo técnico, se necessário.</p></div>`;
+      ${gAlerta.sort((a,b)=>a.st.dias-b.st.dias).map(({g,st})=>`<tr><td><b>${esc(g.item)}</b> — ${esc(g.desc)}</td><td>${esc(g.responsavel)||"—"}</td><td><span class="pill p-alerta">${fmtData(st.fim)} (${st.dias} d)</span></td></tr>`).join("")}
+    </table></div><p style="font-size:12.5px;color:var(--txt-suave);margin-top:8px">Antes do vencimento, vistorie os itens e notifique formalmente o responsável sobre eventuais vícios — com laudo técnico, se necessário.</p></div>`;
   }
   html += `<div class="cartao"><h3>Deveres do síndico na gestão da manutenção (NBR 5674:2024)</h3>
     <ul style="margin-left:18px;font-size:13px;line-height:1.9">
       <li>Manter <b>atualizado o plano de manutenção</b> e revisá-lo periodicamente (após cada inspeção predial);</li>
-      <li>Contratar <b>profissionais qualificados e legalmente habilitados</b> (CREA/CAU), exigindo contrato, ART/RRT e relatórios de serviço;</li>
+      <li>Contratar <b>profissionais qualificados e legalmente habilitados</b> (CREA/CAU), exigindo contrato, ART/RRT e relatórios;</li>
       <li>Garantir que as manutenções sejam realizadas <b>nos prazos previstos</b>;</li>
       <li>Conservar os <b>registros e documentos técnicos</b> acessíveis (OS, laudos, ARTs, certificados, notas fiscais);</li>
-      <li>Comunicar os condôminos (assembleias e boletins) e orientar o <b>uso correto dos sistemas</b> (NBR 14037:2024).</li>
+      <li>Comunicar os condôminos e orientar o <b>uso correto dos sistemas</b> (NBR 14037:2024).</li>
     </ul></div>`;
   document.getElementById("painel-conteudo").innerHTML = html;
 }
@@ -1067,105 +1198,64 @@ function renderRelatorio(){
   const osAno = dados.os.filter(o=>o.dataAbertura?.startsWith(String(ano)));
   const custoPrev = osAno.filter(o=>o.tipo==="Preventiva").reduce((s,o)=>s+(+o.custo||0),0);
   const custoCorr = osAno.filter(o=>o.tipo!=="Preventiva").reduce((s,o)=>s+(+o.custo||0),0);
-
   document.getElementById("relatorio-conteudo").innerHTML = `
   <div class="cartao">
-    <div style="display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid var(--azul);padding-bottom:12px;margin-bottom:14px">
-      <div>
-        <h3 style="font-size:19px">Plano de Manutenção Predial — Relatório de Gestão</h3>
-        <div style="font-size:12.5px;color:var(--txt-suave)">${esc(e.nome||"(condomínio não cadastrado)")} · ${esc(e.endereco||"")}</div>
-        <div style="font-size:12.5px;color:var(--txt-suave)">Emitido em ${fmtData(hoje())} · ${esc(e.versao||"")} · Normas: ${esc(e.normas||"NBR 5674:2024")}</div>
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid var(--azul);padding-bottom:12px;margin-bottom:14px;gap:14px">
+      <div style="display:flex;gap:12px;align-items:flex-start">
+        <img src="assets/logo-icone.png" style="width:52px;height:52px;object-fit:contain" alt="">
+        <div>
+          <h3 style="font-size:19px">Plano de Manutenção Predial — Relatório de Gestão</h3>
+          <div style="font-size:12.5px;color:var(--txt-suave)">${esc(e.nome||"(condomínio não cadastrado)")} · ${esc(e.endereco||"")}</div>
+          <div style="font-size:12.5px;color:var(--txt-suave)">Emitido em ${fmtData(hoje())} · ${esc(e.versao||"")} · Normas: ${esc(e.normas||"NBR 5674:2024")}</div>
+        </div>
       </div>
       <div style="text-align:right;font-size:12px;color:var(--txt-suave)"><b style="color:var(--azul)">Pacheco Engenharia e Perícias</b><br>Gestão conforme NBR 5674:2024</div>
     </div>
     <div class="grade g3">
-      <div><b>Uso:</b> ${esc(e.uso||"—")}</div><div><b>Unidades:</b> ${esc(e.unidades||"—")}</div>
-      <div><b>Entrega/habite-se:</b> ${esc(e.ano||"—")}</div>
-      <div><b>Síndico(a):</b> ${esc(e.sindico||"—")}</div><div><b>Administradora:</b> ${esc(e.administradora||"—")}</div>
-      <div><b>Resp. técnico:</b> ${esc(e.rt||"—")}</div>
+      <div><b>Uso:</b> ${esc(e.uso||"—")}</div><div><b>Unidades:</b> ${esc(e.unidades||"—")}</div><div><b>Entrega/habite-se:</b> ${esc(e.ano||"—")}</div>
+      <div><b>Síndico(a):</b> ${esc(e.sindico||"—")}</div><div><b>Administradora:</b> ${esc(e.administradora||"—")}</div><div><b>Resp. técnico:</b> ${esc(e.rt||"—")}</div>
     </div>
   </div>
-  <div class="cartao"><h3>Resumo executivo</h3>
-    <div class="grade g4">
+  <div class="cartao"><h3>Resumo executivo</h3><div class="grade g4">
       <div class="kpi"><div class="valor">${ativas.length}</div><div class="rotulo">Atividades no programa</div></div>
       <div class="kpi ${vencidas?"vermelho":"verde"}"><div class="valor">${vencidas}</div><div class="rotulo">Pendências vencidas</div></div>
       <div class="kpi"><div class="valor">${osAno.length}</div><div class="rotulo">OS em ${ano}</div></div>
       <div class="kpi"><div class="valor" style="font-size:17px">${fmtR$(custoPrev+custoCorr)}</div><div class="rotulo">Custo total ${ano} (prev. ${fmtR$(custoPrev)} / corr. ${fmtR$(custoCorr)})</div></div>
-    </div>
-  </div>
-  <div class="cartao"><h3>Programa de manutenção e situação atual</h3>
-    <div class="tab-wrap"><table>
+  </div></div>
+  <div class="cartao"><h3>Programa de manutenção e situação atual</h3><div class="tab-wrap"><table>
       <tr><th>Sistema</th><th>Atividade</th><th>Periodicidade</th><th>Responsável</th><th>Última</th><th>Próxima</th><th>Situação</th></tr>
       ${sts.sort((x,y)=>(x.st.dias??-9999)-(y.st.dias??-9999)).map(({a,st})=>`<tr>
         <td>${esc(nomeSistema(a.sistemaId))}</td><td>${esc(a.desc)}</td><td>${nomePeriodo(a.periodicidade)}</td>
-        <td>${esc(a.responsavel)||"—"}</td><td>${fmtData(a.ultimaExec)}</td>
-        <td>${st.proxima?fmtData(st.proxima):"—"}</td>
+        <td>${esc(a.responsavel)||"—"}</td><td>${fmtData(a.ultimaExec)}</td><td>${st.proxima?fmtData(st.proxima):"—"}</td>
         <td><span class="pill ${st.classe}">${st.rotulo}</span></td></tr>`).join("") || `<tr><td colspan="7">Sem atividades cadastradas.</td></tr>`}
-    </table></div>
-  </div>
-  <div class="cartao"><h3>Ordens de serviço de ${ano}</h3>
-    <div class="tab-wrap"><table>
+  </table></div></div>
+  <div class="cartao"><h3>Ordens de serviço de ${ano}</h3><div class="tab-wrap"><table>
       <tr><th>OS</th><th>Data</th><th>Descrição</th><th>Tipo</th><th>Executante</th><th>Custo</th><th>Situação</th></tr>
-      ${osAno.sort((a,b)=>b.dataAbertura.localeCompare(a.dataAbertura)).map(o=>`<tr>
-        <td>${esc(o.numero)}</td><td>${fmtData(o.dataAbertura)}</td><td>${esc(o.desc)}</td>
-        <td>${esc(o.tipo)}</td><td>${esc(o.executante)||"—"}</td><td>${fmtR$(o.custo)}</td><td>${esc(o.situacao)}</td></tr>`).join("") || `<tr><td colspan="7">Sem OS no ano.</td></tr>`}
-    </table></div>
-  </div>
-  <div class="cartao"><h3>Garantias</h3>
-    <div class="tab-wrap"><table>
+      ${osAno.sort((a,b)=>(b.dataAbertura||"").localeCompare(a.dataAbertura||"")).map(o=>`<tr>
+        <td>${esc(o.numero)}</td><td>${fmtData(o.dataAbertura)}</td><td>${esc(o.desc)}</td><td>${esc(o.tipo)}</td><td>${esc(o.executante)||"—"}</td><td>${fmtR$(o.custo)}</td><td>${esc(o.situacao)}</td></tr>`).join("") || `<tr><td colspan="7">Sem OS no ano.</td></tr>`}
+  </table></div></div>
+  <div class="cartao"><h3>Garantias</h3><div class="tab-wrap"><table>
       <tr><th>Item</th><th>Responsável</th><th>Início</th><th>Fim</th><th>Situação</th></tr>
-      ${dados.garantias.map(g=>{const st=statusGarantia(g);return `<tr>
-        <td>${esc(g.item)} — ${esc(g.desc)}</td><td>${esc(g.responsavel)||"—"}</td>
-        <td>${fmtData(g.dataInicio)}</td><td>${fmtData(st.fim)}</td>
-        <td><span class="pill ${st.classe}">${st.rotulo}</span></td></tr>`;}).join("") || `<tr><td colspan="5">Sem garantias cadastradas.</td></tr>`}
-    </table></div>
-  </div>
-  <div class="cartao"><h3>Inspeções e laudos</h3>
-    <div class="tab-wrap"><table>
+      ${dados.garantias.map(g=>{const st=statusGarantia(g);return `<tr><td>${esc(g.item)} — ${esc(g.desc)}</td><td>${esc(g.responsavel)||"—"}</td><td>${fmtData(g.dataInicio)}</td><td>${fmtData(st.fim)}</td><td><span class="pill ${st.classe}">${st.rotulo}</span></td></tr>`;}).join("") || `<tr><td colspan="5">Sem garantias cadastradas.</td></tr>`}
+  </table></div></div>
+  <div class="cartao"><h3>Inspeções e laudos</h3><div class="tab-wrap"><table>
       <tr><th>Data</th><th>Tipo</th><th>Responsável</th><th>ART/RRT</th><th>Principais achados</th></tr>
-      ${[...dados.inspecoes].sort((a,b)=>b.data.localeCompare(a.data)).map(p=>`<tr>
-        <td>${fmtData(p.data)}</td><td>${esc(p.tipo)}</td><td>${esc(p.responsavel)||"—"}</td>
-        <td>${esc(p.art)||"—"}</td><td>${esc(p.achados)||"—"}</td></tr>`).join("") || `<tr><td colspan="5">Sem inspeções registradas.</td></tr>`}
-    </table></div>
-  </div>
+      ${[...dados.inspecoes].sort((a,b)=>b.data.localeCompare(a.data)).map(p=>`<tr><td>${fmtData(p.data)}</td><td>${esc(p.tipo)}</td><td>${esc(p.responsavel)||"—"}</td><td>${esc(p.art)||"—"}</td><td>${esc(p.achados)||"—"}</td></tr>`).join("") || `<tr><td colspan="5">Sem inspeções registradas.</td></tr>`}
+  </table></div></div>
   <div class="cartao" style="font-size:11.5px;color:var(--txt-suave)">
     Relatório gerado pelo aplicativo Plano de Manutenção Predial — Pacheco Engenharia e Perícias, estruturado conforme a
-    ABNT NBR 5674:2024 (gestão da manutenção), NBR 14037:2024 (manual de uso, operação e manutenção) e NBR 16747:2020 (inspeção predial).
-    A validade das garantias e a preservação do desempenho (NBR 15575) dependem do cumprimento das rotinas aqui registradas.
+    ABNT NBR 5674:2024, NBR 14037:2024 e NBR 16747:2020. A validade das garantias e a preservação do desempenho (NBR 15575) dependem do cumprimento das rotinas aqui registradas.
   </div>`;
 }
 
 /* ==================================================================
-   BACKUP / IMPORTAÇÃO
+   BACKUP
    ================================================================== */
 function exportarDados(){
-  const blob = new Blob([JSON.stringify(dados,null,2)], {type:"application/json"});
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
+  const blob = new Blob([JSON.stringify({versao:1, condominio:dados.edificacao, dados}, null, 2)], {type:"application/json"});
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob);
   const nome = (dados.edificacao.nome||"condominio").normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^\w]+/g,"-").toLowerCase();
-  a.download = `plano-manutencao-${nome}-${hoje()}.json`;
-  a.click(); URL.revokeObjectURL(a.href);
-}
-function importarDados(input){
-  const f = input.files[0]; if(!f) return;
-  const r = new FileReader();
-  r.onload = () => {
-    try{
-      const d = JSON.parse(r.result);
-      if(d.versao!==1 || !Array.isArray(d.sistemas)) throw new Error("estrutura inválida");
-      if(!confirm("Substituir TODOS os dados atuais pelo backup importado?")) return;
-      dados = d; salvar(); renderTudo(); renderCabecalho(); preencherEdificacao();
-      alert("Backup importado com sucesso.");
-    }catch(e){ alert("Arquivo inválido: "+e.message); }
-    input.value = "";
-  };
-  r.readAsText(f);
-}
-function zerarDados(){
-  if(!confirm("Apagar TODOS os dados deste dispositivo? Esta ação não pode ser desfeita.")) return;
-  if(!confirm("Tem certeza? Exporte um backup antes, se ainda não o fez.")) return;
-  localStorage.removeItem(CHAVE); dados = carregar();
-  checklistAtual = null; renderTudo(); renderCabecalho(); preencherEdificacao();
+  a.download = `plano-manutencao-${nome}-${hoje()}.json`; a.click(); URL.revokeObjectURL(a.href);
 }
 
 /* ==================================================================
@@ -1176,7 +1266,16 @@ function renderTudo(){
   renderPainel(); renderInventario(); renderPrograma(); renderAgenda();
   renderOS(); renderGarantias(); renderInspecoes(); renderChecklist(); renderRelatorio();
 }
-preencherEdificacao(); renderCabecalho(); irPara("painel");
+async function init(){
+  sb.auth.onAuthStateChange(async (event, session) => {
+    if(session && !usuario){ usuario = session.user; await aposLogin(); }
+    else if(!session && usuario){ usuario = null; mostrarLogin(); }
+  });
+  const {data:{session}} = await sb.auth.getSession();
+  if(session){ usuario = session.user; await aposLogin(); }
+  else { mostrarLogin(); }
+}
+init();
 </script>
 </body>
 </html>
