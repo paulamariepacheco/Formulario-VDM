@@ -6,8 +6,10 @@
 >   (arquivo único `index.html`, NBR 5674:2024/14037:2024/16747:2020; ver
 >   `plano_manutencao/README.md`). **Multi-condomínio com login exclusivo** (Supabase
 >   Auth por link mágico) e isolamento por **RLS**, schema `manutencao` dedicado no
->   projeto `noknoebspmrbigwhyucn` (migração `plano_manutencao/supabase/migrations/`,
->   já aplicada; `manutencao` exposto no PostgREST). Logo oficial em `assets/` e a
+>   projeto `noknoebspmrbigwhyucn` (migrações `0001` schema e `0002` storage em
+>   `plano_manutencao/supabase/migrations/`, já aplicadas; `manutencao` exposto no
+>   PostgREST). **Fotos** nas OS e inspeções em bucket privado `manutencao-fotos`
+>   (RLS por condomínio, compressão no cliente). Logo oficial em `assets/` e a
 >   mesma paleta/tipografia do design system.
 > - **Formulário Viagem das Minas** (legado) — `index.html` na raiz. Não faz parte do sistema de laudos.
 

@@ -138,6 +138,17 @@ dialog .dlg-pe{padding:12px 20px;border-top:1px solid var(--linha-suave);display
 footer{background:var(--azul);color:#c9cdd8;text-align:center;padding:20px;font-size:12px;margin-top:40px}
 footer b{color:var(--branco)}
 
+/* ---------- Fotos ---------- */
+.fotos-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;margin-top:6px}
+.foto-item{border:1px solid var(--linha-suave);border-radius:8px;overflow:hidden;background:#fafbfc;display:flex;flex-direction:column}
+.foto-item img{width:100%;height:96px;object-fit:cover;cursor:pointer;background:#eceef1;display:block}
+.foto-item input{border:none;border-top:1px solid var(--linha-suave);border-radius:0;font-size:11.5px;padding:5px 7px}
+.foto-item input:focus{outline:1px solid var(--petroleo);outline-offset:-1px}
+.foto-item .fi-rm{text-align:center;font-size:11px;color:var(--gr3);cursor:pointer;padding:4px;border-top:1px solid var(--linha-suave)}
+.foto-item .fi-rm:hover{background:var(--gr3-bg)}
+.foto-carregando{font-size:12px;color:var(--petroleo);margin-top:6px}
+.pill-foto{background:#e4e7f0;color:var(--azul)}
+
 /* ---------- Overlays (login e seletor de condomínio) ---------- */
 .overlay{position:fixed;inset:0;z-index:100;background:linear-gradient(135deg,#171f3d 0%,#232d55 100%);display:none;align-items:center;justify-content:center;padding:20px;overflow-y:auto}
 .overlay.on{display:flex}
@@ -604,6 +615,74 @@ async function proximoNumeroOS(){
 }
 
 /* ==================================================================
+   FOTOS (Storage privado 'manutencao-fotos'; caminho {cond}/{tipo}/{uid}.jpg)
+   ================================================================== */
+const BUCKET_FOTOS = "manutencao-fotos";
+let fotosEdicao = [];          // conjunto de trabalho do diálogo aberto: [{path,legenda}]
+
+async function comprimirImagem(file, max=1600, q=0.8){
+  const img = await createImageBitmap(file);
+  let {width, height} = img;
+  if(width>max || height>max){ const r=Math.min(max/width, max/height); width=Math.round(width*r); height=Math.round(height*r); }
+  const c = document.createElement("canvas"); c.width=width; c.height=height;
+  c.getContext("2d").drawImage(img, 0, 0, width, height);
+  return await new Promise(res => c.toBlob(res, "image/jpeg", q));
+}
+function widgetFotos(tipo){
+  return `<div class="campo"><label>Fotos</label>
+    <div id="fotos-edicao" class="fotos-grid"></div>
+    <div id="foto-status" class="foto-carregando" style="display:none">Enviando foto...</div>
+    <input type="file" id="foto-input" accept="image/*" multiple capture="environment" style="display:none" onchange="subirFotos(this,'${tipo}')">
+    <button type="button" class="botao secundario mini" style="margin-top:8px" onclick="document.getElementById('foto-input').click()">📷 Adicionar foto</button>
+    <span style="font-size:11.5px;color:var(--txt-suave);margin-left:8px">Comprimidas para ~1600px antes do envio.</span>
+  </div>`;
+}
+async function subirFotos(input, tipo){
+  const files = [...input.files]; input.value = "";
+  const status = document.getElementById("foto-status");
+  if(status){ status.style.display=""; }
+  for(const f of files){
+    if(!f.type.startsWith("image/")) continue;
+    try{
+      const blob = await comprimirImagem(f);
+      const path = `${condId}/${tipo}/${uid()}.jpg`;
+      const {error} = await sb.storage.from(BUCKET_FOTOS).upload(path, blob, {contentType:"image/jpeg", upsert:false});
+      if(error){ erroSb(error); continue; }
+      fotosEdicao.push({path, legenda:""});
+    }catch(e){ erroSb(e); }
+  }
+  if(status){ status.style.display="none"; }
+  await renderFotosEdicao();
+}
+async function renderFotosEdicao(){
+  const wrap = document.getElementById("fotos-edicao"); if(!wrap) return;
+  if(!fotosEdicao.length){ wrap.innerHTML = `<p style="font-size:12px;color:var(--txt-suave);grid-column:1/-1;margin:0">Nenhuma foto anexada.</p>`; return; }
+  const paths = fotosEdicao.map(f=>f.path);
+  let urlByPath = {};
+  try{
+    const {data} = await sb.storage.from(BUCKET_FOTOS).createSignedUrls(paths, 3600);
+    (data||[]).forEach((d,i)=>{ if(d && d.signedUrl) urlByPath[paths[i]] = d.signedUrl; });
+  }catch(e){ /* mostra sem miniatura se falhar */ }
+  wrap.innerHTML = fotosEdicao.map((f,i)=>`<div class="foto-item">
+    <img src="${urlByPath[f.path]||""}" alt="foto" onclick="abrirFoto('${esc(urlByPath[f.path]||"")}')">
+    <input placeholder="Legenda..." value="${esc(f.legenda)}" onchange="fotosEdicao[${i}].legenda=this.value">
+    <div class="fi-rm" onclick="removerFotoEdicao(${i})">remover</div>
+  </div>`).join("");
+}
+function abrirFoto(url){ if(url) window.open(url, "_blank"); }
+async function removerFotoEdicao(i){
+  const f = fotosEdicao[i]; if(!f) return;
+  try{ await sb.storage.from(BUCKET_FOTOS).remove([f.path]); }catch(e){ /* best-effort */ }
+  fotosEdicao.splice(i,1); renderFotosEdicao();
+}
+// remove do Storage todas as fotos de um registro (ao excluir OS/inspeção)
+async function apagarFotosDe(obj){
+  if(obj && obj.fotos && obj.fotos.length){
+    try{ await sb.storage.from(BUCKET_FOTOS).remove(obj.fotos.map(f=>f.path)); }catch(e){ /* best-effort */ }
+  }
+}
+
+/* ==================================================================
    PLANO-MODELO (NBR 5674 / 14037 + guia Pacheco Eng.)
    ================================================================== */
 const MODELO = [
@@ -890,7 +969,8 @@ function renderAgenda(){
    ================================================================== */
 function abrirOS(id){
   const o = dados.os.find(x=>x.id===id) || {numero:"", dataAbertura:hoje(), origem:"Solicitação do síndico", sistemaId:dados.sistemas[0]?.id||"",
-    desc:"", tipo:"Corretiva", prioridade:"Média", dataProgramada:"", dataInicio:"", dataConclusao:"", executante:"", servicos:"", materiais:"", custo:"", situacao:"Aberta", garantiaId:"", obs:""};
+    desc:"", tipo:"Corretiva", prioridade:"Média", dataProgramada:"", dataInicio:"", dataConclusao:"", executante:"", servicos:"", materiais:"", custo:"", situacao:"Aberta", garantiaId:"", obs:"", fotos:[]};
+  fotosEdicao = (o.fotos||[]).slice();
   abrirDlgHtml(id?`Editar ${o.numero}`:"Abrir Ordem de Serviço", `
     <div class="grade g3">
       <div class="campo"><label>Data de abertura</label><input type="date" id="f-ab" value="${o.dataAbertura}"></div>
@@ -915,18 +995,24 @@ function abrirOS(id){
       <div class="campo"><label>Materiais empregados</label><input id="f-mat" value="${esc(o.materiais)}"></div>
       <div class="campo"><label>Garantia vinculada</label><select id="f-gar"><option value="">(nenhuma)</option>${dados.garantias.map(g=>`<option value="${g.id}" ${g.id===o.garantiaId?"selected":""}>${esc(g.item)} — ${esc(g.desc)}</option>`).join("")}</select></div>
     </div>
-    <div class="campo"><label>Observações / nº de laudo / fotos arquivadas em</label><input id="f-obs" value="${esc(o.obs)}"></div>`,
+    <div class="campo"><label>Observações / nº de laudo</label><input id="f-obs" value="${esc(o.obs)}"></div>`
+    + widgetFotos('os'),
     async () => {
       if(!v("f-desc")) return alert("Descreva a ocorrência.");
       const novo = {atividadeId:o.atividadeId||"", dataAbertura:v("f-ab"), origem:v("f-orig"), sistemaId:v("f-sis"), desc:v("f-desc"),
         tipo:v("f-tipo"), prioridade:v("f-pri"), situacao:v("f-sit"), dataProgramada:v("f-prog"), dataInicio:v("f-ini"), dataConclusao:v("f-fim"),
-        executante:v("f-exec"), custo:+v("f-custo")||0, servicos:v("f-serv"), materiais:v("f-mat"), garantiaId:v("f-gar"), obs:v("f-obs")};
+        executante:v("f-exec"), custo:+v("f-custo")||0, servicos:v("f-serv"), materiais:v("f-mat"), garantiaId:v("f-gar"), obs:v("f-obs"), fotos:fotosEdicao.slice()};
       if(o.id){ novo.id=o.id; novo.numero=o.numero; }
       else { novo.numero = await proximoNumeroOS(); }
       if(await dbUpsert("os",novo)){ fecharDlg(); renderTudo(); }
     });
+  renderFotosEdicao();
 }
-async function removerOS(id){ if(confirm("Excluir esta OS do histórico? (a NBR 5674 recomenda conservar todos os registros)") && await dbDelete("os",id)) renderTudo(); }
+async function removerOS(id){
+  if(!confirm("Excluir esta OS do histórico? (a NBR 5674 recomenda conservar todos os registros)")) return;
+  const o = dados.os.find(x=>x.id===id);
+  if(await dbDelete("os",id)){ await apagarFotosDe(o); renderTudo(); }
+}
 function renderOS(){
   const filtro = document.getElementById("filtro-os").value;
   const alvo = document.getElementById("lista-os");
@@ -939,7 +1025,7 @@ function renderOS(){
     ${lista.map(o=>`<tr>
       <td><b>${esc(o.numero)}</b></td><td>${fmtData(o.dataAbertura)}</td>
       <td style="font-size:12.5px">${o.sistemaId?esc(nomeSistema(o.sistemaId)):"—"}</td>
-      <td>${esc(o.desc)}${o.servicos?`<span class="mini">${esc(o.servicos)}</span>`:""}</td>
+      <td>${esc(o.desc)}${o.fotos&&o.fotos.length?` <span class="pill pill-foto">📷 ${o.fotos.length}</span>`:""}${o.servicos?`<span class="mini">${esc(o.servicos)}</span>`:""}</td>
       <td>${esc(o.tipo)}</td>
       <td><span class="pill ${o.prioridade==="Alta"?"p-erro":o.prioridade==="Média"?"p-alerta":"p-neutro"}">${o.prioridade}</span></td>
       <td style="font-size:12.5px">${esc(o.executante)||"—"}</td><td>${fmtR$(o.custo)}</td>
@@ -995,7 +1081,8 @@ function renderGarantias(){
    INSPEÇÕES
    ================================================================== */
 function abrirInspecao(id){
-  const p = dados.inspecoes.find(x=>x.id===id) || {data:hoje(),tipo:"Inspeção predial (NBR 16747)",abrangencia:"Total",responsavel:"",art:"",achados:"",recomendacoes:"",obs:""};
+  const p = dados.inspecoes.find(x=>x.id===id) || {data:hoje(),tipo:"Inspeção predial (NBR 16747)",abrangencia:"Total",responsavel:"",art:"",achados:"",recomendacoes:"",obs:"",fotos:[]};
+  fotosEdicao = (p.fotos||[]).slice();
   abrirDlgHtml(id?"Editar registro":"Registrar inspeção / laudo", `
     <div class="grade g3">
       <div class="campo"><label>Data</label><input type="date" id="f-data" value="${p.data}"></div>
@@ -1008,14 +1095,20 @@ function abrirInspecao(id){
     </div>
     <div class="campo"><label>Principais achados (patologias, anomalias, não conformidades)</label><textarea id="f-achados">${esc(p.achados)}</textarea></div>
     <div class="campo"><label>Recomendações (intervenções, ajustes do plano)</label><textarea id="f-rec">${esc(p.recomendacoes)}</textarea></div>
-    <div class="campo"><label>Arquivo do laudo / fotos (onde está guardado)</label><input id="f-obs" value="${esc(p.obs)}"></div>`,
+    <div class="campo"><label>Arquivo do laudo (onde está guardado)</label><input id="f-obs" value="${esc(p.obs)}"></div>`
+    + widgetFotos('inspecao'),
     async () => {
-      const novo = {data:v("f-data"), tipo:v("f-tipo"), abrangencia:v("f-abr"), responsavel:v("f-resp"), art:v("f-art"), achados:v("f-achados"), recomendacoes:v("f-rec"), obs:v("f-obs")};
+      const novo = {data:v("f-data"), tipo:v("f-tipo"), abrangencia:v("f-abr"), responsavel:v("f-resp"), art:v("f-art"), achados:v("f-achados"), recomendacoes:v("f-rec"), obs:v("f-obs"), fotos:fotosEdicao.slice()};
       if(p.id) novo.id=p.id;
       if(await dbUpsert("inspecao",novo)){ fecharDlg(); renderTudo(); }
     });
+  renderFotosEdicao();
 }
-async function removerInspecao(id){ if(confirm("Remover este registro de inspeção?") && await dbDelete("inspecao",id)) renderTudo(); }
+async function removerInspecao(id){
+  if(!confirm("Remover este registro de inspeção?")) return;
+  const p = dados.inspecoes.find(x=>x.id===id);
+  if(await dbDelete("inspecao",id)){ await apagarFotosDe(p); renderTudo(); }
+}
 function renderInspecoes(){
   const alvo = document.getElementById("lista-inspecoes");
   if(!dados.inspecoes.length){ alvo.innerHTML = `<div class="cartao vazio">Nenhuma inspeção registrada. O diagnóstico inicial por inspeção predial (NBR 16747:2020) é o 1º passo do plano de manutenção.</div>`; return; }
@@ -1023,7 +1116,7 @@ function renderInspecoes(){
   alvo.innerHTML = `<div class="tab-wrap"><table>
     <tr><th>Data</th><th>Tipo</th><th>Abrangência</th><th>Responsável</th><th>ART/RRT</th><th>Achados</th><th>Recomendações</th><th></th></tr>
     ${lista.map(p=>`<tr>
-      <td>${fmtData(p.data)}</td><td>${esc(p.tipo)}</td><td>${esc(p.abrangencia)||"—"}</td>
+      <td>${fmtData(p.data)}</td><td>${esc(p.tipo)}${p.fotos&&p.fotos.length?` <span class="pill pill-foto">📷 ${p.fotos.length}</span>`:""}</td><td>${esc(p.abrangencia)||"—"}</td>
       <td>${esc(p.responsavel)||"—"}</td><td>${esc(p.art)||"—"}</td>
       <td style="max-width:260px">${esc(p.achados)||"—"}</td><td style="max-width:260px">${esc(p.recomendacoes)||"—"}</td>
       <td><a class="link-acao" onclick="abrirInspecao('${p.id}')">editar</a> · <a class="link-acao rm" onclick="removerInspecao('${p.id}')">remover</a></td>
