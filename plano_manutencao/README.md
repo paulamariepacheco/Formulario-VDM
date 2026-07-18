@@ -89,12 +89,25 @@ app for publicado** (Site URL e Redirect URLs) para o link mágico redirecionar 
 Ex.: `https://plano.pachecoeng.com.br` ou a URL do Netlify. Ao rodar localmente,
 `http://localhost:...` também precisa constar.
 
-## Como publicar
+## Como publicar (Netlify)
 
-Arquivo estático — publicar a pasta `plano_manutencao/` em qualquer hosting
-(Netlify/Vercel/GitHub Pages) ou abrir `index.html` localmente. Requer internet
-(login e nuvem). A chave usada no cliente é a **anon key** (pública por design); a
-proteção real dos dados é a RLS.
+Site estático — `netlify.toml` já incluído nesta pasta. Passos:
+
+1. No Netlify: **Add new site → Import an existing project** e conecte o repositório
+   `paulamariepacheco/Formulario-VDM`.
+2. Em **Site settings → Build & deploy → Build settings**, defina
+   **Base directory = `plano_manutencao`** (o `netlify.toml` cuida do resto:
+   publish = a própria pasta, sem build).
+3. Após o deploy, copie a URL do site (ex.: `https://SEU-SITE.netlify.app`) e:
+   - no **Supabase → Authentication → URL Configuration**, adicione essa URL em
+     **Site URL** e **Redirect URLs** (para o link mágico de login voltar ao app).
+
+Alternativas: arrastar a pasta `plano_manutencao/` em **app.netlify.com/drop**, ou
+publicar em Vercel/GitHub Pages, ou abrir `index.html` localmente (nesse caso inclua
+`http://localhost:PORTA` nos Redirect URLs do Supabase).
+
+A chave usada no cliente é a **anon key** (pública por design); a proteção real dos
+dados é a RLS.
 
 ## Evoluções previstas
 

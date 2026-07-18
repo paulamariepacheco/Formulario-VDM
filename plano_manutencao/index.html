@@ -148,6 +148,13 @@ footer b{color:var(--branco)}
 .foto-item .fi-rm:hover{background:var(--gr3-bg)}
 .foto-carregando{font-size:12px;color:var(--petroleo);margin-top:6px}
 .pill-foto{background:#e4e7f0;color:var(--azul)}
+/* fotos no relatório */
+.rel-foto-item{break-inside:avoid;margin-bottom:16px}
+.rel-foto-item h4{font-size:13px;color:var(--azul);margin-bottom:6px}
+.rel-fotos{display:flex;flex-wrap:wrap;gap:10px}
+.rel-fotos figure{width:150px;margin:0;break-inside:avoid}
+.rel-fotos img{width:150px;height:110px;object-fit:cover;border:1px solid var(--linha-suave);border-radius:6px;background:#eceef1;display:block}
+.rel-fotos figcaption{font-size:10.5px;color:var(--txt-suave);margin-top:3px;line-height:1.3}
 
 /* ---------- Overlays (login e seletor de condomínio) ---------- */
 .overlay{position:fixed;inset:0;z-index:100;background:linear-gradient(135deg,#171f3d 0%,#232d55 100%);display:none;align-items:center;justify-content:center;padding:20px;overflow-y:auto}
@@ -354,7 +361,7 @@ footer b{color:var(--branco)}
 <section class="tela" id="tela-relatorio">
   <h2 class="nao-imprimir">Relatório de Prestação de Contas</h2>
   <p class="desc nao-imprimir">Relatório consolidado para assembleia ou arquivo do condomínio. Use "Imprimir / salvar PDF" — o navegador imprime somente o relatório.</p>
-  <div class="acoes-topo"><button class="botao terra" onclick="window.print()">🖨 Imprimir / salvar PDF</button></div>
+  <div class="acoes-topo"><button class="botao terra" onclick="imprimirRelatorio()">🖨 Imprimir / salvar PDF</button></div>
   <div id="relatorio-conteudo"></div>
 </section>
 
@@ -681,6 +688,31 @@ async function apagarFotosDe(obj){
     try{ await sb.storage.from(BUCKET_FOTOS).remove(obj.fotos.map(f=>f.path)); }catch(e){ /* best-effort */ }
   }
 }
+// galeria de fotos para o relatório (miniaturas com data-foto, hidratadas depois)
+function galeriaRelatorio(fotos){
+  if(!fotos || !fotos.length) return "";
+  return `<div class="rel-fotos">${fotos.map(f=>
+    `<figure><img data-foto="${esc(f.path)}" alt="">${f.legenda?`<figcaption>${esc(f.legenda)}</figcaption>`:""}</figure>`).join("")}</div>`;
+}
+// preenche as miniaturas do relatório com URLs assinadas (chamado ao abrir o relatório e antes de imprimir)
+async function hidratarFotosRelatorio(){
+  const imgs = [...document.querySelectorAll('#relatorio-conteudo img[data-foto]')];
+  const pendentes = imgs.filter(i=>!i.src);
+  const paths = [...new Set(pendentes.map(i=>i.dataset.foto))];
+  if(!paths.length) return;
+  try{
+    const {data} = await sb.storage.from(BUCKET_FOTOS).createSignedUrls(paths, 3600);
+    const map = {}; (data||[]).forEach((d,i)=>{ if(d && d.signedUrl) map[paths[i]] = d.signedUrl; });
+    pendentes.forEach(i=>{ const u = map[i.dataset.foto]; if(u) i.src = u; });
+  }catch(e){ /* mantém sem miniatura se falhar */ }
+}
+async function imprimirRelatorio(){
+  await hidratarFotosRelatorio();
+  const imgs = [...document.querySelectorAll('#relatorio-conteudo img[data-foto]')];
+  await Promise.all(imgs.map(im => (!im.src || im.complete) ? Promise.resolve()
+    : new Promise(r => { im.onload = im.onerror = r; })));
+  window.print();
+}
 
 /* ==================================================================
    PLANO-MODELO (NBR 5674 / 14037 + guia Pacheco Eng.)
@@ -777,6 +809,7 @@ function irPara(id){
   telaAtual = id;
   document.querySelectorAll("section.tela").forEach(s => s.classList.toggle("ativa", s.id==="tela-"+id));
   montarNav(); renderTudo(); window.scrollTo({top:0});
+  if(id==="relatorio") hidratarFotosRelatorio();
 }
 
 /* ==================================================================
@@ -1335,6 +1368,15 @@ function renderRelatorio(){
       <tr><th>Data</th><th>Tipo</th><th>Responsável</th><th>ART/RRT</th><th>Principais achados</th></tr>
       ${[...dados.inspecoes].sort((a,b)=>b.data.localeCompare(a.data)).map(p=>`<tr><td>${fmtData(p.data)}</td><td>${esc(p.tipo)}</td><td>${esc(p.responsavel)||"—"}</td><td>${esc(p.art)||"—"}</td><td>${esc(p.achados)||"—"}</td></tr>`).join("") || `<tr><td colspan="5">Sem inspeções registradas.</td></tr>`}
   </table></div></div>
+  ${(()=>{
+     const insp = [...dados.inspecoes].filter(p=>p.fotos&&p.fotos.length).sort((a,b)=>b.data.localeCompare(a.data));
+     const oss  = [...dados.os].filter(o=>o.fotos&&o.fotos.length).sort((a,b)=>(b.dataAbertura||"").localeCompare(a.dataAbertura||""));
+     if(!insp.length && !oss.length) return "";
+     return `<div class="cartao"><h3>Registro fotográfico</h3>
+       ${insp.map(p=>`<div class="rel-foto-item"><h4>Inspeção ${fmtData(p.data)} — ${esc(p.tipo)}${p.responsavel?` · ${esc(p.responsavel)}`:""}</h4>${galeriaRelatorio(p.fotos)}</div>`).join("")}
+       ${oss.map(o=>`<div class="rel-foto-item"><h4>${esc(o.numero)} — ${esc(o.desc)}${o.dataAbertura?` · ${fmtData(o.dataAbertura)}`:""}</h4>${galeriaRelatorio(o.fotos)}</div>`).join("")}
+     </div>`;
+   })()}
   <div class="cartao" style="font-size:11.5px;color:var(--txt-suave)">
     Relatório gerado pelo aplicativo Plano de Manutenção Predial — Pacheco Engenharia e Perícias, estruturado conforme a
     ABNT NBR 5674:2024, NBR 14037:2024 e NBR 16747:2020. A validade das garantias e a preservação do desempenho (NBR 15575) dependem do cumprimento das rotinas aqui registradas.

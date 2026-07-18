@@ -1,0 +1,21 @@
+# Deploy do Plano de Manutenção Predial no Netlify
+# No painel do Netlify, defina "Base directory" = plano_manutencao
+# (assim este arquivo é lido e o site publicado é esta pasta).
+
+[build]
+  publish = "."
+  command = ""   # site estático, sem etapa de build
+
+# Cabeçalhos de segurança
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "SAMEORIGIN"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+# Cache dos assets de imagem (logo)
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=604800"
