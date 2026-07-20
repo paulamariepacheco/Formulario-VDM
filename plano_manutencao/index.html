@@ -148,6 +148,25 @@ footer b{color:var(--branco)}
 .foto-item .fi-rm:hover{background:var(--gr3-bg)}
 .foto-carregando{font-size:12px;color:var(--petroleo);margin-top:6px}
 .pill-foto{background:#e4e7f0;color:var(--azul)}
+
+/* ---------- Papéis / permissões ---------- */
+#banner-leitura{display:none;background:var(--alerta-bg);color:#7a5b1e;border-bottom:1px solid #e6d9b8;padding:7px 18px;font-size:12.5px;text-align:center}
+body.papel-leitura #banner-leitura{display:block}
+/* somente leitura: some com todas as ações de escrita, mantendo Relatório e Dados */
+body.papel-leitura .acoes-topo{display:none}
+body.papel-leitura #tela-relatorio .acoes-topo,
+body.papel-leitura #tela-ajustes .acoes-topo{display:flex}
+body.papel-leitura a.link-acao{display:none}
+body.papel-leitura .check-opts{display:none}
+body.papel-leitura table .botao.mini{display:none}
+body.papel-leitura #tela-edificacao .botao{display:none}
+body.papel-leitura #dlg-salvar{display:none}
+body.papel-leitura #btn-membros-ajustes,
+body.papel-leitura #btn-membros-top{display:none}
+/* zelador: edita o operacional, mas não o cadastro nem o acesso */
+body.papel-zelador #tela-edificacao .botao{display:none}
+body.papel-zelador #btn-membros-ajustes,
+body.papel-zelador #btn-membros-top{display:none}
 /* fotos no relatório */
 .rel-foto-item{break-inside:avoid;margin-bottom:16px}
 .rel-foto-item h4{font-size:13px;color:var(--azul);margin-bottom:6px}
@@ -219,12 +238,28 @@ footer b{color:var(--branco)}
     <h2>Selecionar condomínio</h2>
     <p class="leg" id="seletor-leg">Escolha um condomínio para gerenciar ou cadastre um novo.</p>
     <div class="lista-cond" id="seletor-lista"></div>
-    <hr class="sep">
-    <div class="campo"><label>Cadastrar novo condomínio</label>
-      <input id="novo-cond-nome" placeholder="Nome do condomínio (ex.: Ed. Comercial Otoni)"></div>
-    <button class="botao terra" style="width:100%" id="novo-cond-btn" onclick="criarCondominio()">+ Criar condomínio</button>
+    <div id="seletor-criar">
+      <hr class="sep">
+      <div class="campo"><label>Cadastrar novo condomínio</label>
+        <input id="novo-cond-nome" placeholder="Nome do condomínio (ex.: Ed. Comercial Otoni)"></div>
+      <button class="botao terra" style="width:100%" id="novo-cond-btn" onclick="criarCondominio()">+ Criar condomínio</button>
+    </div>
     <div class="msg" id="seletor-msg"></div>
     <div class="rodape"><a class="link-acao" onclick="sair()" style="color:var(--petroleo)">Sair da conta</a></div>
+  </div>
+</div>
+
+<!-- ================= OVERLAY ACESSO NÃO LIBERADO ================= -->
+<div class="overlay" id="overlay-negado">
+  <div class="card-auth">
+    <img class="logo-topo" src="assets/logo-tagline.png" alt="Pacheco Engenharia e Perícias">
+    <h2>Acesso ainda não liberado</h2>
+    <p class="leg">O e-mail <b id="acesso-email"></b> ainda não tem acesso liberado ao sistema.
+      O acesso é exclusivo para condomínios com contrato ativo com a Pacheco Engenharia e Perícias.</p>
+    <div class="nota" style="text-align:left">Para contratar ou liberar o acesso, fale com a gente:<br>
+      📧 <b>pericias@pachecoeng.com.br</b><br>📱 <b>+55 (31) 99752-6257</b></div>
+    <p class="leg" style="font-size:12px;margin-top:14px">Se você foi convidado como zelador ou consulta, peça ao síndico para reenviar o convite ao <b>mesmo e-mail</b> que você usou para entrar.</p>
+    <div class="rodape"><a class="link-acao" onclick="sair()" style="color:var(--petroleo)">Sair / entrar com outro e-mail</a></div>
   </div>
 </div>
 
@@ -239,6 +274,8 @@ footer b{color:var(--branco)}
 
 <nav id="nav-principal"></nav>
 
+<div id="banner-leitura">👁 Acesso <b>somente leitura</b> — você pode consultar tudo, mas não editar.</div>
+
 <main>
 
 <section class="tela" id="tela-painel">
@@ -250,7 +287,7 @@ footer b{color:var(--branco)}
 <section class="tela" id="tela-edificacao">
   <h2>Cadastro da Edificação</h2>
   <p class="desc">Identificação do condomínio e responsáveis — a "capa técnica" do Plano de Manutenção (documentação organizada conforme NBR 5674:2024).</p>
-  <div class="acoes-topo"><button class="botao secundario" onclick="abrirMembros()">👥 Gerenciar acesso ao condomínio</button></div>
+  <div class="acoes-topo"><button class="botao secundario" id="btn-membros-top" onclick="abrirMembros()">👥 Gerenciar acesso ao condomínio</button></div>
   <div class="cartao">
     <form id="form-edificacao" class="grade g3" onsubmit="return false">
       <div class="campo"><label>Nome do condomínio</label><input id="ed-nome" placeholder="Condomínio Edifício..."></div>
@@ -270,6 +307,66 @@ footer b{color:var(--branco)}
     </form>
     <button class="botao" onclick="salvarEdificacao()">Salvar cadastro</button>
   </div>
+
+  <div class="cartao">
+    <h3>Notificações do condomínio</h3>
+    <p style="font-size:13px;margin-bottom:8px">E-mail que receberá os alertas automáticos de manutenções e garantias próximas do vencimento (60 e 30 dias antes).</p>
+    <div class="grade g2">
+      <div class="campo"><label>E-mail para alertas</label><input id="ed-emailnotif" type="email" placeholder="sindico@condominio.com.br"></div>
+      <div class="campo"><label>Enviar alertas?</label><select id="ed-notifativa"><option value="sim">Sim</option><option value="nao">Não</option></select></div>
+    </div>
+    <button class="botao secundario" onclick="salvarEdificacao()">Salvar</button>
+  </div>
+
+  <div class="cartao">
+    <h3>Seguro predial</h3>
+    <div class="grade g3">
+      <div class="campo"><label>Seguradora</label><input id="ed-seguradora"></div>
+      <div class="campo"><label>Nº da apólice</label><input id="ed-apolice"></div>
+      <div class="campo"><label>Vigência (fim)</label><input id="ed-segurovig" type="date"></div>
+      <div class="campo" style="grid-column:1/-1"><label>Coberturas / observações</label><textarea id="ed-segurocob" placeholder="Incêndio, responsabilidade civil, danos elétricos, vendaval..."></textarea></div>
+    </div>
+    <button class="botao secundario" onclick="salvarEdificacao()">Salvar</button>
+  </div>
+
+  <div class="cartao">
+    <h3>Contatos de emergência</h3>
+    <p style="font-size:13px;margin-bottom:8px">Telefones úteis para acionamento rápido (bombeiros, concessionárias, prestadores de plantão).</p>
+    <div class="campo"><label>Contatos</label><textarea id="ed-emergencia" placeholder="Bombeiros 193 · Gás (concessionária): ... · Elétrica (plantão): ... · Elevador (emergência): ... · Zelador: ... · Síndico: ... · Administradora (plantão): ..."></textarea></div>
+    <button class="botao secundario" onclick="salvarEdificacao()">Salvar</button>
+  </div>
+
+  <div class="cartao">
+    <h3>Elevadores</h3>
+    <div class="grade g3">
+      <div class="campo"><label>Empresa conservadora</label><input id="ed-elevempresa"></div>
+      <div class="campo"><label>Quantidade de elevadores</label><input id="ed-elevqtd" type="number" min="0"></div>
+      <div class="campo"><label>Nº / vigência do contrato</label><input id="ed-elevcontrato"></div>
+      <div class="campo"><label>Validade do RIA (Relatório de Inspeção Anual)</label><input id="ed-elevria" type="date"></div>
+    </div>
+    <button class="botao secundario" onclick="salvarEdificacao()">Salvar</button>
+  </div>
+
+  <div class="cartao">
+    <h3>AVCB / CLCB (Corpo de Bombeiros)</h3>
+    <div class="grade g3">
+      <div class="campo"><label>Nº do AVCB/CLCB</label><input id="ed-avcbnum"></div>
+      <div class="campo"><label>Validade</label><input id="ed-avcbval" type="date"></div>
+      <div class="campo"><label>Situação</label><select id="ed-avcbsit"><option value="">—</option><option>Válido</option><option>Em renovação</option><option>Vencido</option><option>Não possui</option></select></div>
+    </div>
+    <button class="botao secundario" onclick="salvarEdificacao()">Salvar</button>
+  </div>
+
+  <div class="cartao">
+    <h3>Contrato com a administradora</h3>
+    <div class="grade g3">
+      <div class="campo"><label>Contato (nome / telefone / e-mail)</label><input id="ed-admcontato"></div>
+      <div class="campo"><label>Nº / objeto do contrato</label><input id="ed-admcontrato"></div>
+      <div class="campo"><label>Vigência (fim)</label><input id="ed-admvig" type="date"></div>
+    </div>
+    <button class="botao secundario" onclick="salvarEdificacao()">Salvar</button>
+  </div>
+
   <div class="cartao">
     <h3>Documentação de base (NBR 14037)</h3>
     <p style="font-size:13px;margin-bottom:8px">Mantenha reunidos, preferencialmente em formato digital com cópia em nuvem: Manual de Uso, Operação e Manutenção da edificação; projetos executivos; manuais de fabricantes; AVCB/CLCB; contratos de manutenção; ARTs/RRTs; laudos e relatórios de inspeção; notas fiscais dos serviços.</p>
@@ -376,8 +473,15 @@ footer b{color:var(--branco)}
   <div class="cartao">
     <h3>Acesso</h3>
     <p style="font-size:13px;margin-bottom:10px">Convide outros responsáveis (co-síndico, administradora, conselho) para acessar este mesmo condomínio.</p>
-    <button class="botao secundario" onclick="abrirMembros()">👥 Gerenciar acesso</button>
+    <button class="botao secundario" id="btn-membros-ajustes" onclick="abrirMembros()">👥 Gerenciar acesso</button>
   </div>
+</section>
+
+<!-- ================= ADMINISTRAÇÃO (apenas admin) ================= -->
+<section class="tela" id="tela-admin">
+  <h2>Administração — Pacheco Engenharia</h2>
+  <p class="desc">Área exclusiva da administração. Controle quem pode contratar/usar o sistema, veja todos os condomínios e transfira o principal (síndico) quando necessário.</p>
+  <div id="admin-conteudo"></div>
 </section>
 
 </main>
@@ -414,7 +518,12 @@ let condId = null;
 let dados = vazio();
 let telaAtual = "painel";
 let checklistAtual = null;
+let contexto = { admin:false, autorizado:false, email:"" };  // permissões do usuário logado
+let papelAtual = null;   // papel do usuário no condomínio aberto: dono|sindico|zelador|leitura
 const CHAVE_ULT = "pp_manut_ultimo_cond";
+const podeEditar = () => papelAtual && papelAtual !== "leitura";
+const ehDonoAtual = () => papelAtual === "dono" || contexto.admin;
+const rotuloPapel = p => ({dono:"principal (síndico)", sindico:"gestor", zelador:"zelador", leitura:"somente leitura"}[p] || p||"—");
 const TIPOS = {sistema:"sistemas", atividade:"atividades", os:"os", garantia:"garantias", inspecao:"inspecoes", checklist:"checklists"};
 
 function vazio(){ return {edificacao:{}, sistemas:[], atividades:[], os:[], garantias:[], inspecoes:[], checklists:[], seqOS:0}; }
@@ -451,11 +560,13 @@ const nomeSistema = id => { const s = dados.sistemas.find(x=>x.id===id); return 
    ================================================================== */
 function mostrarLogin(){
   document.getElementById("overlay-seletor").classList.remove("on");
+  document.getElementById("overlay-negado").classList.remove("on");
   document.getElementById("overlay-login").classList.add("on");
 }
 function esconderOverlays(){
   document.getElementById("overlay-login").classList.remove("on");
   document.getElementById("overlay-seletor").classList.remove("on");
+  document.getElementById("overlay-negado").classList.remove("on");
 }
 function msg(el, texto, tipo){ const m=document.getElementById(el); m.className="msg on "+tipo; m.textContent=texto; }
 
@@ -474,13 +585,20 @@ async function aposLogin(){
   document.getElementById("cab-dir").innerHTML =
     `<div class="cab-user">${esc(usuario.email)}<br><a onclick="sair()">Sair</a></div>`;
   try{ await sb.rpc("reivindicar_convites"); }catch(e){ /* silencioso */ }
+  try{ const {data} = await sb.rpc("meu_contexto"); if(data && data[0]) contexto = data[0]; }catch(e){ /* silencioso */ }
   await carregarCondominios();
   let alvo = null;
   const ult = localStorage.getItem(CHAVE_ULT);
   if(ult && condominios.some(c=>c.id===ult)) alvo = ult;
   else if(condominios.length===1) alvo = condominios[0].id;
   if(alvo){ await abrirCondominio(alvo); }
+  else if(condominios.length===0 && !contexto.autorizado){ mostrarAcessoNegado(); }
   else { esconderOverlays(); abrirSeletor(condominios.length===0); }
+}
+function mostrarAcessoNegado(){
+  esconderOverlays();
+  document.getElementById("acesso-email").textContent = usuario.email;
+  document.getElementById("overlay-negado").classList.add("on");
 }
 
 /* ==================================================================
@@ -494,14 +612,17 @@ async function carregarCondominios(){
     .sort((a,b)=>a.nome.localeCompare(b.nome));
 }
 function abrirSeletor(obrigatorio){
+  const podeCriar = contexto.autorizado || contexto.admin;
   document.getElementById("seletor-leg").textContent = obrigatorio
     ? "Você ainda não gerencia nenhum condomínio. Cadastre o primeiro para começar."
-    : "Escolha um condomínio para gerenciar ou cadastre um novo.";
+    : "Escolha um condomínio para gerenciar" + (podeCriar ? " ou cadastre um novo." : ".");
   document.getElementById("seletor-lista").innerHTML = condominios.length
     ? condominios.map(c=>`<div class="item-cond" onclick="abrirCondominio('${c.id}')">
-        <div><b>${esc(c.nome)}</b><br><small>Seu papel: ${c.papel==="dono"?"proprietário do cadastro":"síndico / gestor"}</small></div>
+        <div><b>${esc(c.nome)}</b><br><small>Seu papel: ${rotuloPapel(c.papel)}</small></div>
         <span class="botao mini">Abrir →</span></div>`).join("")
     : `<p style="color:var(--txt-suave);font-size:13px;text-align:center;padding:8px 0">Nenhum condomínio ainda.</p>`;
+  // só quem é autorizado (contratou) ou admin vê o formulário de criação
+  document.getElementById("seletor-criar").style.display = podeCriar ? "" : "none";
   document.getElementById("seletor-msg").className="msg";
   document.getElementById("overlay-seletor").classList.add("on");
 }
@@ -524,6 +645,10 @@ async function criarCondominio(){
 }
 async function abrirCondominio(id){
   condId = id; localStorage.setItem(CHAVE_ULT, id);
+  const c = condominios.find(x=>x.id===id);
+  papelAtual = c ? c.papel : (contexto.admin ? "dono" : null);
+  ["papel-dono","papel-sindico","papel-zelador","papel-leitura"].forEach(k=>document.body.classList.remove(k));
+  if(papelAtual) document.body.classList.add("papel-"+papelAtual);
   await carregarDados(id);
   esconderOverlays();
   renderCabDir(); preencherEdificacao(); renderCabecalho();
@@ -545,8 +670,8 @@ function renderCabDir(){
   const c = condominios.find(x=>x.id===condId);
   document.getElementById("cab-dir").innerHTML = `
     <button class="cab-cond" onclick="abrirSeletor(false)" title="Trocar de condomínio">
-      <small>Condomínio</small><b>${esc(c?c.nome:"—")}</b></button>
-    <div class="cab-user">${esc(usuario.email)}<br><a onclick="sair()">Sair</a></div>`;
+      <small>Condomínio · ${esc(rotuloPapel(papelAtual))}</small><b>${esc(c?c.nome:"—")}</b></button>
+    <div class="cab-user">${esc(usuario.email)}${contexto.admin?' <span class="pill p-terra" style="font-size:9px">ADMIN</span>':""}<br><a onclick="sair()">Sair</a></div>`;
 }
 
 /* ==================================================================
@@ -554,11 +679,19 @@ function renderCabDir(){
    ================================================================== */
 async function abrirMembros(){
   if(!condId) return;
+  if(!ehDonoAtual()){ return alert("Apenas o principal (síndico) do condomínio pode gerenciar o acesso."); }
   abrirDlgHtml("Acesso ao condomínio", `<div id="membros-area" class="vazio">Carregando...</div>
     <hr class="sep">
-    <div class="campo"><label>Convidar por e-mail</label>
-      <input id="conv-email" type="email" placeholder="pessoa@email.com"></div>
-    <p style="font-size:12px;color:var(--txt-suave)">A pessoa acessa com o mesmo e-mail (link mágico) e passa a ver este condomínio. O convite fica pendente até o primeiro acesso dela.</p>`,
+    <div class="grade g2">
+      <div class="campo"><label>Convidar por e-mail</label>
+        <input id="conv-email" type="email" placeholder="pessoa@email.com"></div>
+      <div class="campo"><label>Papel</label>
+        <select id="conv-papel">
+          <option value="zelador">Zelador (registra manutenções e OS)</option>
+          <option value="leitura">Somente leitura (só consulta)</option>
+        </select></div>
+    </div>
+    <p style="font-size:12px;color:var(--txt-suave)">A pessoa acessa com o mesmo e-mail (link mágico) e passa a ver este condomínio. O convite fica pendente até o primeiro acesso dela. O <b>principal (síndico)</b> é único por condomínio — sua troca é feita pela Pacheco Engenharia.</p>`,
     null);
   document.getElementById("dlg-salvar").style.display="none";
   await listarMembros();
@@ -568,10 +701,14 @@ async function listarMembros(){
   const area = document.getElementById("membros-area");
   if(error){ area.textContent="Erro ao carregar."; return; }
   area.className="";
+  const pill = p => p==="dono"?'<span class="pill p-terra">principal</span>'
+    : p==="zelador"?'<span class="pill p-azul">zelador</span>'
+    : p==="leitura"?'<span class="pill p-neutro">somente leitura</span>'
+    : '<span class="pill p-azul">gestor</span>';
   area.innerHTML = `<div class="tab-wrap"><table><tr><th>E-mail</th><th>Papel</th><th>Status</th><th></th></tr>
     ${data.map(m=>`<tr>
       <td>${esc(m.email)}</td>
-      <td>${m.papel==="dono"?'<span class="pill p-terra">proprietário</span>':"síndico / gestor"}</td>
+      <td>${pill(m.papel)}</td>
       <td>${m.user_id?'<span class="pill p-ok">ativo</span>':'<span class="pill p-alerta">convite pendente</span>'}</td>
       <td>${m.papel==="dono"?"":`<a class="link-acao rm" onclick="removerMembro('${m.id}')">remover</a>`}</td>
     </tr>`).join("")}
@@ -591,7 +728,8 @@ function ativarConvite(){
   btn.onclick=async ()=>{
     const email=v("conv-email");
     if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return alert("Informe um e-mail válido.");
-    const {error}=await sb.from("membros").insert({condominio_id:condId, email, papel:"sindico"});
+    const papel = document.getElementById("conv-papel").value;
+    const {error}=await sb.from("membros").insert({condominio_id:condId, email, papel});
     if(error) return erroSb(error);
     document.getElementById("conv-email").value="";
     listarMembros();
@@ -622,9 +760,13 @@ async function dbDelete(tipo, id){
   return true;
 }
 async function proximoNumeroOS(){
-  dados.seqOS = (dados.seqOS||0)+1;
-  await sb.from("condominios").update({seq_os:dados.seqOS}).eq("id",condId);
-  return `OS-${new Date().getFullYear()}-${String(dados.seqOS).padStart(3,"0")}`;
+  // numeração no servidor (permite zelador; evita corrida no seq_os)
+  const {data, error} = await sb.rpc("proximo_numero_os", { p_cond: condId });
+  if(error || !data){ // fallback local
+    dados.seqOS = (dados.seqOS||0)+1;
+    return `OS-${new Date().getFullYear()}-${String(dados.seqOS).padStart(3,"0")}`;
+  }
+  return data;
 }
 
 /* ==================================================================
@@ -808,7 +950,8 @@ const TELAS = [["painel","Painel"],["edificacao","Edificação"],["inventario","
   ["relatorio","Relatório"],["ajustes","Dados"]];
 function montarNav(){
   const pend = dados.atividades.filter(a => a.ativa!==false && ["vencida","nunca"].includes(statusAtividade(a).chave)).length;
-  document.getElementById("nav-principal").innerHTML = TELAS.map(([id,rot]) =>
+  const telas = contexto.admin ? [...TELAS, ["admin","⚙ Administração"]] : TELAS;
+  document.getElementById("nav-principal").innerHTML = telas.map(([id,rot]) =>
     `<button class="${telaAtual===id?"ativa":""}" onclick="irPara('${id}')">${rot}${id==="agenda"&&pend?`<span class="badge">${pend}</span>`:""}</button>`).join("");
 }
 function irPara(id){
@@ -816,6 +959,7 @@ function irPara(id){
   document.querySelectorAll("section.tela").forEach(s => s.classList.toggle("ativa", s.id==="tela-"+id));
   montarNav(); renderTudo(); window.scrollTo({top:0});
   if(id==="relatorio") hidratarFotosRelatorio();
+  if(id==="admin") renderAdmin();
 }
 
 /* ==================================================================
@@ -836,9 +980,12 @@ function fecharDlg(){ dlg.close(); }
 /* ==================================================================
    EDIFICAÇÃO
    ================================================================== */
-const CAMPOS_ED = ["nome","uso","torres","endereco","unidades","pavimentos","ano","construtora","sindico","administradora","rt","versao","normas","docs"];
+const CAMPOS_ED = ["nome","uso","torres","endereco","unidades","pavimentos","ano","construtora","sindico","administradora","rt","versao","normas","docs",
+  "emailnotif","notifativa","seguradora","apolice","segurovig","segurocob","emergencia",
+  "elevempresa","elevqtd","elevcontrato","elevria","avcbnum","avcbval","avcbsit","admcontato","admcontrato","admvig"];
 function preencherEdificacao(){ CAMPOS_ED.forEach(c => { const el=document.getElementById("ed-"+c); if(el) el.value = dados.edificacao[c] ?? (c==="normas"?el.value:""); }); }
 async function salvarEdificacao(){
+  if(!ehDonoAtual()) return alert("Apenas o principal (síndico) pode alterar o cadastro do condomínio.");
   CAMPOS_ED.forEach(c => { const el=document.getElementById("ed-"+c); if(el) dados.edificacao[c]=el.value.trim(); });
   const nome = dados.edificacao.nome || "(condomínio sem nome)";
   const {error} = await sb.from("condominios").update({nome, dados:dados.edificacao}).eq("id",condId);
@@ -1397,6 +1544,102 @@ function exportarDados(){
   const a = document.createElement("a"); a.href = URL.createObjectURL(blob);
   const nome = (dados.edificacao.nome||"condominio").normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^\w]+/g,"-").toLowerCase();
   a.download = `plano-manutencao-${nome}-${hoje()}.json`; a.click(); URL.revokeObjectURL(a.href);
+}
+
+/* ==================================================================
+   ADMINISTRAÇÃO (Paula)
+   ================================================================== */
+async function renderAdmin(){
+  if(!contexto.admin) return;
+  const alvo = document.getElementById("admin-conteudo");
+  alvo.innerHTML = `<div class="vazio">Carregando...</div>`;
+  const [{data:acessos, error:e1}, {data:conds, error:e2}, {data:notifs}] = await Promise.all([
+    sb.from("acessos").select("email,status,observacao,liberado_em").order("liberado_em",{ascending:false}),
+    sb.rpc("admin_listar_condominios"),
+    sb.from("notificacoes").select("id,tipo,destino,assunto,criado_em,enviado_em").order("criado_em",{ascending:false}).limit(30)
+  ]);
+  if(e1||e2){ alvo.innerHTML = `<div class="cartao vazio">Erro ao carregar administração: ${esc((e1||e2).message)}</div>`; return; }
+  const pendentes = (notifs||[]).filter(n=>!n.enviado_em).length;
+  alvo.innerHTML = `
+  <div class="cartao">
+    <h3>Liberar acesso (allowlist)</h3>
+    <p style="font-size:13px;margin-bottom:10px">Somente e-mails liberados aqui podem <b>criar/gerir um condomínio</b> (o principal/síndico). Zeladores e leitura são convidados pelo próprio síndico e não precisam constar aqui.</p>
+    <div class="grade g2" style="margin-bottom:10px">
+      <div class="campo"><label>E-mail a liberar</label><input id="adm-email" type="email" placeholder="cliente@email.com"></div>
+      <div class="campo"><label>Observação (opcional)</label><input id="adm-obs" placeholder="Condomínio X · contrato nº ..."></div>
+    </div>
+    <button class="botao" onclick="adminLiberar()">+ Liberar acesso</button>
+    <div class="tab-wrap" style="margin-top:14px"><table>
+      <tr><th>E-mail</th><th>Status</th><th>Observação</th><th>Liberado em</th><th></th></tr>
+      ${(acessos||[]).map(a=>`<tr>
+        <td>${esc(a.email)}</td>
+        <td><span class="pill ${a.status==="ativo"?"p-ok":"p-neutro"}">${a.status}</span></td>
+        <td style="font-size:12px">${esc(a.observacao)||"—"}</td>
+        <td>${a.liberado_em?fmtData(a.liberado_em.slice(0,10)):"—"}</td>
+        <td>${a.status==="ativo"
+          ? `<a class="link-acao" onclick="adminStatusAcesso('${esc(a.email)}','suspenso')">suspender</a>`
+          : `<a class="link-acao" onclick="adminStatusAcesso('${esc(a.email)}','ativo')">reativar</a>`}
+          · <a class="link-acao rm" onclick="adminRemoverAcesso('${esc(a.email)}')">remover</a></td>
+      </tr>`).join("") || `<tr><td colspan="5" style="color:var(--txt-suave)">Nenhum acesso liberado ainda.</td></tr>`}
+    </table></div>
+  </div>
+
+  <div class="cartao">
+    <h3>Condomínios no sistema (${(conds||[]).length})</h3>
+    <div class="tab-wrap"><table>
+      <tr><th>Condomínio</th><th>Principal (síndico)</th><th>Usuários</th><th>Criado em</th><th></th></tr>
+      ${(conds||[]).map(c=>`<tr>
+        <td><b>${esc(c.nome)}</b></td>
+        <td>${esc(c.principal_email)||"—"}</td>
+        <td style="text-align:center">${c.membros_qtd}</td>
+        <td>${c.criado_em?fmtData(c.criado_em.slice(0,10)):"—"}</td>
+        <td><a class="link-acao" onclick="adminTransferir('${c.id}','${esc(c.nome)}')">trocar principal</a></td>
+      </tr>`).join("") || `<tr><td colspan="5" style="color:var(--txt-suave)">Nenhum condomínio ainda.</td></tr>`}
+    </table></div>
+  </div>
+
+  <div class="cartao">
+    <h3>Fila de e-mails ${pendentes?`<span class="pill p-alerta">${pendentes} pendente(s)</span>`:`<span class="pill p-ok">em dia</span>`}</h3>
+    <p style="font-size:12.5px;color:var(--txt-suave);margin-bottom:8px">Avisos de novo condomínio e alertas de vencimento. O envio é feito pelo serviço de e-mail (Edge Function) quando configurado.</p>
+    <div class="tab-wrap"><table>
+      <tr><th>Quando</th><th>Tipo</th><th>Destino</th><th>Assunto</th><th>Status</th></tr>
+      ${(notifs||[]).map(n=>`<tr>
+        <td>${n.criado_em?fmtData(n.criado_em.slice(0,10)):"—"}</td>
+        <td>${n.tipo==="novo_principal"?"novo condomínio":"vencimento"}</td>
+        <td style="font-size:12px">${esc(n.destino)}</td>
+        <td style="font-size:12px">${esc(n.assunto)}</td>
+        <td>${n.enviado_em?'<span class="pill p-ok">enviado</span>':'<span class="pill p-alerta">na fila</span>'}</td>
+      </tr>`).join("") || `<tr><td colspan="5" style="color:var(--txt-suave)">Sem notificações.</td></tr>`}
+    </table></div>
+  </div>`;
+}
+async function adminLiberar(){
+  const email = v("adm-email");
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return alert("Informe um e-mail válido.");
+  const {error} = await sb.from("acessos").upsert({email:email.toLowerCase(), status:"ativo",
+    observacao:v("adm-obs"), liberado_por:contexto.email, atualizado_em:new Date().toISOString()}, {onConflict:"email"});
+  if(error) return erroSb(error);
+  renderAdmin();
+}
+async function adminStatusAcesso(email, status){
+  const {error} = await sb.from("acessos").update({status, atualizado_em:new Date().toISOString()}).eq("email",email);
+  if(error) return erroSb(error);
+  renderAdmin();
+}
+async function adminRemoverAcesso(email){
+  if(!confirm(`Remover o acesso liberado de ${email}? (condomínios já criados por ele continuam existindo)`)) return;
+  const {error} = await sb.from("acessos").delete().eq("email",email);
+  if(error) return erroSb(error);
+  renderAdmin();
+}
+async function adminTransferir(condId2, nome){
+  const novo = prompt(`Trocar o principal (síndico) do condomínio "${nome}".\n\nInforme o e-mail do NOVO principal.\nO principal atual passará a ser gestor. Esta ação é registrada como aprovada pela administração.`);
+  if(!novo) return;
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(novo.trim())) return alert("E-mail inválido.");
+  const {error} = await sb.rpc("transferir_principal", { p_cond: condId2, p_email: novo.trim() });
+  if(error) return erroSb(error);
+  alert("Principal transferido. O novo e-mail passa a ser o síndico ao acessar (com o mesmo e-mail).");
+  renderAdmin();
 }
 
 /* ==================================================================

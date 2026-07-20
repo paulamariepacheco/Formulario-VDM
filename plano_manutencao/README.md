@@ -22,7 +22,30 @@ e dados na nuvem (Supabase), estruturado conforme:
 - **Convite por e-mail:** em *Edificação → Gerenciar acesso*, o responsável convida
   co-síndico, conselho ou administradora; o convite fica pendente até o primeiro acesso
   da pessoa (que o reivindica automaticamente ao logar com o mesmo e-mail).
-- Papéis: **proprietário do cadastro** (quem criou o condomínio) e **síndico/gestor**.
+## Controle de acesso e papéis (admin)
+
+- **Acesso restrito por contrato:** só e-mails na *allowlist* (liberados por Paula) ou
+  admins podem **criar/gerir um condomínio** (ser o principal). Quem entra sem liberação
+  vê a tela "Acesso ainda não liberado" com o contato da Pacheco.
+- **Papéis por condomínio:**
+  - **principal (síndico)** — único por condomínio; acesso total. Sua **troca é feita
+    apenas pela administração** (Paula), via painel Admin.
+  - **zelador** — registra manutenções, OS, checklists e fotos; não altera o cadastro
+    nem gerencia acesso.
+  - **somente leitura** — consulta tudo (inclui relatório), sem editar.
+- **Painel de Administração** (aba visível só para admin): liberar/suspender/remover
+  e-mails da allowlist, ver todos os condomínios com o principal, transferir o principal
+  e acompanhar a fila de e-mails. Admins iniciais: `pericias@pachecoeng.com.br` e
+  `paula.mariesp@gmail.com` (tabela `manutencao.admins`).
+- Papéis e allowlist são **impostos por RLS** (não só na interface): leitura não escreve,
+  zelador não altera cadastro/acesso, e a criação exige autorização.
+
+## Cadastro estendido
+
+Além da capa técnica, o cadastro guarda: **e-mail para alertas**, **seguro predial**
+(seguradora, apólice, vigência, coberturas), **contatos de emergência**, **elevadores**
+(conservadora, quantidade, contrato, validade do RIA), **AVCB/CLCB** (nº, validade,
+situação) e **contrato com a administradora**.
 
 ## Módulos
 
@@ -72,7 +95,11 @@ Pro/Montserrat.
   - `supabase/migrations/0002_storage_fotos.sql` — bucket privado + políticas de fotos;
   - `supabase/migrations/0003_criar_condominio_rpc.sql` — RPC `criar_condominio`
     (`security definer`) para criar o condomínio + vínculo de dono sem depender do
-    `WITH CHECK` do INSERT direto (evita falha de RLS ao criar o 1º condomínio).
+    `WITH CHECK` do INSERT direto (evita falha de RLS ao criar o 1º condomínio);
+  - `supabase/migrations/0004_acesso_papeis_notificacoes.sql` — admins, allowlist
+    (`acessos`), papéis (zelador/leitura) com RLS separando leitura×escrita, gate de
+    autorização na criação, `transferir_principal` (admin), `proximo_numero_os` e a
+    tabela `notificacoes` (fila de e-mails: novo principal e vencimentos).
 - Tabelas: `condominios`, `membros` (vínculo usuário↔condomínio + convites) e `registros`
   (polimórfico: sistema | atividade | os | garantia | inspecao | checklist, em `jsonb`;
   fotos ficam como `[{path,legenda}]` dentro do `dados` da OS/inspeção).
