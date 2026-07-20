@@ -99,7 +99,37 @@ Pro/Montserrat.
   - `supabase/migrations/0004_acesso_papeis_notificacoes.sql` — admins, allowlist
     (`acessos`), papéis (zelador/leitura) com RLS separando leitura×escrita, gate de
     autorização na criação, `transferir_principal` (admin), `proximo_numero_os` e a
-    tabela `notificacoes` (fila de e-mails: novo principal e vencimentos).
+    tabela `notificacoes` (fila de e-mails: novo principal e vencimentos);
+  - `supabase/migrations/0005_alertas_vencimento.sql` — `gerar_alertas_vencimento()`
+    (detecta manutenções e garantias vencendo em 60/30 dias e enfileira 1 e-mail por
+    condomínio) + cron diário `manutencao-alertas-vencimento` (11:00 UTC / 08:00 BRT);
+  - `supabase/migrations/0006_agendar_envio_emails.sql` — cron diário
+    `manutencao-enviar-emails` (11:05 UTC) que aciona a Edge Function de envio.
+
+## Notificações por e-mail (itens 2 e 5)
+
+Fluxo: gatilhos/cron gravam na fila `manutencao.notificacoes` → a Edge Function
+`enviar-notificacoes` envia via **Resend** e marca como enviado.
+
+- **Item 5 — novo principal:** ao criar um condomínio, a RPC enfileira um aviso para
+  `pericias@pachecoeng.com.br`.
+- **Item 2 — vencimentos:** o cron diário detecta manutenções/garantias vencendo em
+  **60 e 30 dias** e enfileira um e-mail para o endereço cadastrado no condomínio
+  (Edificação → "E-mail para alertas"; respeita "Enviar alertas? = Não").
+- A **Edge Function** (`supabase/functions/enviar-notificacoes/index.ts`, já deployada,
+  `verify_jwt=false`) consome a fila com a service role. Enquanto a `RESEND_API_KEY`
+  não é configurada, ela apenas "pula" e a fila aguarda.
+
+### Para ligar a entrega (1 passo manual, com o Resend)
+
+1. Criar conta em **resend.com** e **verificar o domínio** `pachecoeng.com.br`
+   (registros SPF/DKIM que o Resend indicar), para enviar como
+   `pericias@pachecoeng.com.br`.
+2. No Supabase → **Edge Functions → enviar-notificacoes → Secrets**, definir
+   `RESEND_API_KEY` (e, opcionalmente, `REMETENTE` e `NOTIFY_SECRET`).
+3. Pronto: os crons diários passam a enviar. Para forçar um envio imediato, invoque a
+   função `enviar-notificacoes`. A aba **Administração** mostra a fila e o status
+   (na fila / enviado).
 - Tabelas: `condominios`, `membros` (vínculo usuário↔condomínio + convites) e `registros`
   (polimórfico: sistema | atividade | os | garantia | inspecao | checklist, em `jsonb`;
   fotos ficam como `[{path,legenda}]` dentro do `dados` da OS/inspeção).
