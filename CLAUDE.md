@@ -9,8 +9,11 @@
 >   projeto `noknoebspmrbigwhyucn` (migrações `0001` schema e `0002` storage em
 >   `plano_manutencao/supabase/migrations/`, já aplicadas; `manutencao` exposto no
 >   PostgREST). **Fotos** nas OS e inspeções em bucket privado `manutencao-fotos`
->   (RLS por condomínio, compressão no cliente). Logo oficial em `assets/` e a
->   mesma paleta/tipografia do design system.
+>   (RLS por condomínio, compressão no cliente). **Controle de acesso** (allowlist
+>   `manutencao.acessos` + admins), **papéis** (principal/zelador/leitura via RLS) e
+>   **notificações por e-mail** (fila `manutencao.notificacoes`, crons pg_cron e Edge
+>   Function `enviar-notificacoes` via Resend — falta só a `RESEND_API_KEY`).
+>   Logo oficial em `assets/` e a mesma paleta/tipografia do design system.
 > - **Formulário Viagem das Minas** (legado) — `index.html` na raiz. Não faz parte do sistema de laudos.
 
 Sistema que **elimina a costura manual** de laudos de engenharia. Hoje o laudo é
