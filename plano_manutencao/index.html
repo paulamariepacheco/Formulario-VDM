@@ -244,6 +244,7 @@ body.papel-zelador #btn-membros-top{display:none}
         <input id="novo-cond-nome" placeholder="Nome do condomínio (ex.: Ed. Comercial Otoni)"></div>
       <button class="botao terra" style="width:100%" id="novo-cond-btn" onclick="criarCondominio()">+ Criar condomínio</button>
     </div>
+    <button class="botao secundario" id="seletor-admin" style="width:100%;display:none;margin-top:10px" onclick="irParaAdmin()">⚙ Painel de Administração</button>
     <div class="msg" id="seletor-msg"></div>
     <div class="rodape"><a class="link-acao" onclick="sair()" style="color:var(--petroleo)">Sair da conta</a></div>
   </div>
@@ -623,6 +624,8 @@ function abrirSeletor(obrigatorio){
     : `<p style="color:var(--txt-suave);font-size:13px;text-align:center;padding:8px 0">Nenhum condomínio ainda.</p>`;
   // só quem é autorizado (contratou) ou admin vê o formulário de criação
   document.getElementById("seletor-criar").style.display = podeCriar ? "" : "none";
+  // admin vê o atalho para o painel de administração mesmo sem condomínio
+  document.getElementById("seletor-admin").style.display = contexto.admin ? "" : "none";
   document.getElementById("seletor-msg").className="msg";
   document.getElementById("overlay-seletor").classList.add("on");
 }
@@ -949,17 +952,34 @@ const TELAS = [["painel","Painel"],["edificacao","Edificação"],["inventario","
   ["garantias","Garantias"],["inspecoes","Inspeções e Laudos"],["checklist","Checklist"],
   ["relatorio","Relatório"],["ajustes","Dados"]];
 function montarNav(){
+  const nav = document.getElementById("nav-principal");
+  // modo admin sem condomínio aberto: só Administração + voltar aos condomínios
+  if(!condId && contexto.admin){
+    nav.innerHTML = [["seletor","← Condomínios"],["admin","⚙ Administração"]].map(([id,rot]) =>
+      `<button class="${telaAtual===id?"ativa":""}" onclick="irPara('${id}')">${rot}</button>`).join("");
+    return;
+  }
   const pend = dados.atividades.filter(a => a.ativa!==false && ["vencida","nunca"].includes(statusAtividade(a).chave)).length;
   const telas = contexto.admin ? [...TELAS, ["admin","⚙ Administração"]] : TELAS;
-  document.getElementById("nav-principal").innerHTML = telas.map(([id,rot]) =>
+  nav.innerHTML = telas.map(([id,rot]) =>
     `<button class="${telaAtual===id?"ativa":""}" onclick="irPara('${id}')">${rot}${id==="agenda"&&pend?`<span class="badge">${pend}</span>`:""}</button>`).join("");
 }
 function irPara(id){
+  if(id==="seletor"){ abrirSeletor(false); return; }
   telaAtual = id;
   document.querySelectorAll("section.tela").forEach(s => s.classList.toggle("ativa", s.id==="tela-"+id));
   montarNav(); renderTudo(); window.scrollTo({top:0});
   if(id==="relatorio") hidratarFotosRelatorio();
   if(id==="admin") renderAdmin();
+}
+// entra direto no painel de administração, sem condomínio aberto
+function irParaAdmin(){
+  condId = null;
+  ["papel-dono","papel-sindico","papel-zelador","papel-leitura"].forEach(k=>document.body.classList.remove(k));
+  document.getElementById("cab-dir").innerHTML =
+    `<div class="cab-user">${esc(usuario.email)} <span class="pill p-terra" style="font-size:9px">ADMIN</span><br><a onclick="sair()">Sair</a></div>`;
+  esconderOverlays();
+  irPara("admin");
 }
 
 /* ==================================================================
