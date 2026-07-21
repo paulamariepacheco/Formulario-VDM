@@ -27,6 +27,13 @@ e dados na nuvem (Supabase), estruturado conforme:
 - **Acesso restrito por contrato:** só e-mails na *allowlist* (liberados por Paula) ou
   admins podem **criar/gerir um condomínio** (ser o principal). Quem entra sem liberação
   vê a tela "Acesso ainda não liberado" com o contato da Pacheco.
+- **Acessos temporários (teste):** ao liberar, escolhe-se **1 semana**, **1 mês** ou
+  **permanente** (assinante). Enquanto o teste vale, o cliente usa normalmente (com aviso
+  "seu teste vence em N dias" quando faltam ≤10). Ao **vencer**, o condomínio congela em
+  **somente-leitura** (banner "teste expirado") — os dados continuam visíveis, mas a
+  edição fica bloqueada até a admin **renovar (+7/+30)** ou **tornar permanente**. A trava
+  é imposta por RLS (`condominio_liberado`), não só na interface; condomínios legados/sem
+  restrição e os de admin nunca congelam.
 - **Papéis por condomínio:**
   - **principal (síndico)** — único por condomínio; acesso total. Sua **troca é feita
     apenas pela administração** (Paula), via painel Admin.
@@ -104,7 +111,10 @@ Pro/Montserrat.
     (detecta manutenções e garantias vencendo em 60/30 dias e enfileira 1 e-mail por
     condomínio) + cron diário `manutencao-alertas-vencimento` (11:00 UTC / 08:00 BRT);
   - `supabase/migrations/0006_agendar_envio_emails.sql` — cron diário
-    `manutencao-enviar-emails` (11:05 UTC) que aciona a Edge Function de envio.
+    `manutencao-enviar-emails` (11:05 UTC) que aciona a Edge Function de envio;
+  - `supabase/migrations/0007_acessos_temporarios.sql` — `validade` na allowlist,
+    `acesso_liberado`/`condominio_liberado` com validade, RLS de escrita exigindo
+    condomínio liberado (teste vencido ⇒ só-leitura) e `meu_contexto` com dias restantes.
 
 ## Notificações por e-mail (itens 2 e 5)
 

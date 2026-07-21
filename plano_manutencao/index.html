@@ -152,6 +152,10 @@ footer b{color:var(--branco)}
 /* ---------- Papéis / permissões ---------- */
 #banner-leitura{display:none;background:var(--alerta-bg);color:#7a5b1e;border-bottom:1px solid #e6d9b8;padding:7px 18px;font-size:12.5px;text-align:center}
 body.papel-leitura #banner-leitura{display:block}
+#banner-congelado{display:none;background:var(--gr3-bg);color:#8f3b34;border-bottom:1px solid #e3c4c0;padding:8px 18px;font-size:12.5px;text-align:center}
+body.congelado #banner-congelado{display:block}
+body.congelado #banner-leitura{display:none}   /* evita banner duplo */
+#banner-teste{display:none;background:#e4e7f0;color:var(--azul);border-bottom:1px solid #c9cfe0;padding:8px 18px;font-size:12.5px;text-align:center}
 /* somente leitura: some com todas as ações de escrita, mantendo Relatório e Dados */
 body.papel-leitura .acoes-topo{display:none}
 body.papel-leitura #tela-relatorio .acoes-topo,
@@ -276,6 +280,8 @@ body.papel-zelador #btn-membros-top{display:none}
 <nav id="nav-principal"></nav>
 
 <div id="banner-leitura">👁 Acesso <b>somente leitura</b> — você pode consultar tudo, mas não editar.</div>
+<div id="banner-congelado">🔒 <b>Acesso de teste expirado.</b> Você ainda consulta os dados, mas a edição está bloqueada. Para reativar, fale com a Pacheco Engenharia — <b>pericias@pachecoeng.com.br</b> · (31) 99752-6257.</div>
+<div id="banner-teste"></div>
 
 <main>
 
@@ -521,6 +527,7 @@ let telaAtual = "painel";
 let checklistAtual = null;
 let contexto = { admin:false, autorizado:false, email:"" };  // permissões do usuário logado
 let papelAtual = null;   // papel do usuário no condomínio aberto: dono|sindico|zelador|leitura
+let condCongelado = false;  // teste do principal vencido ⇒ condomínio em somente-leitura
 const CHAVE_ULT = "pp_manut_ultimo_cond";
 const podeEditar = () => papelAtual && papelAtual !== "leitura";
 const ehDonoAtual = () => papelAtual === "dono" || contexto.admin;
@@ -650,12 +657,27 @@ async function abrirCondominio(id){
   condId = id; localStorage.setItem(CHAVE_ULT, id);
   const c = condominios.find(x=>x.id===id);
   papelAtual = c ? c.papel : (contexto.admin ? "dono" : null);
-  ["papel-dono","papel-sindico","papel-zelador","papel-leitura"].forEach(k=>document.body.classList.remove(k));
+  // condomínio liberado para edição? (teste do principal não vencido)
+  let liberado = true;
+  try{ const {data} = await sb.rpc("condominio_liberado",{ cond:id }); liberado = data!==false; }catch(e){}
+  condCongelado = !liberado && !contexto.admin;
+  ["papel-dono","papel-sindico","papel-zelador","papel-leitura","congelado"].forEach(k=>document.body.classList.remove(k));
   if(papelAtual) document.body.classList.add("papel-"+papelAtual);
+  if(condCongelado) document.body.classList.add("papel-leitura","congelado");  // reaproveita o modo leitura
   await carregarDados(id);
   esconderOverlays();
-  renderCabDir(); preencherEdificacao(); renderCabecalho();
+  renderCabDir(); preencherEdificacao(); renderCabecalho(); atualizarBannerTeste();
   irPara("painel");
+}
+function atualizarBannerTeste(){
+  const b = document.getElementById("banner-teste");
+  const mostrar = !condCongelado && papelAtual==="dono" && !contexto.admin
+    && contexto.validade && contexto.dias_restantes!=null
+    && contexto.dias_restantes>=0 && contexto.dias_restantes<=10;
+  if(mostrar){
+    b.style.display="block";
+    b.innerHTML = `⏳ Seu acesso de teste vence em <b>${contexto.dias_restantes} dia(s)</b> (${fmtData(contexto.validade)}). Para assinar e continuar, fale com a Pacheco Engenharia: <b>pericias@pachecoeng.com.br</b>`;
+  } else { b.style.display="none"; }
 }
 async function carregarDados(id){
   const [{data:cond, error:e1}, {data:regs, error:e2}] = await Promise.all([
@@ -1574,7 +1596,7 @@ async function renderAdmin(){
   const alvo = document.getElementById("admin-conteudo");
   alvo.innerHTML = `<div class="vazio">Carregando...</div>`;
   const [{data:acessos, error:e1}, {data:conds, error:e2}, {data:notifs}] = await Promise.all([
-    sb.from("acessos").select("email,status,observacao,liberado_em").order("liberado_em",{ascending:false}),
+    sb.from("acessos").select("email,status,observacao,validade,liberado_em").order("liberado_em",{ascending:false}),
     sb.rpc("admin_listar_condominios"),
     sb.from("notificacoes").select("id,tipo,destino,assunto,criado_em,enviado_em").order("criado_em",{ascending:false}).limit(30)
   ]);
@@ -1583,24 +1605,33 @@ async function renderAdmin(){
   alvo.innerHTML = `
   <div class="cartao">
     <h3>Liberar acesso (allowlist)</h3>
-    <p style="font-size:13px;margin-bottom:10px">Somente e-mails liberados aqui podem <b>criar/gerir um condomínio</b> (o principal/síndico). Zeladores e leitura são convidados pelo próprio síndico e não precisam constar aqui.</p>
-    <div class="grade g2" style="margin-bottom:10px">
+    <p style="font-size:13px;margin-bottom:10px">Somente e-mails liberados aqui podem <b>criar/gerir um condomínio</b> (o principal/síndico). Você pode dar um <b>acesso de teste</b> (7 ou 30 dias) — ao vencer, o condomínio fica só-leitura até renovar ou tornar permanente. Zeladores/leitura são convidados pelo próprio síndico e não precisam constar aqui.</p>
+    <div class="grade g3" style="margin-bottom:10px">
       <div class="campo"><label>E-mail a liberar</label><input id="adm-email" type="email" placeholder="cliente@email.com"></div>
+      <div class="campo"><label>Duração</label><select id="adm-duracao">
+        <option value="7">Teste — 1 semana</option>
+        <option value="30">Teste — 1 mês</option>
+        <option value="0">Permanente (assinante)</option>
+      </select></div>
       <div class="campo"><label>Observação (opcional)</label><input id="adm-obs" placeholder="Condomínio X · contrato nº ..."></div>
     </div>
     <button class="botao" onclick="adminLiberar()">+ Liberar acesso</button>
     <div class="tab-wrap" style="margin-top:14px"><table>
-      <tr><th>E-mail</th><th>Status</th><th>Observação</th><th>Liberado em</th><th></th></tr>
-      ${(acessos||[]).map(a=>`<tr>
+      <tr><th>E-mail</th><th>Situação</th><th>Validade</th><th>Observação</th><th>Ações</th></tr>
+      ${(acessos||[]).map(a=>{ const st=statusAcesso(a); return `<tr>
         <td>${esc(a.email)}</td>
-        <td><span class="pill ${a.status==="ativo"?"p-ok":"p-neutro"}">${a.status}</span></td>
+        <td><span class="pill ${st.cls}">${st.rot}</span></td>
+        <td>${a.validade?fmtData(a.validade)+` <span class="mini">(${diasAte(a.validade)>=0?"faltam "+diasAte(a.validade):"há "+(-diasAte(a.validade))} dias)</span>`:"permanente"}</td>
         <td style="font-size:12px">${esc(a.observacao)||"—"}</td>
-        <td>${a.liberado_em?fmtData(a.liberado_em.slice(0,10)):"—"}</td>
-        <td>${a.status==="ativo"
-          ? `<a class="link-acao" onclick="adminStatusAcesso('${esc(a.email)}','suspenso')">suspender</a>`
-          : `<a class="link-acao" onclick="adminStatusAcesso('${esc(a.email)}','ativo')">reativar</a>`}
+        <td style="font-size:12px">
+          <a class="link-acao" onclick="adminRenovar('${esc(a.email)}',7)">+7d</a> ·
+          <a class="link-acao" onclick="adminRenovar('${esc(a.email)}',30)">+30d</a> ·
+          <a class="link-acao" onclick="adminPermanente('${esc(a.email)}')">tornar permanente</a><br>
+          ${a.status==="ativo"
+            ? `<a class="link-acao" onclick="adminStatusAcesso('${esc(a.email)}','suspenso')">suspender</a>`
+            : `<a class="link-acao" onclick="adminStatusAcesso('${esc(a.email)}','ativo')">reativar</a>`}
           · <a class="link-acao rm" onclick="adminRemoverAcesso('${esc(a.email)}')">remover</a></td>
-      </tr>`).join("") || `<tr><td colspan="5" style="color:var(--txt-suave)">Nenhum acesso liberado ainda.</td></tr>`}
+      </tr>`;}).join("") || `<tr><td colspan="5" style="color:var(--txt-suave)">Nenhum acesso liberado ainda.</td></tr>`}
     </table></div>
   </div>
 
@@ -1633,11 +1664,35 @@ async function renderAdmin(){
     </table></div>
   </div>`;
 }
+function statusAcesso(a){
+  if(a.status==="suspenso") return {rot:"suspenso", cls:"p-neutro"};
+  if(!a.validade) return {rot:"permanente", cls:"p-ok"};
+  const d = diasAte(a.validade);
+  if(d<0)  return {rot:"teste expirado", cls:"p-erro"};
+  if(d<=7) return {rot:`teste · vence em ${d} d`, cls:"p-alerta"};
+  return       {rot:`teste · ${d} d`, cls:"p-azul"};
+}
+function validadePorDuracao(dias){ if(!dias || dias<=0) return null; const d=new Date(); d.setDate(d.getDate()+dias); return d.toISOString().slice(0,10); }
 async function adminLiberar(){
   const email = v("adm-email");
   if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return alert("Informe um e-mail válido.");
+  const dias = +document.getElementById("adm-duracao").value;
   const {error} = await sb.from("acessos").upsert({email:email.toLowerCase(), status:"ativo",
+    validade: validadePorDuracao(dias),
     observacao:v("adm-obs"), liberado_por:contexto.email, atualizado_em:new Date().toISOString()}, {onConflict:"email"});
+  if(error) return erroSb(error);
+  document.getElementById("adm-email").value=""; document.getElementById("adm-obs").value="";
+  renderAdmin();
+}
+async function adminRenovar(email, dias){
+  const nova = validadePorDuracao(dias);
+  const {error} = await sb.from("acessos").update({status:"ativo", validade:nova, atualizado_em:new Date().toISOString()}).eq("email",email);
+  if(error) return erroSb(error);
+  renderAdmin();
+}
+async function adminPermanente(email){
+  if(!confirm(`Tornar o acesso de ${email} permanente (assinante)?`)) return;
+  const {error} = await sb.from("acessos").update({status:"ativo", validade:null, atualizado_em:new Date().toISOString()}).eq("email",email);
   if(error) return erroSb(error);
   renderAdmin();
 }
